@@ -10,6 +10,11 @@
 #include "Light.h"
 #include "DepthFBO.h"
 #include <vector>
+#include "KeyboardController.h"
+#include "MouseController.h"
+#include "JoystickController.h"
+
+using namespace std;
 
 class SceneTerrain : public Scene
 {

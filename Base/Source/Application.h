@@ -3,6 +3,11 @@
 #define APPLICATION_H
 
 #include "timer.h"
+#include "MouseController.h"
+#include "KeyboardController.h"
+#include "JoystickController.h"
+
+struct GLFWwindow;
 
 class Application
 {
@@ -15,8 +20,13 @@ public:
 	void Init();
 	void Run();
 	void Exit();
+	void UpdateInput();//right now it only updates joystick
+	void PostUpdateInput();
+	
 	static bool IsKeyPressed(unsigned short key);
 	static bool GetMouseUpdate();
+	static void MouseButtonCallbacks(GLFWwindow* window, int button, int action, int mods);
+	static void MouseScrollCallbacks(GLFWwindow* window, double xoffset, double yoffset);
 	const static int GetWindowWidth() { return m_window_width; }
 	const static int GetWindowHeight() { return m_window_height; }
 	//Declare variables to store the last and current mouse position

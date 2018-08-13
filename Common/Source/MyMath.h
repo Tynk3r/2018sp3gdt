@@ -250,6 +250,22 @@ Return a random float between min and max
 		return (num + min);
 	}//end of RandFloatMinMax function
 
+/******************************************************************************/
+/*!
+\brief
+Return the interpolated value from v0 to v1 at t*100%
+
+\param v0 - initial value
+\param v1 - final value
+
+\exception None
+\return template T 
+*/
+	template<typename T>
+	inline T lerp(T v0, T v1, T t) {
+		return fma(t, v1, fma(-t, v0, v0));
+	}
+
 }//end namespace Math
 
 /******************************************************************************/
