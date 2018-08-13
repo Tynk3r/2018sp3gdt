@@ -1,0 +1,23 @@
+﻿  Application.cpp
+  Camera.cpp
+  Camera2.cpp
+  Camera3.cpp
+  LoadHmap.cpp
+  LoadOBJ.cpp
+  LoadTGA.cpp
+  main.cpp
+  Mesh.cpp
+  MeshBuilder.cpp
+  SceneLight.cpp
+  SceneLight2.cpp
+  SceneSkybox.cpp
+  SceneTerrain.cpp
+Source\SceneTerrain.cpp(616): warning C4305: 'argument': truncation from 'double' to 'float'
+Source\SceneTerrain.cpp(618): warning C4305: 'argument': truncation from 'double' to 'float'
+Source\SceneTerrain.cpp(635): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+Source\SceneTerrain.cpp(653): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  SceneText.cpp
+  shader.cpp
+  SpriteAnimation.cpp
+  Utility.cpp
+LINK : fatal error LNK1181: cannot open input file 'glfw3.lib'
