@@ -86,9 +86,27 @@ bool Application::GetMouseUpdate()
 
     return false;
 }
-
+	
 void Application::UpdateInput()
 {
+	//update mouse input
+	double mouse_currX, mouse_currY;
+	glfwGetCursorPos(m_window, &mouse_currX, &mouse_currY);
+	MouseController::GetInstance()->UpdateMousePosition(mouse_currX, mouse_currY);
+	if ((mouse_current_x < m_window_deadzone) || (mouse_current_x > m_window_width - m_window_deadzone))
+	{
+		mouse_current_x = m_window_width >> 1;
+		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
+	}
+	if ((mouse_current_y < m_window_deadzone) || (mouse_current_y > m_window_height - m_window_deadzone))
+	{
+		mouse_current_y = m_window_height >> 1;
+		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
+	}
+	//update keyboard input
+	for (int i = 0; i < KeyboardController::MAX_KEYS; ++i)
+		KeyboardController::GetInstance()->UpdateKeyboardStatus(i, IsKeyPressed(i));
+
 	//update joystick input
 	if (JoystickController::GetInstance()->IsJoystickPresent())
 	{
@@ -100,7 +118,23 @@ void Application::UpdateInput()
 
 void Application::PostUpdateInput()
 {
+	MouseController::GetInstance()->EndFrameUpdate();
+	KeyboardController::GetInstance()->EndFrameUpdate();
 	JoystickController::GetInstance()->EndFrameUpdate();
+}
+
+void Application::MouseButtonCallbacks(GLFWwindow* window, int button, int action, int mods)
+{
+	// Send the callback to the mouse controller to handle
+	if (action == GLFW_PRESS)
+		MouseController::GetInstance()->UpdateMouseButtonPressed(button);
+	else
+		MouseController::GetInstance()->UpdateMouseButtonReleased(button);
+}
+
+void Application::MouseScrollCallbacks(GLFWwindow* window, double xoffset, double yoffset)
+{
+	MouseController::GetInstance()->UpdateMouseScroll(xoffset, yoffset);
 }
 
 Application::Application()
@@ -131,7 +165,7 @@ void Application::Init()
 
 
 	//Create a window and create its OpenGL context
-	m_window = glfwCreateWindow(m_window_width, m_window_height, "DM2210 Assignment 2 170264F", NULL, NULL);
+	m_window = glfwCreateWindow(m_window_width, m_window_height, "SUPER MAGIC@ GAMEEEEEEEEE!!!!!!!!!!!!!@", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)
@@ -147,6 +181,8 @@ void Application::Init()
 	//Sets the key callback
 	//glfwSetKeyCallback(m_window, key_callback);
 	glfwSetWindowSizeCallback(m_window, resize_callback);
+	glfwSetMouseButtonCallback(m_window, &Application::MouseButtonCallbacks);
+	glfwSetScrollCallback(m_window, &Application::MouseScrollCallbacks);
 
 	glewExperimental = true; // Needed for core profile
 	//Initialize GLEW

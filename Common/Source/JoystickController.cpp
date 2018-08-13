@@ -9,7 +9,7 @@ JoystickController::~JoystickController()
 }
 void JoystickController::UpdateJoystickStatus(int present, const float * axes, const unsigned char * buttons)
 {
-	this->joystickPresent = present;
+	this->joystickPresent = (bool)present;
 	if (present)
 	{
 		for (int i = 0; i < AXES_TOTAL; ++i)
@@ -18,7 +18,7 @@ void JoystickController::UpdateJoystickStatus(int present, const float * axes, c
 		}
 		for (int i = 0; i < BUTTON_TOTAL; ++i)
 		{
-			this->buttons[i] = buttons[i];
+			this->buttons[i] = (bool)buttons[i];
 		}
 	}
 }
