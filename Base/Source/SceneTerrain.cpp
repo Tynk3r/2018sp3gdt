@@ -8,6 +8,7 @@
 #include "LoadTGA.h"
 #include "LoadHmap.h"
 #include <sstream>
+#define SP3_DEBUG
 
 SceneTerrain::SceneTerrain()
 {
@@ -285,6 +286,10 @@ void SceneTerrain::Update(double dt)
 		camera.up.Set(0, 1, 0);
 		isLyingDown = false;
 	}
+#ifdef SP3_DEBUG
+	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
+		cout << "key H was pressed" << endl;
+#endif // SP3_DEBUG
 
 	if(Application::IsKeyPressed('I'))
 		lights[0].position.z -= (float)(10.f * dt);

@@ -389,3 +389,16 @@ Vector3 operator*( float scalar, const Vector3& rhs )
 {
 	return rhs * scalar;
 }
+
+Vector3 Vector3::lerped(Vector3 goal, float alpha)
+{
+	return Vector3(Math::lerp(this->x, goal.x, alpha), Math::lerp(this->y, goal.y, alpha), Math::lerp(this->z, goal.z, alpha));
+}
+
+Vector3& Vector3::lerp(Vector3 goal, float alpha)
+{
+	this->x = Math::lerp(this->x, goal.x, alpha);
+	this->y = Math::lerp(this->y, goal.y, alpha);
+	this->z = Math::lerp(this->z, goal.z, alpha);
+	return *this;
+}

@@ -68,6 +68,11 @@ struct Vector3
 	friend std::ostream& operator<<( std::ostream& os, Vector3& rhs); //print to ostream
 
 	friend Vector3 operator*( float scalar, const Vector3& rhs ); //what is this for?
+
+	//returns a vector3 interpolated from the current to the goal at alpha*100%
+	Vector3 lerped(Vector3 goal, float alpha);
+	//interpolates the current to the goal at alpha*100%
+	Vector3& lerp(Vector3 goal, float alpha);
 };
 
 #endif //VECTOR3_H
