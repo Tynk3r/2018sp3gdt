@@ -177,13 +177,9 @@ void SceneTerrain::Init()
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
-	meshList[GEO_QUAD]->textureArray[0] = LoadTGA("Image//tent.tga");
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
-	meshList[GEO_OBJECT] = MeshBuilder::GenerateOBJ("OBJ1", "OBJ//tree.obj");
-	meshList[GEO_OBJECT]->textureArray[0] = LoadTGA("Image//bark.tga");
-	meshList[GEO_OBJECT]->textureArray[1] = LoadTGA("Image//treemoss.tga");
 	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 10.f);
@@ -194,24 +190,12 @@ void SceneTerrain::Init()
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
 
-	meshList[GEO_CAMPFIRE_BASE] = MeshBuilder::GenerateOBJ("cpb", "OBJ//campfirebase.obj");
-	meshList[GEO_CAMPFIRE_BASE]->textureArray[0] = LoadTGA("Image//campfirebase.tga");
-	meshList[GEO_CAMPFIRE_POT] = MeshBuilder::GenerateOBJ("cpp", "OBJ//campfirepot.obj");
-	meshList[GEO_CAMPFIRE_POT]->textureArray[0] = LoadTGA("Image//campfirepot.tga");
-	meshList[GEO_CAMPFIRE_POT_STAND] = MeshBuilder::GenerateOBJ("cpp", "OBJ//campfirepotstand.obj");
-	meshList[GEO_CAMPFIRE_POT_STAND]->textureArray[0] = LoadTGA("Image//campfirepotstand.tga");
-	meshList[GEO_TENT] = MeshBuilder::GenerateOBJ("tent", "OBJ//tent.obj");
-	meshList[GEO_TENT]->textureArray[0] = LoadTGA("Image//tent.tga");
-	meshList[GEO_DOG] = MeshBuilder::GenerateOBJ("dog", "OBJ//dog.obj");
-	meshList[GEO_DOG]->textureArray[0] = LoadTGA("Image//dog.tga");
-
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
 	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
 	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
-	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//water.tga");
-	meshList[GEO_WETER]->textureArray[1] = LoadTGA("Image//trans.tga");
+	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//trans.tga");
 
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
