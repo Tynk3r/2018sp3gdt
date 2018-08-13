@@ -121,6 +121,11 @@ uniform vec3 textColor;
 uniform FogParam fogParam;
 uniform sampler2D shadowMap;
 
+//PAINT UNIFORM VALUES
+uniform bool paintTextureEnabled = false;
+uniform sampler2D paintTexture;
+uniform float paintTexco = 1;
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -232,6 +237,14 @@ void main(){
 				color = vec4( fragmentColor, 1 );
 		}
 		
+	}
+
+	//MULTITEXTURE FOR PAINT
+	if(paintTextureEnabled == true)
+	{
+		vec4 paintcol;
+		paintcol = texture2D( paintTexture, texCoord * (1 / paintTexco) );
+		if (paintcol.a > 0) color += paintcol;
 	}
 
 	if(fogParam.enabled)

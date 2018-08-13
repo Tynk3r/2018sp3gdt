@@ -107,6 +107,11 @@ void SceneTerrain::Init()
 	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
 		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
 	
+	//paint uniform value parameters
+	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
+	m_parameters[U_PAINT_TEXTURE] = glGetUniformLocation(m_programID, "paintTexture");
+	m_parameters[U_PAINT_TEXCOORDSTRETCH] = glGetUniformLocation(m_programID, "paintTexco");
+
 	// Use our shader
 	glUseProgram(m_programID);
 
@@ -193,6 +198,9 @@ void SceneTerrain::Init()
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
+	meshList[GEO_TERRAIN]->texturePaintID = LoadTGA("Image//blank256.tga");
+	testvar = 0;
+
 	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
 	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
 	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//trans.tga");
@@ -353,6 +361,9 @@ void SceneTerrain::Update(double dt)
 		}
 	}
 
+	meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, testvar, testvar, Vector3(1, 0, 0), 1, 256);
+
+	testvar += 0.05 * dt;
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -498,6 +509,16 @@ void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
 		mesh->Render();
 		return;
 	}
+
+	if (mesh->texturePaintID > 0)
+	{
+		glUniform1i(m_parameters[U_PAINT_TEXTURE_ENABLED], true);
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, mesh->texturePaintID);
+		glUniform1i(m_parameters[U_PAINT_TEXTURE], 1);
+		glUniform1f(m_parameters[U_PAINT_TEXCOORDSTRETCH], mesh->texCoordStretch);
+	}
+
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 	modelView = viewStack.Top() * modelStack.Top(); // Week 6
@@ -542,6 +563,14 @@ void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
 	/*{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}*/
+
+	if (mesh->texturePaintID > 0)
+	{
+		glUniform1i(m_parameters[U_PAINT_TEXTURE_ENABLED], false);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUniform1i(m_parameters[U_PAINT_TEXTURE], 0);
+		glUniform1f(m_parameters[U_PAINT_TEXCOORDSTRETCH], 1.0f);
+	}
 }
 
 void SceneTerrain::RenderGround()

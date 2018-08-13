@@ -60,6 +60,12 @@ class SceneTerrain : public Scene
 		U_FOG_ENABLED,
 		U_LIGHT_DEPTH_MVP_GPASS,
 		U_LIGHT_DEPTH_MVP,
+
+		//PAINT UNIFORM VALUES
+		U_PAINT_TEXTURE_ENABLED,
+		U_PAINT_TEXTURE,
+		U_PAINT_TEXCOORDSTRETCH,
+
 		U_SHADOW_MAP,
 		U_SHADOW_COLOR_TEXTURE,
 		U_SHADOW_COLOR_TEXTURE1,
@@ -185,6 +191,8 @@ private:
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
+
+	float testvar;
 };
 
 #endif

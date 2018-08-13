@@ -14,6 +14,8 @@ Mesh::Mesh(const std::string &meshName)
 	for (int i = 0; i < MAX_TEXTURES; ++i) {
 		textureArray[i] = 0;
 	}
+	texturePaintID = 0; //Initializes paint ID with nothing
+	texCoordStretch = 1.0f;
 }
 
 Mesh::~Mesh()
@@ -25,6 +27,8 @@ Mesh::~Mesh()
 	for (int i = 0; i < MAX_TEXTURES; ++i) {
 		glDeleteTextures(i, &textureArray[i]);
 	}
+	if (texturePaintID > 0) //Deletes paint ID if it exists
+		glDeleteTextures(1, &texturePaintID);
 }
 
 void Mesh::Render()

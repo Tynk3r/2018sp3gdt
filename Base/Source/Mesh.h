@@ -30,6 +30,8 @@ public:
 	Material material;
 	unsigned textureID;
 	unsigned textureArray[MAX_TEXTURES];
+	unsigned texturePaintID; //Texture ID for Paint, acts as a multitexture, but preferably kept away from the array used for multitexture
+	float texCoordStretch;
 };
 
 #endif
