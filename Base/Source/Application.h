@@ -3,6 +3,7 @@
 #define APPLICATION_H
 
 #include "timer.h"
+#include "JoystickController.h"
 
 class Application
 {
@@ -15,6 +16,8 @@ public:
 	void Init();
 	void Run();
 	void Exit();
+	void UpdateInput();//right now it only updates joystick
+	void PostUpdateInput();
 	static bool IsKeyPressed(unsigned short key);
 	static bool GetMouseUpdate();
 	const static int GetWindowWidth() { return m_window_width; }

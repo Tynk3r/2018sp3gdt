@@ -87,6 +87,22 @@ bool Application::GetMouseUpdate()
     return false;
 }
 
+void Application::UpdateInput()
+{
+	//update joystick input
+	if (JoystickController::GetInstance()->IsJoystickPresent())
+	{
+		JoystickController::GetInstance()->UpdateJoystickStatus(JoystickController::GetInstance()->IsJoystickPresent(),
+			glfwGetJoystickAxes(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->axesCount)),
+			glfwGetJoystickButtons(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->buttonCount)));
+	}
+}
+
+void Application::PostUpdateInput()
+{
+	JoystickController::GetInstance()->EndFrameUpdate();
+}
+
 Application::Application()
 {
 }
@@ -145,6 +161,12 @@ void Application::Init()
 
 	// Hide the cursor
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	if (glfwJoystickPresent(GLFW_JOYSTICK_1))
+	{
+		JoystickController::GetInstance()->UpdateJoystickStatus(1,
+			glfwGetJoystickAxes(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->axesCount)),
+			glfwGetJoystickButtons(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->buttonCount)));
+	}
 }
 
 void Application::Run()
@@ -157,13 +179,15 @@ void Application::Run()
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
 		GetMouseUpdate();
+		UpdateInput();
 		scene->Update(m_timer.getElapsedTime());
 		scene->Render();
 		//Swap buffers
 		glfwSwapBuffers(m_window);
 		//Get and organize events, like keyboard and mouse input, window resizing, etc...
 		glfwPollEvents();
-        m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.   
+        m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
+		PostUpdateInput();
 
 	} //Check if the ESC key had been pressed or if the window had been closed
 	scene->Exit();
