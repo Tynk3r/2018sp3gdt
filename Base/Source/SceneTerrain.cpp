@@ -245,7 +245,9 @@ void SceneTerrain::Init()
 
 	enemy1 = new CEnemy();
 	enemy1->Init();
+	enemy1->setPos(Vector3(-100.f, 20.f, -100.f));
 	enemy1->setScale(Vector3(100.f, 100.f, 100.f));
+	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
@@ -737,12 +739,18 @@ void SceneTerrain::RenderWorld()
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
+			switch ((*it)->getType()) {
+			case CEntity::E_ENEMY:
 			modelStack.PushMatrix();
 			modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (*it)->getPos().x, camera.position.z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 			RenderMesh(meshList[GEO_QUAD], godlights);
 			modelStack.PopMatrix();
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	modelStack.PushMatrix();

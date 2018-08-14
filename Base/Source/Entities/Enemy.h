@@ -18,9 +18,10 @@ public:
 	void Init();
 	void Update(double dt);
 
+	FSM getState(void) { return state; }
+	void setState(FSM s) { state = s; }
+
 private:
 	FSM state;
-	Vector3 target;
-	float speed;
 };
 
