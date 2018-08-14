@@ -29,7 +29,7 @@ public:
 	float getSpeed(void) { return speed; }
 	void setSpeed(float s) { speed = s; }
 
-	bool IsDone(void) { return false; }
+	virtual bool IsDone(void) { return false; }
 
 private:
 	Vector3 position;

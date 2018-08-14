@@ -322,8 +322,15 @@ void SceneTerrain::Update(double dt)
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
+	{
 		cout << "key H was pressed" << endl;
-	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+	}
+	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
 
@@ -775,6 +782,10 @@ void SceneTerrain::RenderWorld()
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
+			CEntity* ent = *it;
+			Vector3 entPos = ent->getPos();
+			Vector3 entTar = ent->getTarget();
+			Vector3 entSca = ent->getScale();
 			switch ((*it)->getType()) {
 			case CEntity::E_ENEMY:
 				modelStack.PushMatrix();
@@ -784,6 +795,21 @@ void SceneTerrain::RenderWorld()
 				RenderMesh(meshList[GEO_QUAD], godlights);
 				modelStack.PopMatrix();
 				break;
+			case CEnemy::E_PROJECTILE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+				modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+				modelStack.Scale(entSca.x, entSca.y, entSca.z);
+				RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.PopMatrix();
+				if (entPos.y < 0)
+				{
+					CProjectile* proj = dynamic_cast<CProjectile*>(ent);
+					proj->setDone(true);
+					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+				}
+			}
 			default:
 				break;
 			}
@@ -825,7 +851,7 @@ void SceneTerrain::RenderPassMain()
 	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
-	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
+	perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
 

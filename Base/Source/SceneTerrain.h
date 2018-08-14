@@ -21,6 +21,7 @@
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
+#include "Entities/Projectile.h"
 
 using namespace std;
 
