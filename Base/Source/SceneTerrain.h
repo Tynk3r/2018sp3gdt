@@ -18,6 +18,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
+#include "Entities/Projectile.h"
 
 using namespace std;
 
