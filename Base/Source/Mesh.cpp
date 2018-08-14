@@ -16,6 +16,7 @@ Mesh::Mesh(const std::string &meshName)
 	}
 	texturePaintID = 0; //Initializes paint ID with nothing
 	texCoordStretch = 1.0f;
+	tgaLengthPaint = 1;
 }
 
 Mesh::~Mesh()
