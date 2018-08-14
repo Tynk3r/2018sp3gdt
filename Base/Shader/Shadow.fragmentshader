@@ -125,6 +125,8 @@ uniform sampler2D shadowMap;
 uniform bool paintTextureEnabled = false;
 uniform sampler2D paintTexture;
 uniform float paintTexco = 1;
+uniform float paintTgaStrX = 1;
+uniform float paintTgaStrY = 1;
 
 float getShadowEffect()
 {
@@ -243,7 +245,7 @@ void main(){
 	if(paintTextureEnabled == true)
 	{
 		vec4 paintcol;
-		paintcol = texture2D( paintTexture, texCoord * (1 / paintTexco) );
+		paintcol = texture2D( paintTexture, vec2( texCoord.x * (1 / paintTexco ) * (1 / paintTgaStrX ), texCoord.y * (1 / paintTexco ) * (1 / paintTgaStrY ) ) ); //For x and y coordinate, first divide it by 'paintTexco' so that it appears as 1 texture if texCoord is not bound by 0 to 1. Then, divide it by ((paint texture id length * 20) / ( scale of that coordinate ))
 		if (paintcol.a > 0) color += paintcol;
 	}
 

@@ -112,6 +112,8 @@ void SceneTerrain::Init()
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
 	m_parameters[U_PAINT_TEXTURE] = glGetUniformLocation(m_programID, "paintTexture");
 	m_parameters[U_PAINT_TEXCOORDSTRETCH] = glGetUniformLocation(m_programID, "paintTexco");
+	m_parameters[U_PAINT_TGASTRETCH_X] = glGetUniformLocation(m_programID, "paintTgaStrX");
+	m_parameters[U_PAINT_TGASTRETCH_Y] = glGetUniformLocation(m_programID, "paintTgaStrY");
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -199,8 +201,19 @@ void SceneTerrain::Init()
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_TERRAIN]->texturePaintID = LoadTGA("Image//blank256.tga");
+	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
+	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
 	testvar = 0;
+
+	meshList[GEO_TESTPAINTQUAD] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD", Color(1, 1, 1), 1.f);
+	meshList[GEO_TESTPAINTQUAD]->textureArray[0] = LoadTGA("Image//moss1.tga");
+	meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint = 1;
+	meshList[GEO_TESTPAINTQUAD]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint);
+
+	meshList[GEO_TESTPAINTQUAD2] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD2", Color(1, 1, 1), 1.f);
+	meshList[GEO_TESTPAINTQUAD2]->textureArray[0] = LoadTGA("Image//moss1.tga");
+	meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint = 64;
+	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
 	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
 	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
@@ -366,7 +379,11 @@ void SceneTerrain::Update(double dt)
 		}
 	}
 
-	meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, testvar, testvar, Vector3(1, 0, 0), 1, 256);
+	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
+	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
+	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
+	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
+	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
 	testvar += 0.05 * dt;
 
@@ -407,7 +424,9 @@ void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
 
 void SceneTerrain::RenderTerrain() {
 	modelStack.PushMatrix();
-	modelStack.Scale(4000.0f, 350.f, 4000.0f); // values varies.
+	modelStack.Scale(4000, 350.f, 4000); // values varies.
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
 	RenderMesh(meshList[GEO_TERRAIN], godlights);
 	modelStack.PopMatrix();
 }
@@ -576,6 +595,10 @@ void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
 		glUniform1i(m_parameters[U_PAINT_TEXTURE], 0);
 		glUniform1f(m_parameters[U_PAINT_TEXCOORDSTRETCH], 1.0f);
 	}
+
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], 0);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], 0);
+
 }
 
 void SceneTerrain::RenderGround()
@@ -759,6 +782,23 @@ void SceneTerrain::RenderParticles(ParticleObject *particle)
 
 void SceneTerrain::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 400, 200);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(20, 20, 1);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
+	RenderMesh(meshList[GEO_TESTPAINTQUAD], godlights);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 350, 300);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(90, 160, 1);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
+	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
+	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
+	modelStack.PopMatrix();
 }
 
 void SceneTerrain::RenderPassMain()
