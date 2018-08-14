@@ -175,7 +175,6 @@ void SceneTerrain::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 2);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
-	camera.Init(Vector3(400, 470, 0), Vector3(0, 400, 50), Vector3(0, 1, 0), m_heightMap);
 	m_lightDepthFBO.Init(1024, 1024);
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -242,6 +241,12 @@ void SceneTerrain::Init()
 		sa->m_anim = new Animation();
 		sa->m_anim->Set(0, 15, 0, 1.f, true);
 	}
+
+	// Create the playerinfo instance, which manages all information about the player
+	playerInfo = CPlayerInfo::GetInstance();
+	playerInfo->Init();
+	camera.Init(playerInfo->GetPos(), playerInfo->GetTarget(), playerInfo->GetUp(), m_heightMap);
+	playerInfo->AttachCamera(&camera);
 
 	enemy1 = new CEnemy();
 	enemy1->Init();
@@ -329,6 +334,9 @@ void SceneTerrain::Update(double dt)
 
 	EntityManager::GetInstance()->Update(dt);
 	camera.Update(dt);
+	// Update the player position and other details based on keyboard and mouse inputs
+	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
+	playerInfo->Update(dt);
 
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -425,7 +433,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
 {
 	Mtx44 ortho;
-	ortho.SetToOrtho(-80, 80, -60, 60, -10, 10);
+	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
 	projectionStack.PushMatrix();
 		projectionStack.LoadMatrix(ortho);
 		viewStack.PushMatrix();
@@ -741,18 +749,19 @@ void SceneTerrain::RenderWorld()
 		{
 			switch ((*it)->getType()) {
 			case CEntity::E_ENEMY:
-			modelStack.PushMatrix();
-			modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-			modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-			modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-			RenderMesh(meshList[GEO_QUAD], godlights);
-			modelStack.PopMatrix();
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_QUAD], godlights);
+				modelStack.PopMatrix();
 				break;
 			default:
 				break;
 			}
 		}
 	}
+
 	modelStack.PushMatrix();
 	modelStack.Translate(0, 400, 200);
 	modelStack.Rotate(90, 1, 0, 0);
@@ -824,9 +833,6 @@ void SceneTerrain::RenderPassMain()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
 	RenderMesh(meshList[GEO_AXES], false);
-
-	//Render some primitive objects, including a (10 by 10) ground and a(radius 1) sphere
-	//RenderMesh(meshList[GEO_AXES], false);
 	modelStack.PushMatrix();
 	modelStack.Translate(2, 2000, 2);
 	RenderMesh(meshList[GEO_SKYPLANE], godlights);
@@ -854,7 +860,7 @@ void SceneTerrain::RenderPassMain()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 10.0f);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
 
 	//On screen text
 	std::ostringstream ss;

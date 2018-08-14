@@ -18,6 +18,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
+#include "PlayerInfo\PlayerInfo.h"
 
 using namespace std;
 
@@ -194,6 +195,7 @@ private:
 	Vector3 m_gravity;
 	std::vector<ParticleObject*> particleList;
 
+	CPlayerInfo* playerInfo;
 	CEnemy* enemy1;
 
 	//Terrain
