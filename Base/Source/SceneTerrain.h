@@ -19,6 +19,8 @@
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
 #include "PlayerInfo\PlayerInfo.h"
+#include "HardwareAbstraction\Keyboard.h"
+#include "HardwareAbstraction\Mouse.h"
 
 using namespace std;
 
@@ -195,6 +197,8 @@ private:
 	Vector3 m_gravity;
 	std::vector<ParticleObject*> particleList;
 
+	CKeyboard* theKeyboard;
+	CMouse* theMouse;
 	CPlayerInfo* playerInfo;
 	CEnemy* enemy1;
 

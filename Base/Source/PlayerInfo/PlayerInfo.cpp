@@ -11,10 +11,10 @@ CPlayerInfo *CPlayerInfo::s_instance = 0;
 
 CPlayerInfo::CPlayerInfo(void)
 	: CEntity()
-	, m_dSpeed(40.0)
+	, m_dSpeed(200.f)
 	, m_dAcceleration(10.0)
 	, m_bJumpUpwards(false)
-	, m_dJumpSpeed(30.0)
+	, m_dJumpSpeed(30.f)
 	, m_dJumpAcceleration(-10.0)
 	, m_bFallDownwards(false)
 	, m_dFallSpeed(0.0)
@@ -108,7 +108,7 @@ void CPlayerInfo::SetToJumpUpwards(bool isOnJumpUpwards)
 	{
 		m_bJumpUpwards = true;
 		m_bFallDownwards = false;
-		m_dJumpSpeed = 10.0;
+		m_dJumpSpeed = 30.f;
 	}
 }
 
@@ -271,19 +271,19 @@ void CPlayerInfo::Update(double dt)
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
 			position.y += 8.0f;
 			target = position + viewDirection;
-			m_dSpeed = 40.0f;
+			m_dSpeed = 200.f;
 			break;
 		case CROUCH:
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
 			position.y -= 3.0f;
 			target = position + viewDirection;
-			m_dSpeed = 30.0f;
+			m_dSpeed = 150.f;
 			break;
 		case PRONE:
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
 			position.y -= 5.0f;
 			target = position + viewDirection;
-			m_dSpeed = 10.0f;
+			m_dSpeed = 50.f;
 			break;
 		default:
 			break;
@@ -295,16 +295,7 @@ void CPlayerInfo::Update(double dt)
 	UpdateJumpUpwards(dt);
 	UpdateFreeFall(dt);
 		
-	// Do camera sway
-	if (m_fCameraSwayAngle != 0.0f)
-	{
-		Mtx44 rotation;
-		if (m_bCameraSwayDirection == false)
-			rotation.SetToRotation(-m_fCameraSwayDeltaAngle, 0.0f, 0.0f, 1.0f);
-		else if (m_bCameraSwayDirection == true)
-			rotation.SetToRotation(m_fCameraSwayDeltaAngle, 0.0f, 0.0f, 1.0f);
-		up = rotation * up;
-	}
+	
 
 	// Update minimap rotation angle
 	Vector3 viewUV = (target - position).Normalized();/*
@@ -396,7 +387,7 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	Vector3 viewUV = (target - position).Normalized();
 	Vector3 rightUV;
 
-	float pitch = (float)(-m_dSpeed * speedMultiplier * (float)deltaTime);
+	float pitch = (float)(-m_dSpeed * speedMultiplier * (float)deltaTime) * 0.4f;
 	rightUV = viewUV.Cross(up);
 	rightUV.y = 0;
 	rightUV.Normalize();
@@ -417,7 +408,7 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 	Vector3 viewUV = (target - position).Normalized();
 	Vector3 rightUV;
 
-	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime;
+	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 	Mtx44 rotation;
 	rotation.SetToRotation(yaw, 0, 1, 0);
 	viewUV = rotation * viewUV;

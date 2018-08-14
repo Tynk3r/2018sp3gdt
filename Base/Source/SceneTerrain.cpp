@@ -16,6 +16,16 @@ SceneTerrain::SceneTerrain()
 
 SceneTerrain::~SceneTerrain()
 {
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
+	}
 }
 
 void SceneTerrain::Init()
@@ -254,6 +264,12 @@ void SceneTerrain::Init()
 	enemy1->setScale(Vector3(100.f, 100.f, 100.f));
 	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
 
+	// Hardware Abstraction
+	theKeyboard = new CKeyboard();
+	theKeyboard->Create(playerInfo);
+	theMouse = new CMouse();
+	theMouse->Create(playerInfo);
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -333,7 +349,11 @@ void SceneTerrain::Update(double dt)
 	}
 
 	EntityManager::GetInstance()->Update(dt);
-	camera.Update(dt);
+	//camera.Update(dt);
+
+	// Hardware Abstraction
+	theKeyboard->Read(dt);
+	theMouse->Read(dt);
 	// Update the player position and other details based on keyboard and mouse inputs
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->Update(dt);
@@ -605,6 +625,14 @@ void SceneTerrain::Exit()
 		ParticleObject *particle = particleList.back();
 		delete particle;
 		particleList.pop_back();
+	}
+	playerInfo->DetachCamera();
+
+	if (playerInfo->DropInstance() == false)
+	{
+#if _DEBUGMODE==1
+		cout << "Unable to drop PlayerInfo class" << endl;
+#endif
 	}
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
