@@ -31,7 +31,8 @@ public:
 	unsigned textureID;
 	unsigned textureArray[MAX_TEXTURES];
 	unsigned texturePaintID; //Texture ID for Paint, acts as a multitexture, but preferably kept away from the array used for multitexture
-	float texCoordStretch;
+	float texCoordStretch; //(paint) amount to modify paint texture size in order to have accurate paint, this is dependent on texCoord
+	float tgaLengthPaint; //(paint) amount to modify paint texture size in order to have accurate paint, this is dependent on paint texture id size
 };
 
 #endif

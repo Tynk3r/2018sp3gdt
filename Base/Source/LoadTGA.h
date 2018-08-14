@@ -13,4 +13,6 @@ GLuint LoadTGA(const char *file_path);
 //Sixth parameter : Length of texture ID (e.g for 256x256 texture size, put in 256)
 GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength);
 
+GLuint NewTGA(int size);
+
 #endif

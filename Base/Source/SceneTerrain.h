@@ -1,6 +1,8 @@
 #ifndef SCENE_TERRAIN_H
 #define SCENE_TERRAIN_H
 
+#define PAINT_LENGTH 20
+
 #include "Scene.h"
 #include "Mtx44.h"
 #include "Camera3.h"
@@ -73,6 +75,8 @@ class SceneTerrain : public Scene
 		U_PAINT_TEXTURE_ENABLED,
 		U_PAINT_TEXTURE,
 		U_PAINT_TEXCOORDSTRETCH,
+		U_PAINT_TGASTRETCH_X,
+		U_PAINT_TGASTRETCH_Y,
 
 		U_SHADOW_MAP,
 		U_SHADOW_COLOR_TEXTURE,
@@ -124,6 +128,8 @@ class SceneTerrain : public Scene
 		GEO_PARTICLE_SMOKE,
 		GEO_PARTICLE_SPARK,
 		GEO_LIGHT_DEPTH_QUAD,
+		GEO_TESTPAINTQUAD,
+		GEO_TESTPAINTQUAD2,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
