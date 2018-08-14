@@ -230,6 +230,10 @@ void SceneTerrain::Init()
 		sa->m_anim->Set(0, 15, 0, 1.f, true);
 	}
 
+	enemy1 = new CEnemy();
+	enemy1->Init();
+	enemy1->setScale(Vector3(100.f, 100.f, 100.f));
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -280,23 +284,11 @@ void SceneTerrain::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
-	if (camera.position.z < -100 && camera.position.z > -500 && camera.position.x < 150 && camera.position.x > 50)
-	{
-		camera.position.Set(125, 370, -350);
-		camera.target.Set(75, 320, 350);
-		camera.up.Set(0, 1, 0);
-		isLyingDown = true;
-	}
-	if (Application::IsKeyPressed('E') && isLyingDown)
-	{
-		camera.position.Set(125, 470, 0);
-		camera.target.Set(125, 320, -350);
-		camera.up.Set(0, 1, 0);
-		isLyingDown = false;
-	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
 		cout << "key H was pressed" << endl;
+	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))
+		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
 
 	if(Application::IsKeyPressed('I'))
@@ -319,52 +311,9 @@ void SceneTerrain::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
-	if (!isLyingDown) { 
-		camera.Update(dt);
-		if (camera.position.y > 120 + 350.f * ReadHeightMap(m_heightMap, camera.position.x / 4000, camera.position.z / 4000)) 
-		{
-			camera.position.y -= 1.f * 200.f * (float)dt;
-			camera.target.y -= 1.f * 200.f * (float)dt;
-		}
-		if (camera.position.y < 120 + 350.f * ReadHeightMap(m_heightMap, camera.position.x / 4000, camera.position.z / 4000))
-		{
-			camera.position.y += 1.f * 200.f * (float)dt;
-			camera.target.y += 1.f * 200.f * (float)dt;
-		}
-		// dog move toward player if not lying down and further than 150
-		if (Vector3(camera.position.x - dogX, 0, camera.position.z - dogZ).Length() > 150.f) {
-			// On the same z val as player
-			if (dogZ == camera.position.z || (dogZ - camera.position.z)*(dogZ - camera.position.z) < dogSpd*dogSpd)
-			{
-				// At player
-				if (dogX == camera.position.x || (dogX - camera.position.x)*(dogX - camera.position.x) < dogSpd*dogSpd) {}
-				// Same z but meat to left
-				else if (dogX > camera.position.x)
-				{
-					dogDir = 270.0f;
-					dogX -= dogSpd;
-				}
-				// Same z but meat to right								   
-				else if (dogX < camera.position.x)
-				{
-					dogDir = 90.0f;
-					dogX += dogSpd;
-				}
-			}
-			// Going front to z = camera.position.z
-			else if (dogZ > camera.position.z)
-			{
-				dogDir = 180.0f;
-				dogZ -= dogSpd;
-			}
-			// Going back to z = camera.position.z
-			else if (dogZ < camera.position.z)
-			{
-				dogDir = 0.0f;
-				dogZ += dogSpd;
-			}
-		}
-	}
+
+	EntityManager::GetInstance()->Update(dt);
+	camera.Update(dt);
 
 	meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, testvar, testvar, Vector3(1, 0, 0), 1, 256);
 
@@ -759,6 +708,20 @@ void SceneTerrain::RenderParticles(ParticleObject *particle)
 
 void SceneTerrain::RenderWorld()
 {
+	// Render all entities
+	if (!EntityManager::GetInstance()->entityList.empty()) {
+		std::list<CEntity*>::iterator it, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (*it)->getPos().x, camera.position.z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+			RenderMesh(meshList[GEO_QUAD], godlights);
+			modelStack.PopMatrix();
+		}
+	}
 }
 
 void SceneTerrain::RenderPassMain()

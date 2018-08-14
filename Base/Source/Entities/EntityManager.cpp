@@ -1,6 +1,4 @@
 #include "EntityManager.h"
-#include "EntityBase.h"
-#include "Collider/Collider.h"
 
 #include <iostream>
 using namespace std;
@@ -9,7 +7,7 @@ using namespace std;
 void EntityManager::Update(double _dt)
 {
 	// Update all entities
-	std::list<EntityBase*>::iterator it, end;
+	std::list<CEntity*>::iterator it, end;
 	end = entityList.end();
 	for (it = entityList.begin(); it != end; ++it)
 	{
@@ -34,41 +32,17 @@ void EntityManager::Update(double _dt)
 	}
 }
 
-// Render all entities
-void EntityManager::Render()
-{
-	// Render all entities
-	std::list<EntityBase*>::iterator it, end;
-	end = entityList.end();
-	for (it = entityList.begin(); it != end; ++it)
-	{
-		(*it)->Render();
-	}
-}
-
-// Render the UI entities
-void EntityManager::RenderUI()
-{
-	// Render all entities UI
-	std::list<EntityBase*>::iterator it, end;
-	end = entityList.end();
-	for (it = entityList.begin(); it != end; ++it)
-	{
-		(*it)->RenderUI();
-	}
-}
-
 // Add an entity to this EntityManager
-void EntityManager::AddEntity(EntityBase* _newEntity)
+void EntityManager::AddEntity(CEntity* _newEntity)
 {
 	entityList.push_back(_newEntity);
 }
 
 // Remove an entity from this EntityManager
-bool EntityManager::RemoveEntity(EntityBase* _existingEntity)
+bool EntityManager::RemoveEntity(CEntity* _existingEntity)
 {
 	// Find the entity's iterator
-	std::list<EntityBase*>::iterator findIter = std::find(entityList.begin(), entityList.end(), _existingEntity);
+	std::list<CEntity*>::iterator findIter = std::find(entityList.begin(), entityList.end(), _existingEntity);
 
 	// Delete the entity if found
 	if (findIter != entityList.end())
@@ -98,16 +72,14 @@ bool EntityManager::CheckOverlap(Vector3 thisMinAABB, Vector3 thisMaxAABB, Vecto
 }
 
 // Check if this entity's bounding sphere collided with that entity's bounding sphere 
-bool EntityManager::CheckSphereCollision(EntityBase *ThisEntity, EntityBase *ThatEntity)
+bool EntityManager::CheckSphereCollision(CEntity *ThisEntity, CEntity *ThatEntity)
 {
-
 	return false;
 }
 
 // Check if this entity collided with another entity, but both must have collider
-bool EntityManager::CheckAABBCollision(EntityBase *ThisEntity, EntityBase *ThatEntity)
+bool EntityManager::CheckAABBCollision(CEntity *ThisEntity, CEntity *ThatEntity)
 {
-
 	return false;
 }
 

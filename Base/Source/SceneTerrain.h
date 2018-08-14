@@ -13,6 +13,9 @@
 #include "KeyboardController.h"
 #include "MouseController.h"
 #include "JoystickController.h"
+#include "Entities/EntityManager.h"
+#include "Entities/Entity.h"
+#include "Entities/Enemy.h"
 
 using namespace std;
 
@@ -180,19 +183,12 @@ private:
 	bool bLightEnabled;
 
 	float fps;
-	bool isLyingDown = false;
-	float dogX = 0.f;
-	float dogZ = 0.f;
-	float dogDir = 0.f;
-	float dogSpd = 2.f;
 	int m_particleCount;
 	int MAX_PARTICLE;
 	Vector3 m_gravity;
 	std::vector<ParticleObject*> particleList;
 
-	float randX1 = Math::RandFloatMinMax(-700, 700);
-	float randX2 = Math::RandFloatMinMax(-700, 700);
-	float randX3 = Math::RandFloatMinMax(-700, 700);
+	CEnemy* enemy1;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
