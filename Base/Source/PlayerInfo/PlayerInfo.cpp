@@ -391,11 +391,13 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	rightUV = viewUV.Cross(up);
 	rightUV.y = 0;
 	rightUV.Normalize();
-	up = rightUV.Cross(viewUV).Normalized();
 	Mtx44 rotation;
 	rotation.SetToRotation(pitch, rightUV.x, rightUV.y, rightUV.z);
+	if (atan2((rotation * viewUV).y, 1) > Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
+	else if (atan2((rotation * viewUV).y, 1) < -Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(-Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
 	viewUV = rotation * viewUV;
 	target = position + viewUV;
+	up = rightUV.Cross(viewUV).Normalized();
 
 	return true;
 }
