@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Entity.h"
-
+#include "../Particles/ParticleManager.h"
 // a projectile class
 class CProjectile : public CEntity
 {
@@ -20,6 +20,7 @@ public:
 	void Update(double dt);
 	bool IsDone();
 	void setDone(bool done);
+	PROJECTILE_TYPE getProjType();
 private:
 	PROJECTILE_TYPE projectileType;
 	Vector3 viewVector;
