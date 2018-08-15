@@ -39,12 +39,8 @@ int CKeyboard::Read(const float deltaTime)
 		Move_FrontBack(deltaTime, true, 2.0f);
 	else if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		Move_FrontBack(deltaTime, true);
-	else if (KeyboardController::GetInstance()->IsKeyReleased('W'))
-		StopSway(deltaTime);
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 		Move_FrontBack(deltaTime, false);
-	else if (KeyboardController::GetInstance()->IsKeyReleased('S'))
-		StopSway(deltaTime);
 
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		Move_LeftRight(deltaTime, true);

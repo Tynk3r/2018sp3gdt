@@ -18,11 +18,8 @@ public:
 
 	void Init(Vector3 pos, Vector3 targ);
 	void Update(double dt);
-	bool IsDone();
-	void setDone(bool done);
 private:
 	PROJECTILE_TYPE projectileType;
 	Vector3 viewVector;
-	bool done;
 };
 

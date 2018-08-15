@@ -19,7 +19,7 @@ public:
 /*
 	std::list<CEntity*> getList() { return entityList; }*/
 	std::list<CEntity*> entityList;
-private:
+
 	EntityManager();
 	virtual ~EntityManager();
 
@@ -30,7 +30,7 @@ private:
 	// Check if this entity collided with another entity, but both must have collider
 	bool CheckAABBCollision(CEntity *ThisEntity, CEntity *ThatEntity);
 	// Check if any Collider is colliding with another Collider
-	bool CheckForCollision(void);
+	bool CheckForCollision(float dt);
 
 };
 

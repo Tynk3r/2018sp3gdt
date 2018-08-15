@@ -46,10 +46,12 @@ void CPlayerInfo::Init(void)
 
 	m_dHealth = 100;
 	m_dScore = 0;
+	setType(E_PLAYER);
 
 	// Set the current values
-	position.Set(400, 0, 0);
-	target.Set(0, 0, 50);
+	setPos(Vector3(10, 0, 0));
+	setTarget(Vector3(0, 0, 50));
+	setScale(Vector3(10, 10, 10));
 	up.Set(0, 1, 0);
 
 	// Set Boundary
@@ -72,6 +74,10 @@ void CPlayerInfo::Init(void)
 
 	hasMoved = false;
 	hasRan = false;
+
+	// Add to EntityManager
+	EntityManager::GetInstance()->AddEntity(this);
+	setCollider(true);
 }
 
 // Returns true if the player is on ground
@@ -124,18 +130,6 @@ void CPlayerInfo::SetToJumpUpwards(bool isOnJumpUpwards)
 }
 
 // Set position
-void CPlayerInfo::SetPos(const Vector3& pos)
-{
-	position = pos;
-}
-
-// Set target
-void CPlayerInfo::SetTarget(const Vector3& target)
-{
-	this->target = target;
-}
-
-// Set position
 void CPlayerInfo::SetUp(const Vector3& up)
 {
 	this->up = up;
@@ -171,25 +165,14 @@ void CPlayerInfo::StopVerticalMovement(void)
 void CPlayerInfo::Reset(void)
 {
 	// Set the current values to default values
-	position = defaultPosition;
-	target = defaultTarget;
+	setPos(defaultPosition);
+	setTarget(defaultTarget);
 	up = defaultUp;
 
 	// Stop vertical movement too
 	StopVerticalMovement();
 }
 
-// Get position x of the player
-Vector3 CPlayerInfo::GetPos(void) const
-{
-	return position;
-}
-
-// Get target
-Vector3 CPlayerInfo::GetTarget(void) const
-{
-	return target;
-}
 // Get Up
 Vector3 CPlayerInfo::GetUp(void) const
 {
@@ -214,10 +197,8 @@ void CPlayerInfo::UpdateJumpUpwards(double dt)
 	// Update position and target y values
 	// Use SUVAT equation to update the change in position and target
 	// s = u * t + 0.5 * a * t ^ 2
-	position.y += (float)(m_dJumpSpeed * m_dElapsedTime + 
-						  0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime);
-	target.y += (float)(m_dJumpSpeed * m_dElapsedTime + 
-						0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime);
+	setPos(getPos() + Vector3(0.f, (float)(m_dJumpSpeed * m_dElapsedTime + 0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime), 0.f));
+	setTarget(getTarget() + Vector3(0.f, (float)(m_dJumpSpeed * m_dElapsedTime + 0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime), 0.f));
 	// Use this equation to calculate final velocity, v
 	// SUVAT: v = u + a * t; v is m_dJumpSpeed AFTER updating using SUVAT where u is 
 	// the initial speed and is equal to m_dJumpSpeed
@@ -245,20 +226,18 @@ void CPlayerInfo::UpdateFreeFall(double dt)
 	// Update position and target y values.
 	// Use SUVAT equation to update the change in position and target
 	// s = u * t + 0.5 * a * t ^ 2
-	position.y += (float)(m_dFallSpeed * m_dElapsedTime + 
-						  0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime);
-	target.y += (float)(m_dFallSpeed * m_dElapsedTime + 
-						0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime);
+	setPos(getPos() + Vector3(0.f, (float)(m_dFallSpeed * m_dElapsedTime + 0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime), 0.f));
+	setTarget(getTarget() + Vector3(0.f, (float)(m_dFallSpeed * m_dElapsedTime + 0.5 * m_dJumpAcceleration * m_dElapsedTime * m_dElapsedTime), 0.f));
 	// Use this equation to calculate final velocity, v
 	// SUVAT: v = u + a * t;
 	// v is m_dJumpSpeed AFTER updating using SUVAT where u is the initial speed and is equal to m_dJumpSpeed
 	m_dFallSpeed = m_dFallSpeed + m_dFallAcceleration * m_dElapsedTime;
 	// Check if the jump speed is below terrain, then it should be reset to terrain height
-	if (position.y < 0.f)
+	if (getPos().y < 0.f)
 	{
-		Vector3 viewDirection = target - position;
-		position.y = 0.f;
-		target = position + viewDirection;
+		Vector3 viewDirection = getTarget() - getPos();
+		setPos(Vector3(getPos().x, 0.f, getPos().z));
+		setTarget(getPos() + viewDirection);
 		m_dFallSpeed = 0.0;
 		m_bFallDownwards = false;
 		m_dElapsedTime = 0.0;
@@ -275,25 +254,25 @@ void CPlayerInfo::Update(double dt)
 		theCurrentPosture = (CURRENT_POSTURE)(theCurrentPosture + 1);
 		if (theCurrentPosture == NUM_POSTURE)
 			theCurrentPosture = STAND;
-		Vector3 viewDirection = target - position;
+		Vector3 viewDirection = getTarget() - getPos();
 		switch (theCurrentPosture)
 		{
 		case STAND:
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			position.y += 8.0f;
-			target = position + viewDirection;
+			setPos(getPos() + Vector3(0.f, 8.0f, 0.f));
+			setTarget(getPos() + viewDirection);
 			m_dSpeed = 200.f;
 			break;
 		case CROUCH:
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			position.y -= 3.0f;
-			target = position + viewDirection;
+			setPos(getPos() + Vector3(0.f, -3.0f, 0.f));
+			setTarget(getPos() + viewDirection);
 			m_dSpeed = 150.f;
 			break;
 		case PRONE:
 			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			position.y -= 5.0f;
-			target = position + viewDirection;
+			setPos(getPos() + Vector3(0.f, -5.0f, 0.f));
+			setTarget(getPos() + viewDirection);
 			m_dSpeed = 50.f;
 			break;
 		default:
@@ -329,10 +308,10 @@ void CPlayerInfo::Update(double dt)
 	if (up.y < 0) up = -up;
 
 	if (screenShakeOn) { screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5)); }
-	
+	else { screenshakeOffset.SetZero(); }
 
 	// Update minimap rotation angle
-	Vector3 viewUV = (target - position).Normalized();/*
+	Vector3 viewUV = (getTarget() - getPos()).Normalized();/*
 	CMinimap::GetInstance()->SetAngle(atan2(viewUV.z, viewUV.x) * 57.2883513685549146);*/
 
 	// If a camera is attached to this playerInfo class, then update it
@@ -343,10 +322,11 @@ void CPlayerInfo::Update(double dt)
 		float srot = sinf(camBobRotate);
 		camDir.Set(camDir.x * crot + camDir.z * srot, camDir.y, -camDir.x * srot + camDir.z * crot);
 
-		attachedCamera->position = position + Vector3(0.f, terrainHeight + 100, 0.f) + screenshakeOffset;
-		attachedCamera->target = position + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 100, 0.f) + screenshakeOffset;
+		attachedCamera->position = getPos() + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+		attachedCamera->target = getPos() + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
 		attachedCamera->up = up.Normalized();
 	}
+	CEntity::Update(dt);
 }
 
 // Detect and process front / back movement on the controller
@@ -368,24 +348,44 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 			m_bCameraSwayDirection = !m_bCameraSwayDirection;
 	}
 
-	Vector3 viewVector = (target - position).Normalized();
+	Vector3 viewVector = (getTarget() - getPos()).Normalized();
+	Vector3 tempPos = getPos();
 	if (direction)
 	{
-		position += viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime;
+		setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		std::list<CEntity*>::iterator it, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			{
+				setPos(getPos() - (viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime) - (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				break;
+			}
+		}
 		//	 Constrain the position
 		Constrain();
 		// Update the target
-		target = position + viewVector;
-
+		setTarget(getPos() + viewVector);
 		return true;
 	}
 	else
 	{
-		position -= viewVector * (float)m_dSpeed * (float)deltaTime;
+		setPos(getPos() - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		std::list<CEntity*>::iterator it, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			{
+				setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime + (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				break;
+			}
+		}
 		//	 Constrain the position
 		Constrain();
 		// Update the target
-		target = position + viewVector;
+		setTarget(getPos() + viewVector);
 		return true;
 	}
 
@@ -396,16 +396,26 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 {
 	hasMoved = true;
 
-	Vector3 viewVector = target - position;
+	Vector3 viewVector = getTarget() - getPos();
 	Vector3 rightUV;
 	if (direction)
 	{
 		rightUV = (viewVector.Normalized()).Cross(up);
 		rightUV.y = 0;
 		rightUV.Normalize();
-		position -= rightUV * (float)m_dSpeed * deltaTime;
+		setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime);
+		std::list<CEntity*>::iterator it, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			{
+				setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime + (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				break;
+			}
+		}
 		// Update the target
-		target = position + viewVector;
+		setTarget(getPos() + viewVector);
 		return true;
 	}
 	else
@@ -413,9 +423,19 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		rightUV = (viewVector.Normalized()).Cross(up);
 		rightUV.y = 0;
 		rightUV.Normalize();
-		position += rightUV * (float)m_dSpeed * deltaTime;
+		setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime);
+		std::list<CEntity*>::iterator it, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			{
+				setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime - (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				break;
+			}
+		}
 		// Update the target
-		target = position + viewVector;
+		setTarget(getPos() + viewVector);
 		return true;
 	}
 	return false;
@@ -427,7 +447,7 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	if (speedMultiplier == 0.0f)
 		return false;
 
-	Vector3 viewUV = (target - position).Normalized();
+	Vector3 viewUV = (getTarget() - getPos()).Normalized();
 	Vector3 rightUV;
 
 	float pitch = (float)(-m_dSpeed * speedMultiplier * (float)deltaTime) * 0.4f;
@@ -439,7 +459,7 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	if (atan2((rotation * viewUV).y, 1) > Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
 	else if (atan2((rotation * viewUV).y, 1) < -Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(-Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
 	viewUV = rotation * viewUV;
-	target = position + viewUV;
+	setTarget(getPos() + viewUV);
 	up = rightUV.Cross(viewUV).Normalized();
 
 	return true;
@@ -450,14 +470,14 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 	if (speedMultiplier == 0.0f)
 		return false;
 
-	Vector3 viewUV = (target - position).Normalized();
+	Vector3 viewUV = (getTarget() - getPos()).Normalized();
 	Vector3 rightUV;
 
 	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 	Mtx44 rotation;
 	rotation.SetToRotation(yaw, 0, 1, 0);
 	viewUV = rotation * viewUV;
-	target = position + viewUV;
+	setTarget(getPos() + viewUV);
 	rightUV = viewUV.Cross(up);
 	rightUV.y = 0;
 	rightUV.Normalize();
@@ -478,30 +498,29 @@ bool CPlayerInfo::StopSway(const float deltaTime)
 // Constrain the position within the borders
 void CPlayerInfo::Constrain(void)
 {
-	
 	//this messes with camera when crouch, 
 	// if the player is not jumping nor falling, then adjust his y position
 	if ((m_bJumpUpwards == false) && (m_bFallDownwards == false))
 	{
 		// if the y position is not equal to terrain height at that position, 
 		// then update y position to the terrain height
-		if (position.y != (0.f))
+		if (getPos().y != (0.f))
 		{
-			Vector3 viewDirection = target - position;
+			Vector3 viewDirection = getTarget() - getPos();
 			//position.y = 0.f;
 			switch (theCurrentPosture)
 			{
 			case STAND:
-				position.y = 0.f;
-				target = position + viewDirection;
+				setPos(Vector3(getPos().x, 0.f, getPos().z));
+				setTarget(getPos() + viewDirection);
 				break;
 			case CROUCH:
-				position.y = 0.f - 3.0f;
-				target = position + viewDirection;
+				setPos(Vector3(getPos().x, -3.f, getPos().z));
+				setTarget(getPos() + viewDirection);
 				break;
 			case PRONE:
-				position.y = 0.f - 5.0f;
-				target = position + viewDirection;
+				setPos(Vector3(getPos().x, -5.f, getPos().z));
+				setTarget(getPos() + viewDirection);
 				break;
 			default:
 				break;
