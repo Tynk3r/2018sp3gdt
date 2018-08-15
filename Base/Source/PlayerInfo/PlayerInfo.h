@@ -131,6 +131,8 @@ private:
 	Vector3 position, target, up;
 	Vector3 maxBoundary, minBoundary;
 
+	Vector3 screenshakeOffset;
+
 	bool hasMoved, hasRan;
 
 	int m_dHealth;

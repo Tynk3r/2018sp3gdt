@@ -68,6 +68,8 @@ void CPlayerInfo::Init(void)
 	m_fCameraSwayAngle_RightLimit = 3.0f;
 	m_bCameraSwayDirection = false;
 
+	screenshakeOffset.SetZero();
+
 	hasMoved = false;
 	hasRan = false;
 }
@@ -324,6 +326,10 @@ void CPlayerInfo::Update(double dt)
 	hasMoved = false;
 	hasRan = false;
 
+	if (up.y < 0) up = -up;
+
+	screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5));
+
 	// Update minimap rotation angle
 	Vector3 viewUV = (target - position).Normalized();/*
 	CMinimap::GetInstance()->SetAngle(atan2(viewUV.z, viewUV.x) * 57.2883513685549146);*/
@@ -336,8 +342,8 @@ void CPlayerInfo::Update(double dt)
 		float srot = sinf(camBobRotate);
 		camDir.Set(camDir.x * crot + camDir.z * srot, camDir.y, -camDir.x * srot + camDir.z * crot);
 
-		attachedCamera->position = position + Vector3(0.f, terrainHeight + 100, 0.f);
-		attachedCamera->target = position + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 100, 0.f);
+		attachedCamera->position = position + Vector3(0.f, terrainHeight + 100, 0.f) + screenshakeOffset;
+		attachedCamera->target = position + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 100, 0.f) + screenshakeOffset;
 		attachedCamera->up = up.Normalized();
 	}
 }

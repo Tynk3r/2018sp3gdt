@@ -207,6 +207,9 @@ void SceneTerrain::Init()
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
 
+	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
+	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
@@ -832,6 +835,25 @@ void SceneTerrain::RenderWorld()
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
 	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
+	modelStack.PopMatrix();
+
+	Vector3 tempDir = (CPlayerInfo::GetInstance()->GetTarget() - CPlayerInfo::GetInstance()->GetPos()).Normalized();
+	modelStack.PushMatrix();
+	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y, CPlayerInfo::GetInstance()->GetPos().z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(-3, -1.5, -2);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_LEFTARM], godlights);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y, CPlayerInfo::GetInstance()->GetPos().z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(3, -1.5, -2);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	modelStack.PopMatrix();
 }
 
