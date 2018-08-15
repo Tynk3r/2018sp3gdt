@@ -125,6 +125,7 @@ public:
 
 	float camBobRotate, camBobHeight;
 	double camBobTime, camBobMaxTimeWalk, camBobMaxTimeRun;
+	bool screenShakeOn = false;
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;

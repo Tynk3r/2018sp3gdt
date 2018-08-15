@@ -328,7 +328,8 @@ void CPlayerInfo::Update(double dt)
 
 	if (up.y < 0) up = -up;
 
-	screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5));
+	if (screenShakeOn) { screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5)); }
+	
 
 	// Update minimap rotation angle
 	Vector3 viewUV = (target - position).Normalized();/*
