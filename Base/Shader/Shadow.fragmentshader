@@ -128,6 +128,9 @@ uniform float paintTexco = 1;
 uniform float paintTgaStrX = 1;
 uniform float paintTgaStrY = 1;
 
+//TRANSPARENCY/ALPHA UNIFORM VALUES
+uniform float colorAlpha;
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -227,7 +230,7 @@ void main(){
 			{
 				if(colorTextureEnabled[i] == true)
 				{
-					color += texture2D( colorTexture[i], texCoord );
+					color += texture2D( colorTexture[i], texCoord ) * vec4(1, 1, 1, colorAlpha);
 					++texCount;
 				}
 			}
@@ -236,7 +239,7 @@ void main(){
 				color = color/texCount;
 			}
 			else
-				color = vec4( fragmentColor, 1 );
+				color = vec4( fragmentColor, colorAlpha );
 		}
 		
 	}

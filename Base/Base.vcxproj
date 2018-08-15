@@ -32,6 +32,8 @@
     <ClCompile Include="Source\MeshBuilder.cpp" />
     <ClCompile Include="Source\OBJMesh.cpp" />
     <ClCompile Include="Source\Particle.cpp" />
+    <ClCompile Include="Source\Particles\ParticleManager.cpp" />
+    <ClCompile Include="Source\Particles\Particle_2.cpp" />
     <ClCompile Include="Source\PlayerInfo\PlayerInfo.cpp" />
     <ClCompile Include="Source\SceneTerrain.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -63,6 +65,8 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\OBJMesh.h" />
     <ClInclude Include="Source\Particle.h" />
+    <ClInclude Include="Source\Particles\ParticleManager.h" />
+    <ClInclude Include="Source\Particles\Particle_2.h" />
     <ClInclude Include="Source\PlayerInfo\PlayerInfo.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneTerrain.h" />

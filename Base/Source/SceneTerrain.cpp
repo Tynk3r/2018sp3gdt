@@ -124,6 +124,8 @@ void SceneTerrain::Init()
 	m_parameters[U_PAINT_TEXCOORDSTRETCH] = glGetUniformLocation(m_programID, "paintTexco");
 	m_parameters[U_PAINT_TGASTRETCH_X] = glGetUniformLocation(m_programID, "paintTgaStrX");
 	m_parameters[U_PAINT_TGASTRETCH_Y] = glGetUniformLocation(m_programID, "paintTgaStrY");
+	//transparency/alpha uniform value parameters
+	m_parameters[U_COLOR_ALPHA] = glGetUniformLocation(m_programID, "colorAlpha");
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -185,6 +187,8 @@ void SceneTerrain::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 2);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
+	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+
 	m_lightDepthFBO.Init(1024, 1024);
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -242,6 +246,8 @@ void SceneTerrain::Init()
 	meshList[GEO_PARTICLE_SMOKE]->textureArray[0] = LoadTGA("Image//particle.tga");
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureArray[0] = LoadTGA("Image//sparkparticle.tga");
+	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 10.f);
+	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -343,6 +349,15 @@ void SceneTerrain::Update(double dt)
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
+	{
+		cout << "key J was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
@@ -369,6 +384,7 @@ void SceneTerrain::Update(double dt)
 	}
 
 	EntityManager::GetInstance()->Update(dt);
+	ParticleManager::GetInstance()->Update(dt);
 	//camera.Update(dt);
 
 	// Hardware Abstraction
@@ -390,7 +406,7 @@ void SceneTerrain::Update(double dt)
 
 	fps = (float)(1.f / dt);
 	rotateAngle++;
-	UpdateParticles(dt);
+	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 }
 
@@ -862,7 +878,44 @@ void SceneTerrain::RenderWorld()
 			}
 		}
 	}
+	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
+	{
 
+		std::list < CParticle_2 *> ::iterator it, end;
+		end = ParticleManager::GetInstance()->particleList.end();
+		for (it = ParticleManager::GetInstance()->particleList.begin(); it != end; ++it)
+		{
+			CParticle_2* par = *it;
+			Vector3 parPos = par->getPos();
+			Vector3 parSca = par->getScale();
+			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
+			switch (par->getParType())
+			{
+			case CParticle_2::PTYPE_FIRE:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_FIRE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			case CParticle_2::PTYPE_ICE:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			}
+		}
+	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	modelStack.PushMatrix();
 	modelStack.Translate(0, 400, 200);
 	modelStack.Rotate(90, 1, 0, 0);

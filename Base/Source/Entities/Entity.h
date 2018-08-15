@@ -10,6 +10,7 @@ public:
 		E_MOVING_TARGET,
 		E_PROJECTILE,
 		E_DRONE,
+		E_PARTICLE,
 		E_TOTAL
 	};
 

@@ -93,7 +93,14 @@
     <ClCompile Include="Source\Entities\Projectile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Source\Entities\Drone.cpp">
+=======
+    <ClCompile Include="Source\Particles\Particle_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Particles\ParticleManager.cpp">
+>>>>>>> 9e30f17fc1e0d1322085b1789f8b10347fe2178b
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,7 +195,14 @@
     <ClInclude Include="Source\Entities\Projectile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Source\Entities\Drone.h">
+=======
+    <ClInclude Include="Source\Particles\Particle_2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Particles\ParticleManager.h">
+>>>>>>> 9e30f17fc1e0d1322085b1789f8b10347fe2178b
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
