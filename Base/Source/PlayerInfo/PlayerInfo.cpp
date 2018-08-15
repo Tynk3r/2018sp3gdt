@@ -56,11 +56,20 @@ void CPlayerInfo::Init(void)
 	maxBoundary.Set(1,1,1);
 	minBoundary.Set(-1, -1, -1);
 
+	camBobHeight = 0;
+	camBobRotate = 0;
+	camBobTime = 0;
+	camBobMaxTimeWalk = 0.8;
+	camBobMaxTimeRun = 0.6;
+
 	m_fCameraSwayAngle = 0.0f;
 	m_fCameraSwayDeltaAngle = 0.3f;
 	m_fCameraSwayAngle_LeftLimit = -3.0f;
 	m_fCameraSwayAngle_RightLimit = 3.0f;
 	m_bCameraSwayDirection = false;
+
+	hasMoved = false;
+	hasRan = false;
 }
 
 // Returns true if the player is on ground
@@ -295,7 +304,25 @@ void CPlayerInfo::Update(double dt)
 	UpdateJumpUpwards(dt);
 	UpdateFreeFall(dt);
 		
-	
+	double timeLim = camBobMaxTimeWalk;
+
+	if (hasMoved && camBobTime <= 0.0) camBobTime = timeLim;
+
+	if (camBobTime > 0.0 && camBobTime <= timeLim && hasMoved)
+	{
+		camBobTime -= dt;
+		camBobHeight = -Math::FAbs(0.01 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI));
+		camBobRotate = 0.008 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI);
+	}
+	else
+	{
+		camBobHeight = 0;
+		camBobRotate = 0;
+		camBobTime = 0.0;
+	}
+
+	hasMoved = false;
+	hasRan = false;
 
 	// Update minimap rotation angle
 	Vector3 viewUV = (target - position).Normalized();/*
@@ -304,8 +331,13 @@ void CPlayerInfo::Update(double dt)
 	// If a camera is attached to this playerInfo class, then update it
 	if (attachedCamera)
 	{
+		Vector3 camDir = viewUV;
+		float crot = cosf(camBobRotate);
+		float srot = sinf(camBobRotate);
+		camDir.Set(camDir.x * crot + camDir.z * srot, camDir.y, -camDir.x * srot + camDir.z * crot);
+
 		attachedCamera->position = position + Vector3(0.f, terrainHeight + 100, 0.f);
-		attachedCamera->target = target + Vector3(0.f, terrainHeight + 100, 0.f);
+		attachedCamera->target = position + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 100, 0.f);
 		attachedCamera->up = up.Normalized();
 	}
 }
@@ -313,6 +345,8 @@ void CPlayerInfo::Update(double dt)
 // Detect and process front / back movement on the controller
 bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	hasMoved = true;
+	if (speedMultiplier > 1) hasRan = true;
 	// Add camera sway
 	if (m_bCameraSwayDirection == false)
 	{
@@ -353,6 +387,8 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 // Detect and process left / right movement on the controller
 bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	hasMoved = true;
+
 	Vector3 viewVector = target - position;
 	Vector3 rightUV;
 	if (direction)

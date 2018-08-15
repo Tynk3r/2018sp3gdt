@@ -123,10 +123,15 @@ public:
 
 	float terrainHeight = 0.f;
 
+	float camBobRotate, camBobHeight;
+	double camBobTime, camBobMaxTimeWalk, camBobMaxTimeRun;
+
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 position, target, up;
 	Vector3 maxBoundary, minBoundary;
+
+	bool hasMoved, hasRan;
 
 	int m_dHealth;
 	int m_dScore;
