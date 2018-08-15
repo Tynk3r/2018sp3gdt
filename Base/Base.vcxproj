@@ -19,6 +19,7 @@
     <ClCompile Include="Source\Entities\Enemy.cpp" />
     <ClCompile Include="Source\Entities\Entity.cpp" />
     <ClCompile Include="Source\Entities\EntityManager.cpp" />
+    <ClCompile Include="Source\Entities\Projectile.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Controller.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Keyboard.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Mouse.cpp" />
@@ -31,12 +32,7 @@
     <ClCompile Include="Source\OBJMesh.cpp" />
     <ClCompile Include="Source\Particle.cpp" />
     <ClCompile Include="Source\PlayerInfo\PlayerInfo.cpp" />
-    <ClCompile Include="Source\Scene5.cpp" />
-    <ClCompile Include="Source\SceneLight.cpp" />
-    <ClCompile Include="Source\SceneLight2.cpp" />
-    <ClCompile Include="Source\SceneSkybox.cpp" />
     <ClCompile Include="Source\SceneTerrain.cpp" />
-    <ClCompile Include="Source\SceneText.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
@@ -51,6 +47,7 @@
     <ClInclude Include="Source\Entities\Enemy.h" />
     <ClInclude Include="Source\Entities\Entity.h" />
     <ClInclude Include="Source\Entities\EntityManager.h" />
+    <ClInclude Include="Source\Entities\Projectile.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\HardwareAbstraction\Controller.h" />
     <ClInclude Include="Source\HardwareAbstraction\Keyboard.h" />
@@ -66,16 +63,7 @@
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\PlayerInfo\PlayerInfo.h" />
     <ClInclude Include="Source\Scene.h" />
-    <ClInclude Include="Source\Scene1.h" />
-    <ClInclude Include="Source\Scene2.h" />
-    <ClInclude Include="Source\Scene3.h" />
-    <ClInclude Include="Source\Scene4.h" />
-    <ClInclude Include="Source\Scene5.h" />
-    <ClInclude Include="Source\SceneLight.h" />
-    <ClInclude Include="Source\SceneLight2.h" />
-    <ClInclude Include="Source\SceneSkybox.h" />
     <ClInclude Include="Source\SceneTerrain.h" />
-    <ClInclude Include="Source\SceneText.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\SoundEngine.h" />
     <ClInclude Include="Source\SpriteAnimation.h" />
