@@ -35,6 +35,7 @@
     <ClCompile Include="Source\Particles\ParticleManager.cpp" />
     <ClCompile Include="Source\Particles\Particle_2.cpp" />
     <ClCompile Include="Source\PlayerInfo\PlayerInfo.cpp" />
+    <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SceneTerrain.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="Source\Particles\Particle_2.h" />
     <ClInclude Include="Source\PlayerInfo\PlayerInfo.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SceneTerrain.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\SoundEngine.h" />
