@@ -62,7 +62,7 @@ void CSceneManager::Update(StopWatch* m_timer) {
 void CSceneManager::ChangeScene() {
 
 	// Check if in Main Game
-	if (currentSceneID == Scenes::START_MENU) {
+	if (currentSceneID == Scenes::GAME) {
 		/*if (sceneList[currentSceneID]->waveCount) {
 
 		}*/
