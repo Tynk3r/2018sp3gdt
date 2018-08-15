@@ -11,17 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-#include "Scene1.h"
-#include "Scene2.h"
-#include "Scene3.h"
-#include "Scene4.h"
-#include "Scene5.h"
-#include "SceneLight.h"
-#include "SceneLight2.h"
-#include "SceneTexture.h"
-#include "SceneSkybox.h"
-#include "SceneText.h"
 #include "SceneTerrain.h"
 
 GLFWwindow* m_window;

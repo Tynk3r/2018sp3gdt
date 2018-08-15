@@ -839,18 +839,18 @@ void SceneTerrain::RenderWorld()
 
 	Vector3 tempDir = (CPlayerInfo::GetInstance()->GetTarget() - CPlayerInfo::GetInstance()->GetPos()).Normalized();
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y, CPlayerInfo::GetInstance()->GetPos().z);
+	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->GetPos().z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3, -1.5, -2);
+	modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_LEFTARM], godlights);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y, CPlayerInfo::GetInstance()->GetPos().z);
+	modelStack.Translate(CPlayerInfo::GetInstance()->GetPos().x, CPlayerInfo::GetInstance()->GetPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->GetPos().z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3, -1.5, -2);
+	modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);

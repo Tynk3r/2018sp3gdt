@@ -69,6 +69,7 @@ void CPlayerInfo::Init(void)
 	m_bCameraSwayDirection = false;
 
 	screenshakeOffset.SetZero();
+	cameraSway.SetZero();
 
 	hasMoved = false;
 	hasRan = false;
@@ -265,6 +266,16 @@ void CPlayerInfo::UpdateFreeFall(double dt)
 	}
 }
 
+Vector3 CPlayerInfo::GetScreenshake() const
+{
+	return screenshakeOffset;
+}
+
+Vector3 CPlayerInfo::GetCameraSway() const
+{
+	return cameraSway;
+}
+
 /********************************************************************************
  Hero Update
  ********************************************************************************/
@@ -328,7 +339,18 @@ void CPlayerInfo::Update(double dt)
 
 	if (up.y < 0) up = -up;
 
-	screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5));
+	//screenshakeOffset.Set(Math::RandFloatMinMax(-0.5, 0.5), Math::RandFloatMinMax(-0.5, 0.5), Math::RandFloatMinMax(-0.5, 0.5));
+
+	if (cameraSway.x > 0)
+	{
+		cameraSway.x -= 5 * dt;
+		if (cameraSway.x < 0) cameraSway.x = 0;
+	}
+	else if (cameraSway.x < 0)
+	{
+		cameraSway.x += 5 * dt;
+		if (cameraSway.x > 0) cameraSway.x = 0;
+	}
 
 	// Update minimap rotation angle
 	Vector3 viewUV = (target - position).Normalized();/*
@@ -435,8 +457,8 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	rightUV.Normalize();
 	Mtx44 rotation;
 	rotation.SetToRotation(pitch, rightUV.x, rightUV.y, rightUV.z);
-	if (atan2((rotation * viewUV).y, 1) > Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
-	else if (atan2((rotation * viewUV).y, 1) < -Math::PI / 5) rotation.SetToRotation(Math::RadianToDegree(-Math::PI / 5 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
+	if (atan2((rotation * viewUV).y, 1) > Math::PI / 6) rotation.SetToRotation(Math::RadianToDegree(Math::PI / 6 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
+	else if (atan2((rotation * viewUV).y, 1) < -Math::PI / 6) rotation.SetToRotation(Math::RadianToDegree(-Math::PI / 6 - atan2(viewUV.y, 1)), rightUV.x, rightUV.y, rightUV.z);
 	viewUV = rotation * viewUV;
 	target = position + viewUV;
 	up = rightUV.Cross(viewUV).Normalized();
@@ -448,6 +470,10 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 {
 	if (speedMultiplier == 0.0f)
 		return false;
+
+	cameraSway.x -= speedMultiplier / 40;
+	if (cameraSway.x > 1.0) cameraSway.x = 1.0;
+	else if (cameraSway.x < -1.0) cameraSway.x = -1.0;
 
 	Vector3 viewUV = (target - position).Normalized();
 	Vector3 rightUV;
