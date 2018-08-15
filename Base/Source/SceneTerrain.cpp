@@ -132,7 +132,7 @@ void SceneTerrain::Init()
 
 	lights[0].type = Light::LIGHT_POINT;
 	lights[0].position.Set(0, 350.f + 50.f, 100);
-	lights[0].color.Set(255, 69, 0);/*
+	lights[0].color.Set(0, 69, 0);/*
 	lights[0].position.Set(0, 350.f + 300.f, 0);
 	lights[0].color.Set(1, 1, 1);*/
 	lights[0].power = 0.5f;
@@ -144,15 +144,15 @@ void SceneTerrain::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
-	lights[1].type = Light::LIGHT_POINT;
+	lights[1].type = Light::LIGHT_SPOT;
 	lights[1].position.Set(0, 350.f + 50.f, 100);
-	lights[1].color.Set(255, 69, 0);
-	lights[1].power = 0;
+	lights[1].color.Set(155, 29, 29);
+	lights[1].power = 2;
 	lights[1].kC = 1.f;
 	lights[1].kL = 0.01f;
 	lights[1].kQ = 0.001f;
-	lights[1].cosCutoff = cos(Math::DegreeToRadian(45));
-	lights[1].cosInner = cos(Math::DegreeToRadian(30));
+	lights[1].cosCutoff = cos(Math::DegreeToRadian(60));
+	lights[1].cosInner = cos(Math::DegreeToRadian(50));
 	lights[1].exponent = 3.f;
 	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
 	
@@ -401,6 +401,10 @@ void SceneTerrain::Update(double dt)
 	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
 	testvar += 0.05 * dt;
+
+	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -847,7 +851,7 @@ void SceneTerrain::RenderWorld()
 				float tempRotation = Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z));
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
 				modelStack.PopMatrix();
@@ -856,7 +860,7 @@ void SceneTerrain::RenderWorld()
 
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
 				modelStack.Translate(16, 18, -15);
 				modelStack.Rotate(tempDrone->getWingRotation(), 0, 0, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
@@ -865,7 +869,7 @@ void SceneTerrain::RenderWorld()
 
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
 				modelStack.Translate(-16, 18, -15);
 				modelStack.Rotate(-tempDrone->getWingRotation(), 0, 0, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
@@ -984,23 +988,26 @@ void SceneTerrain::RenderPassMain()
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < 2; ++i) //MAX IS THE NUMBER OF LIGHTS
 	{
-		Vector3 lightDir(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
-	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * lights[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
-	else
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
+			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightDirection_cameraspace.x);
+		}
+		else if (lights[i].type == Light::LIGHT_SPOT)
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightPosition_cameraspace.x);
+			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[i].spotDirection;
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + 11 * i], 1, &spotDirection_cameraspace.x);
+		}
+		else
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightPosition_cameraspace.x);
+		}
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
