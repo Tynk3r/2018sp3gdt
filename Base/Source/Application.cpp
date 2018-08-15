@@ -12,6 +12,8 @@
 #include <stdlib.h>
 
 #include "SceneTerrain.h"
+#include "SceneTest.h"
+#include "SceneManager.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -20,6 +22,7 @@ double Application::mouse_last_x = 0.0, Application::mouse_last_y = 0.0,
 	   Application::mouse_current_x = 0.0, Application::mouse_current_y = 0.0,
 	   Application::mouse_diff_x = 0.0, Application::mouse_diff_y = 0.0;
 double Application::camera_yaw = 0.0, Application::camera_pitch = 0.0;
+bool Application::wrapAroundEnabled = false;
 
 //Define an error callback
 static void error_callback(int error, const char* description)
@@ -58,12 +61,12 @@ bool Application::GetMouseUpdate()
 	camera_pitch = mouse_diff_y * 0.0174555555555556f;// 3.142f / 180.0f );
 
 	// Do a wraparound if the mouse cursor has gone out of the deadzone
-	if ((mouse_current_x < m_window_deadzone) || (mouse_current_x > m_window_width-m_window_deadzone))
+	if (((mouse_current_x < m_window_deadzone) || (mouse_current_x > m_window_width-m_window_deadzone)) && wrapAroundEnabled)
 	{
 		mouse_current_x = m_window_width >> 1;
 		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
 	}
-	if ((mouse_current_y < m_window_deadzone) || (mouse_current_y > m_window_height-m_window_deadzone))
+	if (((mouse_current_y < m_window_deadzone) || (mouse_current_y > m_window_height-m_window_deadzone)) && wrapAroundEnabled)
 	{
 		mouse_current_y = m_window_height >> 1;
 		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
@@ -82,16 +85,6 @@ void Application::UpdateInput()
 	double mouse_currX, mouse_currY;
 	glfwGetCursorPos(m_window, &mouse_currX, &mouse_currY);
 	MouseController::GetInstance()->UpdateMousePosition(mouse_currX, mouse_currY);
-	if ((mouse_current_x < m_window_deadzone) || (mouse_current_x > m_window_width - m_window_deadzone))
-	{
-		mouse_current_x = m_window_width >> 1;
-		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
-	}
-	if ((mouse_current_y < m_window_deadzone) || (mouse_current_y > m_window_height - m_window_deadzone))
-	{
-		mouse_current_y = m_window_height >> 1;
-		glfwSetCursorPos(m_window, mouse_current_x, mouse_current_y);
-	}
 	//update keyboard input
 	for (int i = 0; i < KeyboardController::MAX_KEYS; ++i)
 		KeyboardController::GetInstance()->UpdateKeyboardStatus(i, IsKeyPressed(i));
@@ -196,27 +189,64 @@ void Application::Init()
 
 void Application::Run()
 {
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	//Main Loop
-	Scene *scene = new SceneTerrain();
-	scene->Init();
-
+	// init scenes
+	Scene *scene1 = new SceneTest();
+	Scene *scene2 = new SceneTerrain();
+	scene1->Init();
+	CSceneManager* sceneManager = CSceneManager::Instance();
+	sceneManager->AddScene(scene1);
+	sceneManager->AddScene(scene2);
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
-	{
-		GetMouseUpdate();
-		UpdateInput();
-		scene->Update(m_timer.getElapsedTime());
-		scene->Render();
-		//Swap buffers
-		glfwSwapBuffers(m_window);
-		//Get and organize events, like keyboard and mouse input, window resizing, etc...
-		glfwPollEvents();
-        m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
-		PostUpdateInput();
 
-	} //Check if the ESC key had been pressed or if the window had been closed
-	scene->Exit();
-	delete scene;
+	while (!glfwWindowShouldClose(m_window) && !Application::IsKeyPressed(VK_ESCAPE))
+	{
+		if (Application::IsKeyPressed(MK_LBUTTON))
+		{
+			// if at how to play menu
+			if (sceneManager->GetCurrentSceneID() == CSceneManager::START_MENU)
+			{
+				
+				if (mouse_current_x >= 485 && mouse_current_x <= 793)
+				{
+					// If CLick Anywhere
+					if (mouse_current_y >= 288 && mouse_current_y <= 372)
+					{
+						sceneManager->GoToScene(CSceneManager::GAME);
+						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+					}
+				}
+				if (mouse_current_x >= 485 && mouse_current_x <= 788)
+				{
+					if (mouse_current_y >= 439 && mouse_current_y <= 523)
+					{
+						break;
+					}
+				}
+			}
+		}
+		
+	
+		{
+			GetMouseUpdate();
+			UpdateInput();
+			//scene1->Update(m_timer.getElapsedTime());
+			//scene1->Render();
+			sceneManager->Update(&m_timer);
+			//Swap buffers
+			glfwSwapBuffers(m_window);
+			//Get and organize events, like keyboard and mouse input, window resizing, etc...
+			glfwPollEvents();
+			m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
+			PostUpdateInput();
+		}//Check if the ESC key had been pressed or if the window had been closed
+	}
+	scene1->Exit();
+	delete scene1;
+
+	
 }
 
 void Application::Exit()
