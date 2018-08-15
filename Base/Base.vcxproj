@@ -37,6 +37,7 @@
     <ClCompile Include="Source\PlayerInfo\PlayerInfo.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SceneTerrain.cpp" />
+    <ClCompile Include="Source\SceneTest.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
@@ -72,6 +73,7 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SceneTerrain.h" />
+    <ClInclude Include="Source\SceneTest.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\SoundEngine.h" />
     <ClInclude Include="Source\SpriteAnimation.h" />
