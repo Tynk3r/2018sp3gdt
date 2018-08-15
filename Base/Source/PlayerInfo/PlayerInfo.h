@@ -92,6 +92,9 @@ public:
 	// Get Fall Acceleration of the player
 	double GetFallAcceleration(void) const;
 
+	Vector3 GetScreenshake(void) const;
+	Vector3 GetCameraSway(void) const;
+
 	// Update Jump Upwards
 	void UpdateJumpUpwards(double dt = 0.0333f);
 	// Update FreeFall
@@ -125,11 +128,15 @@ public:
 
 	float camBobRotate, camBobHeight;
 	double camBobTime, camBobMaxTimeWalk, camBobMaxTimeRun;
+	bool screenShakeOn = false;
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 position, target, up;
 	Vector3 maxBoundary, minBoundary;
+
+	Vector3 screenshakeOffset;
+	Vector3 cameraSway;
 
 	bool hasMoved, hasRan;
 
