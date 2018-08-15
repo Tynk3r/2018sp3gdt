@@ -210,6 +210,10 @@ void SceneTerrain::Init()
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
 
+	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
+	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
+	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
@@ -266,6 +270,12 @@ void SceneTerrain::Init()
 	enemy1->setPos(Vector3(-100.f, 20.f, -100.f));
 	enemy1->setScale(Vector3(100.f, 100.f, 100.f));
 	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
+
+	drone1 = new CDrone();
+	drone1->Init();
+	drone1->setPos(Vector3(0, 20.f, 0));
+	drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -791,6 +801,7 @@ void SceneTerrain::RenderWorld()
 			Vector3 entSca = ent->getScale();
 			switch ((*it)->getType()) {
 			case CEntity::E_ENEMY:
+			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
@@ -798,6 +809,7 @@ void SceneTerrain::RenderWorld()
 				RenderMesh(meshList[GEO_QUAD], godlights);
 				modelStack.PopMatrix();
 				break;
+			}
 			case CEnemy::E_PROJECTILE:
 			{
 				modelStack.PushMatrix();
@@ -813,6 +825,38 @@ void SceneTerrain::RenderWorld()
 					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 				}
 			}
+			break;
+			case CEntity::E_DRONE:
+			{
+				float tempRotation = Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z));
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
+				modelStack.PopMatrix();
+
+				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
+
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Translate(16, 18, -15);
+				modelStack.Rotate(tempDrone->getWingRotation(), 0, 0, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_LWING], godlights);
+				modelStack.PopMatrix();
+
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation, 0, 1, 0);
+				modelStack.Translate(-16, 18, -15);
+				modelStack.Rotate(-tempDrone->getWingRotation(), 0, 0, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_RWING], godlights);
+				modelStack.PopMatrix();
+			}
+				break;
 			default:
 				break;
 			}

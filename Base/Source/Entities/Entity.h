@@ -9,6 +9,7 @@ public:
 		E_ENEMY = 0,
 		E_MOVING_TARGET,
 		E_PROJECTILE,
+		E_DRONE,
 		E_TOTAL
 	};
 

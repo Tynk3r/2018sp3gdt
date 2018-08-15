@@ -18,6 +18,7 @@
 #include "Entities/EntityManager.h"
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
+#include "Entities/Drone.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
@@ -136,6 +137,9 @@ class SceneTerrain : public Scene
 		GEO_TESTPAINTQUAD2,
 		GEO_LEFTARM,
 		GEO_RIGHTARM,
+		GEO_DRONE_HEAD,
+		GEO_DRONE_LWING,
+		GEO_DRONE_RWING,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -204,6 +208,7 @@ private:
 	CMouse* theMouse;
 	CPlayerInfo* playerInfo;
 	CEnemy* enemy1;
+	CDrone* drone1;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
