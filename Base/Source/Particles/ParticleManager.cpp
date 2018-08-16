@@ -90,4 +90,12 @@ ParticleManager::ParticleManager()
 // Destructor
 ParticleManager::~ParticleManager()
 {
+	std::list<CParticle_2*>::iterator it, end;
+	it = particleList.begin();
+	end = particleList.end();
+	while (it != end)
+	{
+		delete *it;
+		it = particleList.erase(it);
+	}
 }
