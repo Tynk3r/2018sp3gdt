@@ -23,6 +23,7 @@
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
+#include "CameraEffects\CameraEffectManager.h"
 
 using namespace std;
 

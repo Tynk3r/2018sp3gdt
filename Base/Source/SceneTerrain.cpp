@@ -362,6 +362,7 @@ void SceneTerrain::Update(double dt)
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
 	{
@@ -371,6 +372,7 @@ void SceneTerrain::Update(double dt)
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
@@ -422,6 +424,7 @@ void SceneTerrain::Update(double dt)
 
 	EntityManager::GetInstance()->Update(dt);
 	ParticleManager::GetInstance()->Update(dt);
+	CameraEffectManager::GetInstance()->Update(dt);
 	//camera.Update(dt);
 
 	// Hardware Abstraction
@@ -1119,12 +1122,23 @@ void SceneTerrain::RenderPassMain()
 
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
-	RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f,Application::GetWindowHeight()*0.2f);
-	//modelStack.PushMatrix();
-	//modelStack.Translate(0, 400, 0);
-	//modelStack.Scale(100, 100, 1);
-	//RenderMesh(meshList[GEO_SPRITEANIM_ACTIONLINES], false);
-	//modelStack.PopMatrix();
+	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
+	{
+		std::list < CameraEffect *> ::iterator it, end;
+		end = CameraEffectManager::GetInstance()->camEfflist.end();
+		for (it = CameraEffectManager::GetInstance()->camEfflist.begin(); it != end; ++it)
+		{
+			CameraEffect* camEff = *it;
+			switch (camEff->getCamEffectType())
+			{
+			case CameraEffect::CE_TYPE_ACTIONLINE_WHITE:
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+				break;
+			}
+		}
+	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
 
 	//On screen text
 	std::ostringstream ss;
