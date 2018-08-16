@@ -25,19 +25,26 @@ void CEntity::Update(double dt)
 	{
 	case E_ENEMY:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_DRONE:
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		setTarget(getPos() + viewVector);
+		setAABB(Vector3(position.x + 150, position.y + 300 + 100, position.z + 150), Vector3(position.x - 150, position.y /*- scale.y*/ + 100, position.z - 150));
+		break;
 	case E_PROJECTILE:
 	case E_MOVING_TARGET:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_PLAYER:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	default:
 		break;
 	}
-	setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+	//setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 }
 
 // Set the maxAABB and minAABB

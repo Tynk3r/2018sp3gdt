@@ -209,7 +209,7 @@ void SceneTerrain::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0.5, 0));
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5));
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
@@ -296,6 +296,7 @@ void SceneTerrain::Init()
 	drone1->setPos(Vector3(0, 20.f, 0));
 	drone1->setScale(Vector3(10.f, 10.f, 10.f));
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -381,28 +382,59 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key K was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = Vector3(0, -1, 0) + camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = Vector3(0, -1, 0) + camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
 		
-		aa->SetLifespanTime(0.3);
+		aa->SetLifespanTime(1.0);
 
-		//include the raycast check here
-
-		float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
-		if (tempScaleZ <= 0)
+		//raycast check
+		Vector3 tempProj(9999, 9999, 9999);
+		std::list<CEntity*>::iterator it, it2, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_DRONE)
+			{
+				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
+				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					(*it)->setTarget((*it)->getPos() + tempProj);
+					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					(*it)->setTarget((*it)->getPos() + tempProj);
+					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+			}
 		}
-		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
 
-		aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
-		for (int i = 0; i < 10; ++i)
-		{
-			ParticleManager::GetInstance()->AddParticle(aa);
-		}
-		aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		//add for ground also!!
+
+
+		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setScale(aa->getScale() + Vector3(-1, -1, -1));
+
+		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
+		////if (tempScaleZ <= 0)
+		////{
+		////	aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+		////}
+		////else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
+
+
+
+		//aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		//for (int i = 0; i < 10; ++i)
+		//{
+		//	ParticleManager::GetInstance()->AddParticle(aa);
+		//}
+		//aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
@@ -924,7 +956,7 @@ void SceneTerrain::RenderWorld()
 					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
 					modelStack.Translate(0, 0, -entSca.z / 2);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_CUBE], godlights);
+					RenderMesh(meshList[GEO_CUBE], false);
 					modelStack.PopMatrix();
 				}
 				else
@@ -1015,17 +1047,17 @@ void SceneTerrain::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
-			case CParticle_2::PTYPE_BEAM:
-				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
-				modelStack.Rotate(bBoardRot, 0, 1, 0);
-				modelStack.Rotate(par->getRot(), 0, 0, 1);
-				modelStack.Scale(parSca.x, parSca.y, 0.1f);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
-				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
-				modelStack.PopMatrix();
-				break;
+			//case CParticle_2::PTYPE_BEAM:
+			//	modelStack.PushMatrix();
+			//	modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+			//	modelStack.Rotate(bBoardRot, 0, 1, 0);
+			//	modelStack.Rotate(par->getRot(), 0, 0, 1);
+			//	modelStack.Scale(parSca.x, parSca.y, 0.1f);
+			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+			//	RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+			//	modelStack.PopMatrix();
+			//	break;
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
