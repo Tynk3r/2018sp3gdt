@@ -209,6 +209,8 @@ void SceneTerrain::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0.5, 0));
+
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
 
@@ -361,6 +363,24 @@ void SceneTerrain::Update(double dt)
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
+	{
+		cout << "key K was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
+		
+		float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
+		if (Math::FAbs(tempScaleZ) <= 0)
+		{
+			aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+		}
+		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
+
+		//include the raycast check here
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
@@ -836,17 +856,32 @@ void SceneTerrain::RenderWorld()
 			}
 			case CEnemy::E_PROJECTILE:
 			{
-				modelStack.PushMatrix();
-				modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
-				modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
-				modelStack.Scale(entSca.x, entSca.y, entSca.z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
-				modelStack.PopMatrix();
-				if (entPos.y < 0)
+				CProjectile* proj = dynamic_cast<CProjectile*>(ent);
+
+				if (proj->getProjType() == CProjectile::PTYPE_BEAM)
 				{
-					CProjectile* proj = dynamic_cast<CProjectile*>(ent);
-					proj->setIsDone(true);
-					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+					modelStack.PushMatrix();
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
+					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
+					modelStack.Translate(0, 0, -entSca.z / 2);
+					modelStack.Scale(entSca.x, entSca.y, entSca.z);
+					RenderMesh(meshList[GEO_CUBE], godlights);
+					modelStack.PopMatrix();
+				}
+				else
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+					modelStack.Scale(entSca.x, entSca.y, entSca.z);
+					RenderMesh(meshList[GEO_SPHERE], godlights);
+					modelStack.PopMatrix();
+					if (entPos.y < 0) //need to change eventually for proper collision
+					{
+						proj->setIsDone(true);
+						meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+					}
 				}
 			}
 			break;
