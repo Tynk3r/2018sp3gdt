@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "SceneTerrain.h"
+#include "GameMenu.h"
 #include "SceneTest.h"
 #include "SceneManager.h"
 
@@ -193,18 +194,21 @@ void Application::Run()
 	//Main Loop
 	// init scenes
 	Scene *scene1 = new SceneTest();
-	Scene *scene2 = new SceneTerrain();
+	Scene *scene2 = new GameMenu();
+	Scene *scene3 = new SceneTerrain();
 	
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
 	sceneManager->AddScene(scene2);
+	sceneManager->AddScene(scene3);
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-
+	static bool leftButtonDebounce = false;
 	while (!glfwWindowShouldClose(m_window) && !Application::IsKeyPressed(VK_ESCAPE))
 	{
-		if (Application::IsKeyPressed(MK_LBUTTON))
+		if (Application::IsKeyPressed(MK_LBUTTON) && !leftButtonDebounce)
 		{
-			// if at how to play menu
+			// if at how to play menu 
+			leftButtonDebounce = true;
 			if (sceneManager->GetCurrentSceneID() == CSceneManager::START_MENU)
 			{
 				
@@ -213,10 +217,10 @@ void Application::Run()
 					// If CLick Anywhere
 					if (mouse_current_y >= 288 && mouse_current_y <= 372)
 					{
-						scene1->SEngine->stopMenu();
-						scene2->SEngine->playGame();
-						sceneManager->GoToScene(CSceneManager::GAME);
-						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+						//scene1->SEngine->stopMenu();
+						//scene2->SEngine->playGame();
+						sceneManager->GoToScene(CSceneManager::GAME_MENU);
+					//	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 					}
 				}
@@ -228,8 +232,34 @@ void Application::Run()
 					}
 				}
 			}
+			else if (sceneManager->GetCurrentSceneID() == CSceneManager::GAME_MENU)
+			{
+
+				if (mouse_current_x >= 513 && mouse_current_x <= 779)
+				{
+					// If CLick Anywhere
+					if (mouse_current_y >= 239 && mouse_current_y <= 312)
+					{
+						scene1->SEngine->stopMenu();
+						scene2->SEngine->playGame();
+						sceneManager->GoToScene(CSceneManager::GAME);
+						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+					}
+				}
+				if (mouse_current_x >= 524 && mouse_current_x <= 756)
+				{
+					if (mouse_current_y >= 498 && mouse_current_y <= 560)
+					{
+						sceneManager->GoToScene(CSceneManager::START_MENU);
+					}
+				}
+			}
 		}
-		
+		else if (!Application::IsKeyPressed(MK_LBUTTON) && leftButtonDebounce)
+		{
+			leftButtonDebounce = false;
+		}
 	
 		{
 			GetMouseUpdate();
