@@ -11,6 +11,7 @@ CParticle_2::CParticle_2(PARTICLE_TYPE particleType, Vector3 pos, Vector3 vel, V
 {
 	this->setType(E_PARTICLE);
 	this->setPos(pos);
+	this->originPosition = pos;
 	this->setScale(scale);
 	this->Init();
 }
@@ -25,6 +26,7 @@ CParticle_2::CParticle_2(PARTICLE_TYPE particleType, CEntity * parent) :
 {
 	this->setType(E_PARTICLE);
 	this->setPos(parent->getPos());
+	this->originPosition = parent->getOriginPos();
 	this->Init();
 }
 
@@ -116,4 +118,9 @@ float CParticle_2::getRot()
 float CParticle_2::getTransparency()
 {
 	return this->transparency;
+}
+
+Vector3 CParticle_2::getOriginPos()
+{
+	return this->originPosition;
 }

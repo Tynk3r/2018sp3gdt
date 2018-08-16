@@ -88,3 +88,8 @@ void CEntity::setCollider(const bool _value)
 {
 	m_bCollider = _value;
 }
+
+Vector3 CEntity::getOriginPos()
+{
+	return this->originPosition;
+}

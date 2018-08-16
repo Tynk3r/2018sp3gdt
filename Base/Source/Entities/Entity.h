@@ -51,7 +51,7 @@ public:
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
 	virtual void setCollider(const bool _value);
-
+	Vector3 getOriginPos();
 private:
 	Vector3 position;
 	Vector3 scale;
@@ -64,5 +64,7 @@ private:
 	Vector3 maxAABB;
 	Vector3 minAABB;
 	bool m_bCollider;
+protected:
+	Vector3 originPosition;
 };
 
