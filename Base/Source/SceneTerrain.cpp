@@ -509,12 +509,11 @@ void SceneTerrain::RenderTerrain() {
 
 void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
-	if(!mesh || mesh->textureID <= 0)
+	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
-	
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(-128, 128, -72, 72, 0, 0);
+	ortho.SetToOrtho(0, Application::GetInstance().GetWindowWidth() * 0.1f , 0, Application::GetInstance().GetWindowHeight() * 0.1f, -10, 10);
 	projectionStack.PushMatrix();
 		projectionStack.LoadMatrix(ortho);
 		viewStack.PushMatrix();
@@ -528,7 +527,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 				glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 				glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 				glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
 				for(unsigned i = 0; i < text.length(); ++i)
 				{
@@ -932,7 +931,7 @@ void SceneTerrain::RenderWorld()
 				else
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, proj->getOriginPos().x / 4000.f, proj->getOriginPos().z / 4000.f), entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
@@ -1003,12 +1002,13 @@ void SceneTerrain::RenderWorld()
 			CParticle_2* par = *it;
 			Vector3 parPos = par->getPos();
 			Vector3 parSca = par->getScale();
+			Vector3 parOrigPos = par->getOriginPos();
 			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
 			switch (par->getParType())
 			{
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1019,7 +1019,7 @@ void SceneTerrain::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_ICE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1030,7 +1030,7 @@ void SceneTerrain::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_BEAM:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);

@@ -32,6 +32,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	}
 	this->setPos(pos);
 	this->setTarget(targ);
+	this->originPosition = pos;
 	lifespanTime = 10;
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
