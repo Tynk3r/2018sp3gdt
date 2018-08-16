@@ -316,7 +316,7 @@ void SceneTest::Update(double dt)
 		bLightEnabled = false;
 	}
 
-	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
+	//cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 	
 
 #ifdef SP3_DEBUG

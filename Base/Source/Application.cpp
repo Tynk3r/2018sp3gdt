@@ -194,7 +194,7 @@ void Application::Run()
 	// init scenes
 	Scene *scene1 = new SceneTest();
 	Scene *scene2 = new SceneTerrain();
-	scene1->Init();
+	
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
 	sceneManager->AddScene(scene2);

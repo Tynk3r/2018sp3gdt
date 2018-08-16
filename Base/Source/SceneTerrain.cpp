@@ -994,19 +994,19 @@ void SceneTerrain::RenderPassMain()
 		{
 			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
 			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightDirection_cameraspace.x);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightDirection_cameraspace.x);
 		}
 		else if (lights[i].type == Light::LIGHT_SPOT)
 		{
 			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightPosition_cameraspace.x);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
 			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[i].spotDirection;
-			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + 11 * i], 1, &spotDirection_cameraspace.x);
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &spotDirection_cameraspace.x);
 		}
 		else
 		{
 			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + 11 * i], 1, &lightPosition_cameraspace.x);
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
 		}
 	}
 
