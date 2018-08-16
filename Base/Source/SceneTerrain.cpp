@@ -394,13 +394,11 @@ void SceneTerrain::Update(double dt)
 		}
 		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
 
-		//aa->setPos(aa->getPos() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 		aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 		for (int i = 0; i < 10; ++i)
 		{
 			ParticleManager::GetInstance()->AddParticle(aa);
 		}
-		//aa->setPos(aa->getPos() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 		aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 
 	}
