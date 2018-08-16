@@ -7,6 +7,7 @@ class CEntity
 public:
 	enum TYPE {
 		E_ENEMY = 0,
+		E_TARGET,
 		E_MOVING_TARGET,
 		E_PROJECTILE,
 		E_PLAYER,

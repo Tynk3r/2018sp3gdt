@@ -69,32 +69,6 @@ EntityManager::~EntityManager()
 // Check for overlap
 bool EntityManager::CheckOverlap(Vector3 thisMinAABB, Vector3 thisMaxAABB, Vector3 thatMinAABB, Vector3 thatMaxAABB)
 {	
-	/*if (   (thisMinAABB.x >= thatMinAABB.x && thisMinAABB.x <= thatMaxAABB.x) || (thisMaxAABB.x >= thatMinAABB.x && thisMaxAABB.x <= thatMaxAABB.x)
-		&& (thisMinAABB.y >= thatMinAABB.y && thisMinAABB.y <= thatMaxAABB.y) || (thisMaxAABB.y >= thatMinAABB.y && thisMaxAABB.y <= thatMaxAABB.y)
-		&& (thisMinAABB.z >= thatMinAABB.z && thisMinAABB.z <= thatMaxAABB.z) || (thisMaxAABB.z >= thatMinAABB.z && thisMaxAABB.z <= thatMaxAABB.z))
-	{
-		return true;
-	}
-	if (   (thatMinAABB.x >= thisMinAABB.x && thatMinAABB.x <= thisMaxAABB.x) || (thatMaxAABB.x >= thisMinAABB.x && thatMaxAABB.x <= thisMaxAABB.x)
-		&& (thatMinAABB.y >= thisMinAABB.y && thatMinAABB.y <= thisMaxAABB.y) || (thatMaxAABB.y >= thisMinAABB.y && thatMaxAABB.y <= thisMaxAABB.y)
-		&& (thatMinAABB.z >= thisMinAABB.z && thatMinAABB.z <= thisMaxAABB.z) || (thatMaxAABB.z >= thisMinAABB.z && thatMaxAABB.z <= thisMaxAABB.z))
-	{
-		return true;
-	}
-	if (   (thisMinAABB.x >= thatMinAABB.x && thisMinAABB.x <= thatMaxAABB.x) && (thisMaxAABB.x >= thatMinAABB.x && thisMaxAABB.x <= thatMaxAABB.x)
-		&& (thisMinAABB.y >= thatMinAABB.y && thisMinAABB.y <= thatMaxAABB.y) && (thisMaxAABB.y >= thatMinAABB.y && thisMaxAABB.y <= thatMaxAABB.y)
-		&& (thisMinAABB.z >= thatMinAABB.z && thisMinAABB.z <= thatMaxAABB.z) && (thisMaxAABB.z >= thatMinAABB.z && thisMaxAABB.z <= thatMaxAABB.z))
-	{
-		return true;
-	}
-	if (   (thatMinAABB.x >= thisMinAABB.x && thatMinAABB.x <= thisMaxAABB.x) && (thatMaxAABB.x >= thisMinAABB.x && thatMaxAABB.x <= thisMaxAABB.x)
-		&& (thatMinAABB.y >= thisMinAABB.y && thatMinAABB.y <= thisMaxAABB.y) && (thatMaxAABB.y >= thisMinAABB.y && thatMaxAABB.y <= thisMaxAABB.y)
-		&& (thatMinAABB.z >= thisMinAABB.z && thatMinAABB.z <= thisMaxAABB.z) && (thatMaxAABB.z >= thisMinAABB.z && thatMaxAABB.z <= thisMaxAABB.z))
-	{
-		return true;
-	}
-	
-	return false;*/
 	// Check if this object is overlapping that object
 	if (((thatMinAABB >= thisMinAABB) && (thatMinAABB <= thisMaxAABB))
 		||
@@ -147,18 +121,28 @@ bool EntityManager::CheckForCollision(float dt)
 	end = entityList.end();
 	for (it = entityList.begin(); it != end; ++it)
 	{
-		if ((*it)->getType() == CEntity::E_PLAYER || ((*it)->getTarget() - (*it)->getPos()).Length() <= 5)
-			continue;
+		/*if ((*it)->getType() == CEntity::E_PLAYER)
+			continue;*/
 		Vector3 viewVector = ((*it)->getTarget() - (*it)->getPos()).Normalized();
 		for (it2 = entityList.begin(); it2 != end; ++it2)
 		{
 			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 
 			{ 
-				//CPlayerInfo* plr = dynamic_cast<CPlayerInfo*>(*it) ? dynamic_cast<CPlayerInfo*>(*it) : dynamic_cast<CPlayerInfo*>(*it2);
-				//CEnemy* enmy = dynamic_cast<CEnemy*>(*it) ? dynamic_cast<CEnemy*>(*it) : dynamic_cast<CEnemy*>(*it2);
-				//plr->Move_FrontBack(dt, false, 1.f);
-				//enmy->tempMoveBack(dt);
-				(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt));
+				switch ((*it)->getType())
+				{
+				case CEntity::E_ENEMY:
+				case CEntity::E_TARGET:
+				case CEntity::E_MOVING_TARGET:
+					if ((*it2)->getType() == CEntity::E_PROJECTILE)
+					{
+						(*it)->setIsDone(true);
+						(*it2)->setIsDone(true);
+						break;
+					}
+				default:
+					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
+					break;
+				}
 				return true; 
 			}
 		}

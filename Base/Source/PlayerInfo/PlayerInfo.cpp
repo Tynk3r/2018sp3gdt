@@ -51,7 +51,7 @@ void CPlayerInfo::Init(void)
 	// Set the current values
 	setPos(Vector3(10, 0, 0));
 	setTarget(Vector3(0, 0, 50));
-	setScale(Vector3(10, 10, 10));
+	setScale(Vector3(20, 10, 20));
 	up.Set(0, 1, 0);
 
 	// Set Boundary

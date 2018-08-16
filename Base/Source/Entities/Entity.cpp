@@ -24,15 +24,20 @@ void CEntity::Update(double dt)
 	switch (type) 
 	{
 	case E_ENEMY:
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) 
+		{ 
+			viewVector.SetZero(); 
+		}
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		break;
-	case E_DRONE:
 	case E_PROJECTILE:
+	case E_DRONE:
 	case E_MOVING_TARGET:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
 		break;
 	case E_PLAYER:
+	case E_TARGET:
 		break;
 	default:
 		break;
