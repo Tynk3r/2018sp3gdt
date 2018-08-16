@@ -124,6 +124,7 @@ public:
 
 	int GetHealth(void) const;
 	int GetScore(void) const;
+	void SetScore(int s) { m_dScore = s; }
 
 	float terrainHeight = 0.f;
 

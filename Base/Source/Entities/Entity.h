@@ -7,6 +7,7 @@ class CEntity
 public:
 	enum TYPE {
 		E_ENEMY = 0,
+		E_TARGET,
 		E_MOVING_TARGET,
 		E_PROJECTILE,
 		E_PLAYER,
@@ -16,9 +17,9 @@ public:
 	};
 
 	CEntity();
-	virtual ~CEntity() = 0;
+	~CEntity();
 
-	virtual void Init() {};
+	void Init();
 	virtual void Update(double dt);
 
 	Vector3 getPos(void) { return position; }
@@ -50,7 +51,7 @@ public:
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
 	virtual void setCollider(const bool _value);
-
+	Vector3 getOriginPos();
 private:
 	Vector3 position;
 	Vector3 scale;
@@ -63,5 +64,7 @@ private:
 	Vector3 maxAABB;
 	Vector3 minAABB;
 	bool m_bCollider;
+protected:
+	Vector3 originPosition;
 };
 

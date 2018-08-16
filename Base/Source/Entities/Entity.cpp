@@ -18,19 +18,30 @@ CEntity::~CEntity()
 {
 }
 
+void CEntity::Init()
+{
+	// Add to EntityManager
+	EntityManager::GetInstance()->AddEntity(this);
+	setCollider(true);
+}
+
 void CEntity::Update(double dt) 
 {
 	Vector3 viewVector = (getTarget() - getPos()).Normalized();
 	switch (type) 
 	{
 	case E_ENEMY:
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) 
+		{ 
+			viewVector.SetZero(); 
+		}
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_DRONE:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
-		setAABB(Vector3(position.x + 150, position.y + 300 + 100, position.z + 150), Vector3(position.x - 150, position.y /*- scale.y*/ + 100, position.z - 150));
+		setAABB(Vector3(position.x + 100, position.y + 200 + 150, position.z + 100), Vector3(position.x - 100, position.y /*- scale.y*/ + 150, position.z - 100));
 		break;
 	case E_PROJECTILE:
 	case E_MOVING_TARGET:
@@ -40,6 +51,8 @@ void CEntity::Update(double dt)
 		break;
 	case E_PLAYER:
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		break;
+	case E_TARGET:
 		break;
 	default:
 		break;
@@ -89,4 +102,9 @@ bool CEntity::hasCollider(void) const
 void CEntity::setCollider(const bool _value)
 {
 	m_bCollider = _value;
+}
+
+Vector3 CEntity::getOriginPos()
+{
+	return this->originPosition;
 }

@@ -16,8 +16,6 @@ public:
 
 	void AddEntity(CEntity* _newEntity);
 	bool RemoveEntity(CEntity* _existingEntity);
-/*
-	std::list<CEntity*> getList() { return entityList; }*/
 	std::list<CEntity*> entityList;
 
 	EntityManager();
