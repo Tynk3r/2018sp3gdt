@@ -4,7 +4,8 @@
 
 
 CProjectile::CProjectile(PROJECTILE_TYPE projectileType) :
-	projectileType(projectileType)
+	projectileType(projectileType),
+	elapsedTime(0)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -19,15 +20,19 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	{
 	case PTYPE_FIRE:
 		this->setSpeed(350);
-		this->setScale(Vector3(2, 2, 2));
+		this->setScale(Vector3(10, 10, 10));
 		break;
 	case PTYPE_ICE:
 		this->setSpeed(225);
 		this->setScale(Vector3(2, 2, 2));
 		break;
+	case PTYPE_BEAM:
+		this->setSpeed(0);
+		break;
 	}
 	this->setPos(pos);
-	this->setTarget(targ);	
+	this->setTarget(targ);
+	lifespanTime = 10;
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
@@ -36,6 +41,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 void CProjectile::Update(double dt)
 {
 	CEntity::Update(dt);
+	this->elapsedTime += (float)dt;
 	switch (projectileType)
 	{
 	case PTYPE_BEAM:
@@ -46,6 +52,8 @@ void CProjectile::Update(double dt)
 		ParticleManager::GetInstance()->AddParticle(this);
 		break;
 	}
+	lifespanTime -= dt;
+	if (lifespanTime <= 0) setIsDone(true);
 }
 
 //bool CProjectile::IsDone()
@@ -61,4 +69,9 @@ void CProjectile::Update(double dt)
 CProjectile::PROJECTILE_TYPE CProjectile::getProjType()
 {
 	return this->projectileType;
+}
+
+float CProjectile::getElapsedTime()
+{
+	return this->elapsedTime;
 }

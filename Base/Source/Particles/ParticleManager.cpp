@@ -54,6 +54,9 @@ void ParticleManager::AddParticle(CEntity * entity)
 				case CProjectile::PTYPE_ICE:
 					newPar = new CParticle_2(CParticle_2::PTYPE_ICE, proj);
 					break;
+				case CProjectile::PTYPE_BEAM:
+					newPar = new CParticle_2(CParticle_2::PTYPE_BEAM, proj);
+					break;
 			}
 			break;
 		}
@@ -87,4 +90,12 @@ ParticleManager::ParticleManager()
 // Destructor
 ParticleManager::~ParticleManager()
 {
+	std::list<CParticle_2*>::iterator it, end;
+	it = particleList.begin();
+	end = particleList.end();
+	while (it != end)
+	{
+		delete *it;
+		it = particleList.erase(it);
+	}
 }

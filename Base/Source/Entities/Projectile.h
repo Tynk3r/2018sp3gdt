@@ -19,8 +19,12 @@ public:
 	void Init(Vector3 pos, Vector3 targ);
 	void Update(double dt);
 	PROJECTILE_TYPE getProjType();
+	float getElapsedTime();
+	void SetLifespanTime(double time) { lifespanTime = time; }
 private:
 	PROJECTILE_TYPE projectileType;
 	Vector3 viewVector;
+	double lifespanTime;
+	float elapsedTime;
 };
 

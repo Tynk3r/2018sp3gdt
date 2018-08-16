@@ -23,6 +23,7 @@
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
+#include "CameraEffects\CameraEffectManager.h"
 
 using namespace std;
 
@@ -146,6 +147,7 @@ class SceneTerrain : public Scene
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
 		GEO_SPRITEANIM_ACTIONLINES,
+		GEO_FIREBALL,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

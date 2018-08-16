@@ -313,19 +313,16 @@ void CPlayerInfo::Update(double dt)
 		camBobTime = 0.0;
 	}
 
-	hasMoved = false;
-	hasRan = false;
-
 	if (up.y < 0) up = -up;
 
 	if (cameraSway.x > 0)
 	{
-		cameraSway.x -= 5 * dt;
+		cameraSway.x -= 2 * dt;
 		if (cameraSway.x < 0) cameraSway.x = 0;
 	}
 	else if (cameraSway.x < 0)
 	{
-		cameraSway.x += 5 * dt;
+		cameraSway.x += 2 * dt;
 		if (cameraSway.x > 0) cameraSway.x = 0;
 	}
 

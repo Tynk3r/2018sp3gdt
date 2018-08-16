@@ -33,6 +33,8 @@
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\SceneTest.cpp" />
     <ClCompile Include="Source\GameMenu.cpp" />
+    <ClCompile Include="Source\CameraEffects\CameraEffect.cpp" />
+    <ClCompile Include="Source\CameraEffects\CameraEffectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -71,5 +73,7 @@
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\SceneTest.h" />
     <ClInclude Include="Source\GameMenu.h" />
+    <ClInclude Include="Source\CameraEffects\CameraEffect.h" />
+    <ClInclude Include="Source\CameraEffects\CameraEffectManager.h" />
   </ItemGroup>
 </Project>
