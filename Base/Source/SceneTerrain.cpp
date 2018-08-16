@@ -211,7 +211,7 @@ void SceneTerrain::Init()
 
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0.5, 0));
 
-	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
+	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
@@ -1049,7 +1049,7 @@ void SceneTerrain::RenderPassMain()
 		}
 	}
 
-	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	RenderMesh(meshList[GEO_AXES], false);
 	modelStack.PushMatrix();
