@@ -20,6 +20,23 @@ CEntity::~CEntity()
 
 void CEntity::Update(double dt) 
 {
+	Vector3 viewVector = (getTarget() - getPos()).Normalized();
+	switch (type) 
+	{
+	case E_ENEMY:
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		break;
+	case E_DRONE:
+	case E_PROJECTILE:
+	case E_MOVING_TARGET:
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		setTarget(getPos() + viewVector);
+		break;
+	case E_PLAYER:
+		break;
+	default:
+		break;
+	}
 	setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 }
 

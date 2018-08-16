@@ -1,36 +1,29 @@
-#include "SceneTerrain.h"
+#include "GameMenu.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
-#include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadHmap.h"
 #include <sstream>
+#include "SceneManager.h"
+#include "SoundEngine.h"
 #define SP3_DEBUG
 
-SceneTerrain::SceneTerrain()
+GameMenu::GameMenu()
 {
 }
 
-SceneTerrain::~SceneTerrain()
+GameMenu::~GameMenu()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
+	
 }
 
-void SceneTerrain::Init()
+void GameMenu::Init()
 {
+
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test
@@ -133,7 +126,7 @@ void SceneTerrain::Init()
 
 	lights[0].type = Light::LIGHT_POINT;
 	lights[0].position.Set(0, 350.f + 50.f, 100);
-	lights[0].color.Set(0, 69, 0);/*
+	lights[0].color.Set(255, 69, 0);/*
 	lights[0].position.Set(0, 350.f + 300.f, 0);
 	lights[0].color.Set(1, 1, 1);*/
 	lights[0].power = 0.5f;
@@ -145,15 +138,15 @@ void SceneTerrain::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
-	lights[1].type = Light::LIGHT_SPOT;
+	lights[1].type = Light::LIGHT_POINT;
 	lights[1].position.Set(0, 350.f + 50.f, 100);
-	lights[1].color.Set(155, 29, 29);
-	lights[1].power = 2;
+	lights[1].color.Set(255, 69, 0);
+	lights[1].power = 0;
 	lights[1].kC = 1.f;
 	lights[1].kL = 0.01f;
 	lights[1].kQ = 0.001f;
-	lights[1].cosCutoff = cos(Math::DegreeToRadian(60));
-	lights[1].cosInner = cos(Math::DegreeToRadian(50));
+	lights[1].cosCutoff = cos(Math::DegreeToRadian(45));
+	lights[1].cosInner = cos(Math::DegreeToRadian(30));
 	lights[1].exponent = 3.f;
 	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
 	
@@ -196,20 +189,18 @@ void SceneTerrain::Init()
 	{
 		meshList[i] = NULL;
 	}
-	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
+	//meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
-	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 1.f);
+	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 1.f);
+	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 10.f);
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
-
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0.5, 0));
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
@@ -252,6 +243,13 @@ void SceneTerrain::Init()
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 10.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
+	//LOAD MAIN MENU
+	meshList[GEO_GAMEMENU] = MeshBuilder::GenerateQuad("GameMenu",1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_GAMEMENU]->textureArray[i] = LoadTGA("Image//gamemenu.tga");
+
+
+
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -259,7 +257,7 @@ void SceneTerrain::Init()
 	meshList[GEO_GRASS_LIGHTGREEN]->textureArray[0] = LoadTGA("Image//grass_lightgreen.tga");
 	meshList[GEO_SPRITE_ANIMATION] =
 		MeshBuilder::GenerateSpriteAnimation("fire", 4, 4);
-	//meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
+	meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation
 		*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
@@ -267,40 +265,10 @@ void SceneTerrain::Init()
 		sa->m_anim = new Animation();
 		sa->m_anim->Set(0, 15, 0, 1.f, true);
 	}
-	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
-	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
-	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
-	if (sa_AL)
-	{
-		sa_AL->m_anim = new Animation();
-		sa_AL->m_anim->Set(0, (2 * 2) - 1, 1, 0.25f, true);
-	}
+	
+	//camera.Init(playerInfo->GetPos(), playerInfo->GetTarget(), playerInfo->GetUp(), m_heightMap);
+	camera.Init(Vector3(), Vector3(0, 0, -1), Vector3(0, 1), m_heightMap);
 
-	// Create the playerinfo instance, which manages all information about the player
-	playerInfo = CPlayerInfo::GetInstance();
-	playerInfo->Init();
-	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
-	playerInfo->AttachCamera(&camera);
-
-	enemy1 = new CEnemy();
-	enemy1->Init();
-	enemy1->setPos(Vector3(-100.f, 20.f, -100.f));
-	enemy1->setScale(Vector3(10.f, 10.f, 10.f));
-	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
-
-	drone1 = new CDrone();
-	drone1->Init();
-	drone1->setPos(Vector3(0, 20.f, 0));
-	drone1->setScale(Vector3(10.f, 10.f, 10.f));
-	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
-
-	// Hardware Abstraction
-	theKeyboard = new CKeyboard();
-	theKeyboard->Create(playerInfo);
-	theMouse = new CMouse();
-	theMouse->Create(playerInfo);
-
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
@@ -312,14 +280,14 @@ void SceneTerrain::Init()
 	m_gravity.Set(0, -9.8f, 0);
 
 	bLightEnabled = true;
-	lights[0].type = Light::LIGHT_POINT;
-	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 
-	///init sound
+	// Sound
+
 	SEngine = new CSoundEngine;
+	
 }
 
-void SceneTerrain::Update(double dt)
+void GameMenu::Update(double dt)
 {
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
@@ -353,59 +321,14 @@ void SceneTerrain::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
-#ifdef SP3_DEBUG
-	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
-	{
-		cout << "key H was pressed" << endl;
-		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
-	{
-		cout << "key J was pressed" << endl;
-		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
-	}
-	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
-	{
-		cout << "key K was pressed" << endl;
-		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
-		
-		float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
-		if (Math::FAbs(tempScaleZ) <= 0)
-		{
-			aa->setScale(aa->getScale() + Vector3(0, 0, 400));
-		}
-		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
 
-		//include the raycast check here
-	}
-	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
-		cout << "joystick X button was pressed" << endl;
+	//cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
+	
+
+#ifdef SP3_DEBUG
+
 #endif // SP3_DEBUG
 
-	if(Application::IsKeyPressed('I'))
-		lights[0].position.z -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('K'))
-		lights[0].position.z += (float)(10.f * dt);
-	if(Application::IsKeyPressed('J'))
-		lights[0].position.x -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('L'))
-		lights[0].position.x += (float)(10.f * dt);
-	if(Application::IsKeyPressed('O'))
-		lights[0].position.y -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('P'))
-		lights[0].position.y += (float)(10.f * dt);
 
 	rotateAngle += (float)(10 * dt);
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -414,34 +337,12 @@ void SceneTerrain::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
-	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
-	if (sa_AL)
-	{
-		sa_AL->Update(dt);
-	}
 
-	EntityManager::GetInstance()->Update(dt);
 	ParticleManager::GetInstance()->Update(dt);
 	//camera.Update(dt);
 
-	// Hardware Abstraction
-	theKeyboard->Read(dt);
-	theMouse->Read(dt);
-	// Update the player position and other details based on keyboard and mouse inputs
-	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
-	playerInfo->Update(dt);
-
-	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
-	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
-	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
-	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
-	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-
+	
 	testvar += 0.05 * dt;
-
-	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -449,9 +350,11 @@ void SceneTerrain::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+
+	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
-void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
+void GameMenu::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -478,7 +381,7 @@ void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTerrain::RenderTerrain() {
+void GameMenu::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -487,7 +390,7 @@ void SceneTerrain::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void GameMenu::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -527,7 +430,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void GameMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -537,38 +440,26 @@ void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, fl
 			viewStack.LoadIdentity();
 			modelStack.PushMatrix();
 				modelStack.LoadIdentity();
-				modelStack.Scale(size_x, size_y, 1);
+				modelStack.Scale(size_x, size_y, 1.f);
 				modelStack.Translate(x, y, 0);
        
 				Mtx44 MVP, modelView, modelView_inverse_transpose;
-				
+	
 				MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-				modelView = viewStack.Top() * modelStack.Top(); // Week 6
-				glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-				if (enableLight && bLightEnabled)
+
+				if(mesh->textureID > 0)
 				{
-					glUniform1i(m_parameters[U_LIGHTENABLED], 1);
-					modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-					glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
-					//modelView = viewStack.Top() * modelStack.Top();
-					//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-					//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-					//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
-
-					Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-					glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
-
-					//load material
-					glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
-					glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
-					glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
-					glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
+					glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+					glActiveTexture(GL_TEXTURE0);
+					glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+					glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
 				}
 				else
 				{
-					glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+					glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
 				}
+				glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 				for (int i = 0; i < MAX_TEXTURES; ++i) {
 					if (mesh->textureArray[i] > 0) {
 						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
@@ -593,7 +484,7 @@ void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, fl
 
 }
 
-void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
+void GameMenu::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -683,7 +574,7 @@ void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneTerrain::RenderGround()
+void GameMenu::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -707,15 +598,17 @@ void SceneTerrain::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneTerrain::Render()
+void GameMenu::Render()
 {
+
+	
 	//******************************* PRE RENDER PASS*************************************
 		RenderPassGPass();
 	//******************************* MAIN RENDER PASS************************************
 		RenderPassMain();
 }
 
-void SceneTerrain::Exit()
+void GameMenu::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -729,20 +622,20 @@ void SceneTerrain::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
-	playerInfo->DetachCamera();
+	/*playerInfo->DetachCamera();
 
 	if (playerInfo->DropInstance() == false)
 	{
 #if _DEBUGMODE==1
 		cout << "Unable to drop PlayerInfo class" << endl;
 #endif
-	}
+	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneTerrain::RenderTrees() 
+void GameMenu::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -757,7 +650,7 @@ void SceneTerrain::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneTerrain::GetParticle(void)
+ParticleObject* GameMenu::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -781,7 +674,7 @@ ParticleObject* SceneTerrain::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneTerrain::UpdateParticles(double dt)
+void GameMenu::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -845,7 +738,7 @@ void SceneTerrain::UpdateParticles(double dt)
 	}
 }
 
-void SceneTerrain::RenderParticles(ParticleObject *particle)
+void GameMenu::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -870,96 +763,8 @@ void SceneTerrain::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneTerrain::RenderWorld()
+void GameMenu::RenderWorld()
 {
-	// Render all entities
-	if (!EntityManager::GetInstance()->entityList.empty()) {
-		std::list<CEntity*>::iterator it, end;
-		end = EntityManager::GetInstance()->entityList.end();
-		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
-		{
-			CEntity* ent = *it;
-			Vector3 entPos = ent->getPos();
-			Vector3 entTar = ent->getTarget();
-			Vector3 entSca = ent->getScale();
-			switch ((*it)->getType()) {
-			case CEntity::E_ENEMY:
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
-				modelStack.PopMatrix();
-				break;
-			}
-			case CEnemy::E_PROJECTILE:
-			{
-				CProjectile* proj = dynamic_cast<CProjectile*>(ent);
-
-				if (proj->getProjType() == CProjectile::PTYPE_BEAM)
-				{
-					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
-					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
-					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
-					modelStack.Translate(0, 0, -entSca.z / 2);
-					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_CUBE], godlights);
-					modelStack.PopMatrix();
-				}
-				else
-				{
-					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
-					modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
-					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_SPHERE], godlights);
-					modelStack.PopMatrix();
-					if (entPos.y < 0) //need to change eventually for proper collision
-					{
-						proj->setIsDone(true);
-						meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-					}
-				}
-			}
-			break;
-			case CEntity::E_DRONE:
-			{
-				float tempRotation = Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z));
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
-				modelStack.PopMatrix();
-
-				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
-
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Translate(16, 18, -15);
-				modelStack.Rotate(tempDrone->getWingRotation(), 0, 0, 1);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_LWING], godlights);
-				modelStack.PopMatrix();
-
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Translate(-16, 18, -15);
-				modelStack.Rotate(-tempDrone->getWingRotation(), 0, 0, 1);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_RWING], godlights);
-				modelStack.PopMatrix();
-			}
-				break;
-			default:
-				break;
-			}
-		}
-	}
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
 
@@ -998,45 +803,10 @@ void SceneTerrain::RenderWorld()
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 400, 200);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(20, 20, 1);
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-	RenderMesh(meshList[GEO_TESTPAINTQUAD], godlights);
-	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 350, 300);
-	modelStack.Rotate(90, 1, 0, 0);
-	modelStack.Scale(90, 160, 1);
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
-	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
-	modelStack.PopMatrix();
-
-	Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
-	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_LEFTARM], godlights);
-	modelStack.PopMatrix();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	modelStack.PopMatrix();
 }
 
-void SceneTerrain::RenderPassMain()
+void GameMenu::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1052,8 +822,8 @@ void SceneTerrain::RenderPassMain()
 	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
-	perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
-	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
+	//perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
+	perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
 
 	// Camera matrix
@@ -1066,34 +836,31 @@ void SceneTerrain::RenderPassMain()
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
-	for (int i = 0; i < 2; ++i) //MAX IS THE NUMBER OF LIGHTS
+	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
 	{
-		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
-		{
-			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
-			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightDirection_cameraspace.x);
-		}
-		else if (lights[i].type == Light::LIGHT_SPOT)
-		{
-			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
-			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[i].spotDirection;
-			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &spotDirection_cameraspace.x);
-		}
-		else
-		{
-			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
-			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
-		}
+		Vector3 lightDir(lights[0].position.x, lights[0].position.y, lights[0].position.z);
+		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+	}
+	else if (lights[0].type == Light::LIGHT_SPOT)
+	{
+		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+		Vector3 spotDirection_cameraspace = viewStack.Top() * lights[0].spotDirection;
+		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
+	}
+	else
+	{
+		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
+		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	RenderMesh(meshList[GEO_AXES], false);
+//	RenderMesh(meshList[GEO_AXES], false);
 	modelStack.PushMatrix();
 	modelStack.Translate(2, 2000, 2);
-	RenderMesh(meshList[GEO_SKYPLANE], godlights);
+	//RenderMesh(meshList[GEO_SKYPLANE], godlights);
 	modelStack.PopMatrix();
 
 	//RenderGround();
@@ -1105,26 +872,17 @@ void SceneTerrain::RenderPassMain()
 	RenderWorld(); //casts shadow
 	////////////////////////////////	
 
-	//Render particles
-	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject *particle = (ParticleObject *)*it;
-		if (particle->active)
-		{
-			RenderParticles(particle);
-		}
-	}
-
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
-	RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f,Application::GetWindowHeight()*0.2f);
-	//modelStack.PushMatrix();
-	//modelStack.Translate(0, 400, 0);
-	//modelStack.Scale(100, 100, 1);
-	//RenderMesh(meshList[GEO_SPRITEANIM_ACTIONLINES], false);
-	//modelStack.PopMatrix();
+	//RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
+	modelStack.PushMatrix();
+	modelStack.Scale(100.f, 70.f, 5.f);
+	RenderMeshIn2D(meshList[GEO_GAMEMENU], false, 255.f, 143.3f);
+	
+	modelStack.PopMatrix();
+
+
 
 	//On screen text
 	std::ostringstream ss;
@@ -1137,7 +895,7 @@ void SceneTerrain::RenderPassMain()
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
 }
-void SceneTerrain::RenderPassGPass()
+void GameMenu::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();
