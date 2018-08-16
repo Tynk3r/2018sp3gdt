@@ -25,9 +25,13 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 		this->setSpeed(225);
 		this->setScale(Vector3(2, 2, 2));
 		break;
+	case PTYPE_BEAM:
+		this->setSpeed(0);
+		break;
 	}
 	this->setPos(pos);
-	this->setTarget(targ);	
+	this->setTarget(targ);
+	lifespanTime = 10;
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
@@ -46,6 +50,8 @@ void CProjectile::Update(double dt)
 		ParticleManager::GetInstance()->AddParticle(this);
 		break;
 	}
+	lifespanTime -= dt;
+	if (lifespanTime <= 0) setIsDone(true);
 }
 
 //bool CProjectile::IsDone()

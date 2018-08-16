@@ -38,7 +38,11 @@ void CDrone::Update(double dt)
 	case F_IDLE:
 	{
 		setTarget(getPos() + Vector3(0, 1 * dt, 0));
-		if (getPos().y >= 200) state = F_ROAM;
+		if (getPos().y >= 200)
+		{
+			state = F_ROAM;
+			setSpeed(0);
+		}
 	}
 		break;
 	case F_ROAM:
@@ -50,12 +54,13 @@ void CDrone::Update(double dt)
 			if (eyeRotation >= 360) eyeRotation = fmod(eyeRotation, 360);
 		}
 		setTarget(getPos() + Vector3(sinf(Math::DegreeToRadian(eyeRotation)), 0, cosf(Math::DegreeToRadian(eyeRotation))) );
+
 		rt_scanTime -= dt;
 	}
 		break;
 	case F_ATTACK:
 	{
-		
+		setSpeed(100);
 		//LAUNCH FIREBALL WHEN CLOSE ENOUGH, THEN GO BACK TO F_ROAM
 
 

@@ -381,14 +381,26 @@ void SceneTerrain::Update(double dt)
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
 		
+		aa->SetLifespanTime(0.3);
+
+		//include the raycast check here
+
 		float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
-		if (Math::FAbs(tempScaleZ) <= 0)
+		if (tempScaleZ <= 0)
 		{
 			aa->setScale(aa->getScale() + Vector3(0, 0, 400));
 		}
 		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
 
-		//include the raycast check here
+		//aa->setPos(aa->getPos() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		for (int i = 0; i < 10; ++i)
+		{
+			ParticleManager::GetInstance()->AddParticle(aa);
+		}
+		//aa->setPos(aa->getPos() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
@@ -532,7 +544,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
-	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
+	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
 	projectionStack.PushMatrix();
 		projectionStack.LoadMatrix(ortho);
 		viewStack.PushMatrix();
@@ -902,6 +914,7 @@ void SceneTerrain::RenderWorld()
 				if (proj->getProjType() == CProjectile::PTYPE_BEAM)
 				{
 					modelStack.PushMatrix();
+					//modelStack.Translate(camera.position.x, camera.position.y - 1, camera.position.z);
 					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
 					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
 					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
@@ -997,6 +1010,17 @@ void SceneTerrain::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
+			case CParticle_2::PTYPE_BEAM:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1018,24 +1042,29 @@ void SceneTerrain::RenderWorld()
 	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
 	modelStack.PopMatrix();
 
-	Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_LEFTARM], godlights);
+	RenderMeshIn2D(meshList[GEO_LEFTARM], godlights, 40, 40, -2, -1);
+	RenderMeshIn2D(meshList[GEO_RIGHTARM], godlights, 40, 40, 2, -1);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	modelStack.PopMatrix();
+	//Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
+	//modelStack.PushMatrix();
+	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	//modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
+	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	//modelStack.Scale(1, 1, 1.5);
+	//RenderMesh(meshList[GEO_LEFTARM], godlights);
+	//modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	//modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
+	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	//modelStack.Scale(1, 1, 1.5);
+	//RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	//modelStack.PopMatrix();
 }
 
 void SceneTerrain::RenderPassMain()
