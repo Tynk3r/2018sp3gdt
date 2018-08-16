@@ -17,6 +17,7 @@ void CDrone::Init()
 	wingRotation = 0;
 	eyeRotation = 0;
 	rt_scanTime = 0.5;
+	setCollider(true);
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 }
@@ -29,14 +30,14 @@ float CDrone::getWingRotation() const
 
 void CDrone::Update(double dt)
 {
-	Vector3 viewVector = (getTarget() - getPos()).Normalized();
+	//Vector3 viewVector = (getTarget() - getPos()).Normalized();
 	wingRotation += 120 * dt;
 	if (wingRotation >= 120) wingRotation = fmod(wingRotation, 120);
 	switch (state)
 	{
 	case F_IDLE:
 	{
-		setPos(getPos() + Vector3(0, 50 * dt, 0));
+		setTarget(getPos() + Vector3(0, 1 * dt, 0));
 		if (getPos().y >= 200) state = F_ROAM;
 	}
 		break;
@@ -63,6 +64,6 @@ void CDrone::Update(double dt)
 	default:
 		break;
 	}
-
+	CEntity::Update(dt);
 	//setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 }

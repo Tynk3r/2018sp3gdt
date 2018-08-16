@@ -17,6 +17,7 @@ public:
 	// Total Amount of Scenes
 	enum Scenes {
 		START_MENU,
+		GAME_MENU,
 		GAME,
 
 		TOTAL_SCENES

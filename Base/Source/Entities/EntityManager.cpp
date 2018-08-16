@@ -150,7 +150,6 @@ bool EntityManager::CheckForCollision(float dt)
 		if ((*it)->getType() == CEntity::E_PLAYER || ((*it)->getTarget() - (*it)->getPos()).Length() <= 5)
 			continue;
 		Vector3 viewVector = ((*it)->getTarget() - (*it)->getPos()).Normalized();
-		(*it)->setPos((*it)->getPos() + (viewVector * (*it)->getSpeed() * (float)dt));
 		for (it2 = entityList.begin(); it2 != end; ++it2)
 		{
 			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 

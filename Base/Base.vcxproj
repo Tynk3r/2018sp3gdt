@@ -21,6 +21,7 @@
     <ClCompile Include="Source\Entities\Entity.cpp" />
     <ClCompile Include="Source\Entities\EntityManager.cpp" />
     <ClCompile Include="Source\Entities\Projectile.cpp" />
+    <ClCompile Include="Source\GameMenu.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Controller.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Keyboard.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Mouse.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="Source\Entities\Entity.h" />
     <ClInclude Include="Source\Entities\EntityManager.h" />
     <ClInclude Include="Source\Entities\Projectile.h" />
+    <ClInclude Include="Source\GameMenu.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\HardwareAbstraction\Controller.h" />
     <ClInclude Include="Source\HardwareAbstraction\Keyboard.h" />
