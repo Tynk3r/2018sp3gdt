@@ -15,6 +15,8 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Camera2.cpp" />
     <ClCompile Include="Source\Camera3.cpp" />
+    <ClCompile Include="Source\CameraEffects\CameraEffect.cpp" />
+    <ClCompile Include="Source\CameraEffects\CameraEffectManager.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\Entities\Drone.cpp" />
     <ClCompile Include="Source\Entities\Enemy.cpp" />
@@ -49,6 +51,8 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Camera2.h" />
     <ClInclude Include="Source\Camera3.h" />
+    <ClInclude Include="Source\CameraEffects\CameraEffect.h" />
+    <ClInclude Include="Source\CameraEffects\CameraEffectManager.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Entities\Drone.h" />
     <ClInclude Include="Source\Entities\Enemy.h" />
