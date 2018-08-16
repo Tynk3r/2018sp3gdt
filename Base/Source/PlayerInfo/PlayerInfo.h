@@ -97,6 +97,12 @@ public:
 	// Update
 	void Update(double dt = 0.0333f);
 
+	void SetNotMoving()
+	{
+		hasMoved = false;
+		hasRan = false;
+	}
+
 	// Hardware Abstraction methods
 	// Detect and process front / back movement on the controller
 	bool Move_FrontBack(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f);

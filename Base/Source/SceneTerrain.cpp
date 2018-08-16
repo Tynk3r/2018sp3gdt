@@ -411,12 +411,14 @@ void SceneTerrain::Update(double dt)
 	ParticleManager::GetInstance()->Update(dt);
 	//camera.Update(dt);
 
+	playerInfo->SetNotMoving();
+
 	// Hardware Abstraction
 	theKeyboard->Read(dt);
 	theMouse->Read(dt);
 	// Update the player position and other details based on keyboard and mouse inputs
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
-	playerInfo->Update(dt);
+	//playerInfo->Update(dt);
 
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -979,7 +981,7 @@ void SceneTerrain::RenderWorld()
 
 	Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 	modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
@@ -988,7 +990,7 @@ void SceneTerrain::RenderWorld()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 	modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
