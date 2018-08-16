@@ -54,6 +54,9 @@ void ParticleManager::AddParticle(CEntity * entity)
 				case CProjectile::PTYPE_ICE:
 					newPar = new CParticle_2(CParticle_2::PTYPE_ICE, proj);
 					break;
+				case CProjectile::PTYPE_BEAM:
+					newPar = new CParticle_2(CParticle_2::PTYPE_BEAM, proj);
+					break;
 			}
 			break;
 		}

@@ -9,7 +9,7 @@ public:
 	enum PARTICLE_TYPE {
 		PTYPE_FIRE,
 		PTYPE_ICE,
-
+		PTYPE_BEAM,
 		PTYPE_TOTAL
 	};
 
