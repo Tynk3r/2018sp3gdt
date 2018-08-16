@@ -265,6 +265,14 @@ void SceneTerrain::Init()
 		sa->m_anim = new Animation();
 		sa->m_anim->Set(0, 15, 0, 1.f, true);
 	}
+	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
+	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
+	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
+	if (sa_AL)
+	{
+		sa_AL->m_anim = new Animation();
+		sa_AL->m_anim->Set(0, (2 * 2) - 1, 1, 0.25f, true);
+	}
 
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
@@ -386,6 +394,11 @@ void SceneTerrain::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
+	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
+	if (sa_AL)
+	{
+		sa_AL->Update(dt);
+	}
 
 	EntityManager::GetInstance()->Update(dt);
 	ParticleManager::GetInstance()->Update(dt);
@@ -494,7 +507,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
+void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -504,23 +517,49 @@ void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, floa
 			viewStack.LoadIdentity();
 			modelStack.PushMatrix();
 				modelStack.LoadIdentity();
-				modelStack.Scale(size, size, size);
+				modelStack.Scale(size_x, size_y, 1);
 				modelStack.Translate(x, y, 0);
        
 				Mtx44 MVP, modelView, modelView_inverse_transpose;
-	
+				
 				MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
 				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-				if(mesh->textureID > 0)
+				modelView = viewStack.Top() * modelStack.Top(); // Week 6
+				glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+				if (enableLight && bLightEnabled)
 				{
-					glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
-					glActiveTexture(GL_TEXTURE0);
-					glBindTexture(GL_TEXTURE_2D, mesh->textureID);
-					glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+					glUniform1i(m_parameters[U_LIGHTENABLED], 1);
+					modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
+					//modelView = viewStack.Top() * modelStack.Top();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+					//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
+
+					Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+					glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
+
+					//load material
+					glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
+					glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
+					glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
+					glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
 				}
 				else
 				{
-					glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
+					glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+				}
+				for (int i = 0; i < MAX_TEXTURES; ++i) {
+					if (mesh->textureArray[i] > 0) {
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
+						glActiveTexture(GL_TEXTURE0 + i);
+						glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+						glUniform1i(m_parameters[U_COLOR_TEXTURE + i], i);
+					}
+					else {
+
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 0);
+					}
 				}
 				mesh->Render();
 				if(mesh->textureID > 0)
@@ -1044,7 +1083,13 @@ void SceneTerrain::RenderPassMain()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
+	RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f,Application::GetWindowHeight()*0.2f);
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0, 400, 0);
+	//modelStack.Scale(100, 100, 1);
+	//RenderMesh(meshList[GEO_SPRITEANIM_ACTIONLINES], false);
+	//modelStack.PopMatrix();
 
 	//On screen text
 	std::ostringstream ss;

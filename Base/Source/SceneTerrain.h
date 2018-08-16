@@ -145,6 +145,7 @@ class SceneTerrain : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
+		GEO_SPRITEANIM_ACTIONLINES,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -163,7 +164,7 @@ public:
 
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string Terrain, Color color, float size, float x, float y);
-	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size=1.0f, float x=0.0f, float y=0.0f);
+	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x = 1.0f, float size_y = 1.0f, float x = 0.0f, float y = 0.0f);
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderGround();
 	void RenderSkybox();
