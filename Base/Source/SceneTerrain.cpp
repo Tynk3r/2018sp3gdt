@@ -4,6 +4,7 @@
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
+#include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadHmap.h"
@@ -124,13 +125,15 @@ void SceneTerrain::Init()
 	m_parameters[U_PAINT_TEXCOORDSTRETCH] = glGetUniformLocation(m_programID, "paintTexco");
 	m_parameters[U_PAINT_TGASTRETCH_X] = glGetUniformLocation(m_programID, "paintTgaStrX");
 	m_parameters[U_PAINT_TGASTRETCH_Y] = glGetUniformLocation(m_programID, "paintTgaStrY");
+	//transparency/alpha uniform value parameters
+	m_parameters[U_COLOR_ALPHA] = glGetUniformLocation(m_programID, "colorAlpha");
 
 	// Use our shader
 	glUseProgram(m_programID);
 
 	lights[0].type = Light::LIGHT_POINT;
 	lights[0].position.Set(0, 350.f + 50.f, 100);
-	lights[0].color.Set(255, 69, 0);/*
+	lights[0].color.Set(0, 69, 0);/*
 	lights[0].position.Set(0, 350.f + 300.f, 0);
 	lights[0].color.Set(1, 1, 1);*/
 	lights[0].power = 0.5f;
@@ -142,15 +145,15 @@ void SceneTerrain::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
-	lights[1].type = Light::LIGHT_POINT;
+	lights[1].type = Light::LIGHT_SPOT;
 	lights[1].position.Set(0, 350.f + 50.f, 100);
-	lights[1].color.Set(255, 69, 0);
-	lights[1].power = 0;
+	lights[1].color.Set(155, 29, 29);
+	lights[1].power = 2;
 	lights[1].kC = 1.f;
 	lights[1].kL = 0.01f;
 	lights[1].kQ = 0.001f;
-	lights[1].cosCutoff = cos(Math::DegreeToRadian(45));
-	lights[1].cosInner = cos(Math::DegreeToRadian(30));
+	lights[1].cosCutoff = cos(Math::DegreeToRadian(60));
+	lights[1].cosInner = cos(Math::DegreeToRadian(50));
 	lights[1].exponent = 3.f;
 	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
 	
@@ -185,6 +188,8 @@ void SceneTerrain::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 2);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
+	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+
 	m_lightDepthFBO.Init(1024, 1024);
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -209,6 +214,10 @@ void SceneTerrain::Init()
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
+
+	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
+	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
+	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
@@ -238,6 +247,8 @@ void SceneTerrain::Init()
 	meshList[GEO_PARTICLE_SMOKE]->textureArray[0] = LoadTGA("Image//particle.tga");
 	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("PARTICLE_SPARK", Color(1, 1, 1), 1.f);
 	meshList[GEO_PARTICLE_SPARK]->textureArray[0] = LoadTGA("Image//sparkparticle.tga");
+	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 10.f);
+	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -267,6 +278,12 @@ void SceneTerrain::Init()
 	enemy1->setScale(Vector3(10.f, 10.f, 10.f));
 	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
 
+	drone1 = new CDrone();
+	drone1->Init();
+	drone1->setPos(Vector3(0, 20.f, 0));
+	drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
 	theKeyboard->Create(playerInfo);
@@ -287,6 +304,9 @@ void SceneTerrain::Init()
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+
+	///init sound
+	SEngine = new CSoundEngine;
 }
 
 void SceneTerrain::Update(double dt)
@@ -333,6 +353,15 @@ void SceneTerrain::Update(double dt)
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
+	{
+		cout << "key J was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
@@ -359,6 +388,7 @@ void SceneTerrain::Update(double dt)
 	}
 
 	EntityManager::GetInstance()->Update(dt);
+	ParticleManager::GetInstance()->Update(dt);
 	//camera.Update(dt);
 
 	// Hardware Abstraction
@@ -376,11 +406,15 @@ void SceneTerrain::Update(double dt)
 
 	testvar += 0.05 * dt;
 
+	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	fps = (float)(1.f / dt);
 	rotateAngle++;
-	UpdateParticles(dt);
+	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 }
 
@@ -791,6 +825,7 @@ void SceneTerrain::RenderWorld()
 			Vector3 entSca = ent->getScale();
 			switch ((*it)->getType()) {
 			case CEntity::E_ENEMY:
+			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
@@ -798,7 +833,9 @@ void SceneTerrain::RenderWorld()
 				RenderMesh(meshList[GEO_SPHERE], godlights);
 				modelStack.PopMatrix();
 				break;
-			case CEntity::E_PROJECTILE:
+			}
+			case CEnemy::E_PROJECTILE:
+			{
 				modelStack.PushMatrix();
 				modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
 				modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
@@ -811,13 +848,82 @@ void SceneTerrain::RenderWorld()
 					proj->setIsDone(true);
 					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 				}
+			}
+			break;
+			case CEntity::E_DRONE:
+			{
+				float tempRotation = Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z));
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
+				modelStack.PopMatrix();
+
+				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
+
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
+				modelStack.Translate(16, 18, -15);
+				modelStack.Rotate(tempDrone->getWingRotation(), 0, 0, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_LWING], godlights);
+				modelStack.PopMatrix();
+
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
+				modelStack.Translate(-16, 18, -15);
+				modelStack.Rotate(-tempDrone->getWingRotation(), 0, 0, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_DRONE_RWING], godlights);
+				modelStack.PopMatrix();
+			}
 				break;
 			default:
 				break;
 			}
 		}
 	}
+	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
+	{
 
+		std::list < CParticle_2 *> ::iterator it, end;
+		end = ParticleManager::GetInstance()->particleList.end();
+		for (it = ParticleManager::GetInstance()->particleList.begin(); it != end; ++it)
+		{
+			CParticle_2* par = *it;
+			Vector3 parPos = par->getPos();
+			Vector3 parSca = par->getScale();
+			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
+			switch (par->getParType())
+			{
+			case CParticle_2::PTYPE_FIRE:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_FIRE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			case CParticle_2::PTYPE_ICE:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			}
+		}
+	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	modelStack.PushMatrix();
 	modelStack.Translate(0, 400, 200);
 	modelStack.Rotate(90, 1, 0, 0);
@@ -838,18 +944,18 @@ void SceneTerrain::RenderWorld()
 
 	Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y, CPlayerInfo::GetInstance()->getPos().z);
+	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3, -1.5, -2);
+	modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_LEFTARM], godlights);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y, CPlayerInfo::GetInstance()->getPos().z);
+	modelStack.Translate(CPlayerInfo::GetInstance()->getPos().x, CPlayerInfo::GetInstance()->getPos().y + CPlayerInfo::GetInstance()->terrainHeight + 100, CPlayerInfo::GetInstance()->getPos().z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3, -1.5, -2);
+	modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
@@ -886,23 +992,26 @@ void SceneTerrain::RenderPassMain()
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < 2; ++i) //MAX IS THE NUMBER OF LIGHTS
 	{
-		Vector3 lightDir(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
-	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * lights[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
-	else
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
+			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightDirection_cameraspace.x);
+		}
+		else if (lights[i].type == Light::LIGHT_SPOT)
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
+			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[i].spotDirection;
+			glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &spotDirection_cameraspace.x);
+		}
+		else
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[i].position;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + (U_LIGHT1_POSITION - U_LIGHT0_POSITION) * i], 1, &lightPosition_cameraspace.x);
+		}
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);

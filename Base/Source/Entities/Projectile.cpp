@@ -18,11 +18,11 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	switch (this->projectileType) //set properties depending on projectile's type (fire or ice or whatever)
 	{
 	case PTYPE_FIRE:
-		this->setSpeed(50);
+		this->setSpeed(350);
 		this->setScale(Vector3(2, 2, 2));
 		break;
 	case PTYPE_ICE:
-		this->setSpeed(25);
+		this->setSpeed(225);
 		this->setScale(Vector3(2, 2, 2));
 		break;
 	}
@@ -36,4 +36,10 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 void CProjectile::Update(double dt)
 {
 	CEntity::Update(dt);
+	ParticleManager::GetInstance()->AddParticle(this);
+}
+
+CProjectile::PROJECTILE_TYPE CProjectile::getProjType()
+{
+	return this->projectileType;
 }
