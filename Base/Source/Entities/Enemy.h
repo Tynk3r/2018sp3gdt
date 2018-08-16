@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Entity.h"
+#include "../PlayerInfo/PlayerInfo.h"
 
 class CEnemy : public CEntity
 {
@@ -21,7 +22,9 @@ public:
 	FSM getState(void) { return state; }
 	void setState(FSM s) { state = s; }
 	void tempMoveBack(float dt);
+	void setPlayerRef(CPlayerInfo* playerRef);
 private:
 	FSM state;
+	CPlayerInfo* playerRef;
 };
 
