@@ -36,10 +36,16 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 void CProjectile::Update(double dt)
 {
 	
-
-	setPos(getPos() + (viewVector * getSpeed() * (float)dt));
-	ParticleManager::GetInstance()->AddParticle(this);
-	
+	switch (projectileType)
+	{
+	case PTYPE_BEAM:
+		ParticleManager::GetInstance()->AddParticle(this);
+		break;
+	default:
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		ParticleManager::GetInstance()->AddParticle(this);
+		break;
+	}
 }
 
 bool CProjectile::IsDone()
