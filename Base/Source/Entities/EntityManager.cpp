@@ -126,6 +126,29 @@ bool EntityManager::CheckForCollision(float dt)
 		Vector3 viewVector = ((*it)->getTarget() - (*it)->getPos()).Normalized();
 		for (it2 = entityList.begin(); it2 != end; ++it2)
 		{
+			switch ((*it)->getType()) //pre-collision check updates
+			{
+			case CEntity::E_ENEMY:
+			{
+				if ((*it2)->getType() == CEntity::E_PLAYER)
+				{
+					CEnemy* enemy = static_cast<CEnemy*>((*it));
+					CPlayerInfo* player= static_cast<CPlayerInfo*>((*it2));
+					enemy->setPlayerRef(player);
+				}
+				break;
+			}
+			case CEntity::E_PLAYER:
+			{
+				if ((*it2)->getType() == CEntity::E_ENEMY)
+				{
+					CEnemy* enemy = static_cast<CEnemy*>((*it2));
+					CPlayerInfo* player = static_cast<CPlayerInfo*>((*it));
+					enemy->setPlayerRef(player);
+				}
+				break;
+			}
+			}						//pre-collision check updates <<<<<<<<<<<<END>>>>>>>>>>>>
 			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 
 			{ 
 				switch ((*it)->getType())
