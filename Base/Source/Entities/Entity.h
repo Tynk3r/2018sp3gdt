@@ -17,9 +17,9 @@ public:
 	};
 
 	CEntity();
-	virtual ~CEntity() = 0;
+	~CEntity();
 
-	virtual void Init() {};
+	void Init();
 	virtual void Update(double dt);
 
 	Vector3 getPos(void) { return position; }

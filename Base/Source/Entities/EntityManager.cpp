@@ -121,8 +121,8 @@ bool EntityManager::CheckForCollision(float dt)
 	end = entityList.end();
 	for (it = entityList.begin(); it != end; ++it)
 	{
-		/*if ((*it)->getType() == CEntity::E_PLAYER)
-			continue;*/
+		if ((*it)->getType() == CEntity::E_PLAYER)
+			continue;
 		Vector3 viewVector = ((*it)->getTarget() - (*it)->getPos()).Normalized();
 		for (it2 = entityList.begin(); it2 != end; ++it2)
 		{
@@ -137,6 +137,19 @@ bool EntityManager::CheckForCollision(float dt)
 					{
 						(*it)->setIsDone(true);
 						(*it2)->setIsDone(true);
+						switch ((*it)->getType())
+						{
+						case CEntity::E_ENEMY:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+							break;
+						case CEntity::E_MOVING_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							break;
+						case CEntity::E_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+							break;
+						}
+						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
 				default:

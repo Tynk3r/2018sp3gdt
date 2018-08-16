@@ -18,6 +18,13 @@ CEntity::~CEntity()
 {
 }
 
+void CEntity::Init()
+{
+	// Add to EntityManager
+	EntityManager::GetInstance()->AddEntity(this);
+	setCollider(true);
+}
+
 void CEntity::Update(double dt) 
 {
 	Vector3 viewVector = (getTarget() - getPos()).Normalized();

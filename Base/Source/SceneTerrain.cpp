@@ -198,14 +198,16 @@ void SceneTerrain::Init()
 	}
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
+	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 10.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
-	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
+	/*meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);*/
 	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 1.f);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 1.f);
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
+	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
+	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
@@ -238,22 +240,13 @@ void SceneTerrain::Init()
 	meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint = 64;
 	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
-	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
-	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//trans.tga");
 
-	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
-	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
-
-	meshList[GEO_PARTICLE_SMOKE] = MeshBuilder::GenerateQuad("PARTICLE_SMOKE", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SMOKE]->textureArray[0] = LoadTGA("Image//particle.tga");
-	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("PARTICLE_SPARK", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SPARK]->textureArray[0] = LoadTGA("Image//sparkparticle.tga");
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 1.f);
 
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
+
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -263,8 +256,7 @@ void SceneTerrain::Init()
 	meshList[GEO_SPRITE_ANIMATION] =
 		MeshBuilder::GenerateSpriteAnimation("fire", 4, 4);
 	//meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation
-		*>(meshList[GEO_SPRITE_ANIMATION]);
+	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
 		sa->m_anim = new Animation();
@@ -296,6 +288,16 @@ void SceneTerrain::Init()
 	drone1->setPos(Vector3(0, 20.f, 0));
 	drone1->setScale(Vector3(10.f, 10.f, 10.f));
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+
+	for (int i = 0; i < 1; i++) 
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType(CEntity::E_TARGET);
+		targets[i]->setPos(Vector3(0, 75.f, 1500.f));
+		targets[i]->setScale(Vector3(5.f, 5.f, 5.f));
+		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+	}
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -512,7 +514,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 	
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(0, 80, 0, 60, -10, 10);
+	ortho.SetToOrtho(-128, 128, -72, 72, 0, 0);
 	projectionStack.PushMatrix();
 		projectionStack.LoadMatrix(ortho);
 		viewStack.PushMatrix();
@@ -975,6 +977,17 @@ void SceneTerrain::RenderWorld()
 				modelStack.PopMatrix();
 			}
 				break;
+			case CEntity::E_TARGET:
+			case CEntity::E_MOVING_TARGET:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_QUAD], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}
@@ -1176,8 +1189,8 @@ void SceneTerrain::RenderPassMain()
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
+	ss << "Score: " << 8;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 1000, -128, -72);
 
 	std::ostringstream ss1;
 	ss1.precision(4);
