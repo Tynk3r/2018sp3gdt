@@ -4,6 +4,7 @@
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
+#include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadHmap.h"
@@ -303,6 +304,9 @@ void SceneTerrain::Init()
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+
+	///init sound
+	SEngine = new CSoundEngine;
 }
 
 void SceneTerrain::Update(double dt)

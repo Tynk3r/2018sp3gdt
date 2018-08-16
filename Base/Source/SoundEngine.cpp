@@ -126,3 +126,23 @@ void CSoundEngine::PlayASound(const std::string& _soundIndex)
 
 	
 }
+
+void CSoundEngine::stopMenu()
+{
+	engine->stopAllSounds();
+}
+
+void CSoundEngine::playMenu()
+{
+	engine->play2D("Sound//mainmenumusic.mp3", true);
+}
+
+void CSoundEngine::stopGame()
+{
+	engine->stopAllSounds();
+}
+
+void CSoundEngine::playGame()
+{
+	engine->play2D("Sound//gamemusic.mp3", true);
+}

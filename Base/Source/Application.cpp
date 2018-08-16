@@ -213,6 +213,8 @@ void Application::Run()
 					// If CLick Anywhere
 					if (mouse_current_y >= 288 && mouse_current_y <= 372)
 					{
+						scene1->SEngine->stopMenu();
+						scene2->SEngine->playGame();
 						sceneManager->GoToScene(CSceneManager::GAME);
 						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
