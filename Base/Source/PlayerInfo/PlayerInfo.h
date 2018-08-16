@@ -76,11 +76,6 @@ public:
 	void SetFallAcceleration(const double m_dFallAcceleration);
 	// Set the boundary for the player info
 	void SetBoundary(Vector3 max, Vector3 min);
-
-	// Get position
-	Vector3 GetPos(void) const;
-	// Get target
-	Vector3 GetTarget(void) const;
 	// Get Up
 	Vector3 GetUp(void) const;
 	// Get Jump Speed of the player
@@ -132,7 +127,7 @@ public:
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
-	Vector3 position, target, up;
+	Vector3 up;
 	Vector3 maxBoundary, minBoundary;
 
 	Vector3 screenshakeOffset;

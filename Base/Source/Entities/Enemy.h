@@ -20,7 +20,7 @@ public:
 
 	FSM getState(void) { return state; }
 	void setState(FSM s) { state = s; }
-
+	void tempMoveBack(float dt);
 private:
 	FSM state;
 };

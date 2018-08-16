@@ -9,6 +9,7 @@
 #include "LoadHmap.h"
 #include <sstream>
 #include "SceneManager.h"
+#include "SoundEngine.h"
 #define SP3_DEBUG
 
 SceneTest::SceneTest()
@@ -279,6 +280,11 @@ void SceneTest::Init()
 	m_gravity.Set(0, -9.8f, 0);
 
 	bLightEnabled = true;
+
+	// Sound
+
+	SEngine = new CSoundEngine;
+	SEngine->playMenu();
 }
 
 void SceneTest::Update(double dt)

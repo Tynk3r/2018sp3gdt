@@ -4,7 +4,7 @@
 
 
 CProjectile::CProjectile(PROJECTILE_TYPE projectileType) :
-	projectileType(projectileType), done(false)
+	projectileType(projectileType)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -28,14 +28,14 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	}
 	this->setPos(pos);
 	this->setTarget(targ);	
-	viewVector = (getTarget() - getPos()).Normalized();
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
+	setCollider(true);
 }
 
 void CProjectile::Update(double dt)
 {
-	
+	CEntity::Update(dt);
 	switch (projectileType)
 	{
 	case PTYPE_BEAM:
@@ -48,15 +48,15 @@ void CProjectile::Update(double dt)
 	}
 }
 
-bool CProjectile::IsDone()
-{
-	return this->done;
-}
-
-void CProjectile::setDone(bool done)
-{
-	this->done = done;
-}
+//bool CProjectile::IsDone()
+//{
+//	return this->done;
+//}
+//
+//void CProjectile::setDone(bool done)
+//{
+//	this->done = done;
+//}
 
 CProjectile::PROJECTILE_TYPE CProjectile::getProjType()
 {
