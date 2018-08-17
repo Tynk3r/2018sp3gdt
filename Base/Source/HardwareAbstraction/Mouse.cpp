@@ -42,6 +42,13 @@ int CMouse::Read(const float deltaTime)
 		Look_LeftRight(deltaTime, true, mouse_diff_x);
 	if (mouse_diff_y != 0.0)
 		Look_UpDown(deltaTime, true, mouse_diff_y);
+	if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB))//if pressed lmb
+	{
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
+		{
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_CASTING);
+		}
+	}
 
 	/*if (MouseController::GetInstance()->GetMouseScrollStatus(MouseController::SCROLL_TYPE_YOFFSET) != thePlayerInfo->GetWeapon())
 		Change(deltaTime);

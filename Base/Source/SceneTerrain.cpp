@@ -363,6 +363,16 @@ void SceneTerrain::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
+	if (playerInfo->CanCast())
+	{
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+		playerInfo->SetCanCast(false);
+	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
 	{
@@ -1107,10 +1117,18 @@ void SceneTerrain::RenderWorld()
 	modelStack.PopMatrix();
 
 	Vector3 tempDir = (camera.target - camera.position).Normalized();
+	Vector3 lArmOffset, rArmOffset, lArmRot, rArmRot;
+	if (playerInfo)
+	{
+		lArmOffset = playerInfo->GetLeftArmOffset();
+		rArmOffset = playerInfo->GetRightArmOffset();
+		lArmRot = playerInfo->GetLeftArmRotation();
+		rArmRot = playerInfo->GetRightArmRotation();
+	}
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_LEFTARM], godlights);
@@ -1119,8 +1137,11 @@ void SceneTerrain::RenderWorld()
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Rotate(rArmRot.x, 1, 0, 0);
+	modelStack.Rotate(rArmRot.y, 0, 1, 0);
+	modelStack.Rotate(rArmRot.z, 0, 0, 1);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	modelStack.PopMatrix();
