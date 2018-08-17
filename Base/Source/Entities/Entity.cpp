@@ -44,7 +44,7 @@ void CEntity::Update(double dt)
 	case E_PROJECTILE:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
-		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		setAABB(Vector3(position.x + scale.x * 1.1f, position.y + scale.y* 1.1f, position.z + scale.z* 1.1f), Vector3(position.x - scale.x* 1.1f, position.y - scale.y* 1.1f, position.z - scale.z* 1.1f));
 		break;
 	case E_PLAYER:
 	case E_TARGET:

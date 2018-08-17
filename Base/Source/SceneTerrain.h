@@ -149,6 +149,11 @@ class SceneTerrain : public Scene
 		RENDER_PASS_PRE,
 		RENDER_PASS_MAIN,
 	};
+	enum TARGET_STATE
+	{
+		T_STATIONARY = 0,
+		T_MOVING,
+	};
 public:
 	SceneTerrain();
 	~SceneTerrain();
@@ -213,6 +218,7 @@ private:
 	CDrone* drone1;
 	CEntity* targets[3];
 	CEntity* targetsMoving[3];
+	TARGET_STATE targetState = T_STATIONARY;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

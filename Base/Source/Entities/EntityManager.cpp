@@ -19,7 +19,7 @@ void EntityManager::Update(double _dt)
 	it = entityList.begin();
 	while (it != end)
 	{
-		if ((*it)->isDone())
+		if ((*it)->isDone() && (*it)->getType() != CEntity::E_TARGET && (*it)->getType() != CEntity::E_MOVING_TARGET)
 		{
 			// Delete if done
 			delete *it;
@@ -109,7 +109,7 @@ bool EntityManager::CheckSphereCollision(CEntity *ThisEntity, CEntity *ThatEntit
 // Check if this entity collided with another entity, but both must have collider
 bool EntityManager::CheckAABBCollision(CEntity *ThisEntity, CEntity *ThatEntity)
 {
-	if (!ThisEntity->hasCollider() || !ThatEntity->hasCollider() || ThisEntity == ThatEntity) { return false; }
+	if (!ThisEntity->hasCollider() || !ThatEntity->hasCollider() || ThisEntity == ThatEntity || ThisEntity->isDone() || ThatEntity->isDone()) { return false; }
 	return CheckOverlap(ThisEntity->getMinAABB(), ThisEntity->getMaxAABB(), ThatEntity->getMinAABB(), ThatEntity->getMaxAABB());
 }
 

@@ -19,11 +19,11 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	switch (this->projectileType) //set properties depending on projectile's type (fire or ice or whatever)
 	{
 	case PTYPE_FIRE:
-		this->setSpeed(350);
+		this->setSpeed(1000);
 		this->setScale(Vector3(10, 10, 10));
 		break;
 	case PTYPE_ICE:
-		this->setSpeed(225);
+		this->setSpeed(750);
 		this->setScale(Vector3(2, 2, 2));
 		break;
 	case PTYPE_BEAM:
