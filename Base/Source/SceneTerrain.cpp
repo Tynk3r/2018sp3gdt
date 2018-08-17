@@ -1093,29 +1093,24 @@ void SceneTerrain::RenderWorld()
 	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
 	modelStack.PopMatrix();
 
+	Vector3 tempDir = (camera.target - camera.position).Normalized();
 	modelStack.PushMatrix();
-	RenderMeshIn2D(meshList[GEO_LEFTARM], godlights, 40, 40, -2, -1);
-	RenderMeshIn2D(meshList[GEO_RIGHTARM], godlights, 40, 40, 2, -1);
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_LEFTARM], godlights);
 	modelStack.PopMatrix();
 
-	//Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
-	//modelStack.PushMatrix();
-	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	//modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	//modelStack.Scale(1, 1, 1.5);
-	//RenderMesh(meshList[GEO_LEFTARM], godlights);
-	//modelStack.PopMatrix();
-
-	//modelStack.PushMatrix();
-	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	//modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	//modelStack.Scale(1, 1, 1.5);
-	//RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	//modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	modelStack.PopMatrix();
 }
 
 void SceneTerrain::RenderPassMain()

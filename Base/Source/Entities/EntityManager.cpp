@@ -298,7 +298,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 	}
 	else if (((x0 < p0.x || x0 > p1.x) && p1.x > p0.x) || ((x0 < p1.x || x0 > p0.x) && p0.x >= p1.x))
 	{
-		if (Vector3(x1, y1, z1).Length() <= mousePoint.Length() && (z1 >= relativePos.z - tempScale.z && z1 <= relativePos.z + tempScale.z))
+		if (Vector3(x1, y1, z1).Length() <= mousePoint.Length() && (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z))
 		{
 			return Vector3(x1, y1, z1);
 		}
@@ -306,7 +306,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 	}
 	else if (((x1 < p2.x || x1 > p3.x) && p3.x > p2.x) || ((x1 < p3.x || x1 > p2.x) && p2.x >= p3.x))
 	{
-		if (Vector3(x0, y0, z0).Length() <= mousePoint.Length() && (z0 >= relativePos.z - tempScale.z  && z0 <= relativePos.z + tempScale.z))
+		if (Vector3(x0, y0, z0).Length() <= mousePoint.Length() && (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z))
 		{
 			return Vector3(x0, y0, z0);
 		}
@@ -320,20 +320,20 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 		}
 		if (Vector3(x0, y0, z0).Length() > mousePoint.Length())
 		{
-			if (z1 >= relativePos.z - tempScale.z && z1 <= relativePos.z + tempScale.z) return Vector3(x1, y1, z1);
+			if (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z) return Vector3(x1, y1, z1);
 			else return Vector3(9999, 9999, 9999);
 		}
 		if (Vector3(x1, y1, z1).Length() > mousePoint.Length())
 		{
-			if (z0 >= relativePos.z - tempScale.z && z0 <= relativePos.z + tempScale.z) return Vector3(x0, y0, z0);
+			if (z0 >= ent->getMinAABB().z - pivot.z  && z0 <= ent->getMaxAABB().z - pivot.z) return Vector3(x0, y0, z0);
 			else return Vector3(9999, 9999, 9999);
 		}
 		if (Vector3(x0, y0, z0).Length() > Vector3(x1, y1, z1).Length())
 		{
-			if (z1 >= relativePos.z - tempScale.z && z1 <= relativePos.z + tempScale.z) return Vector3(x1, y1, z1);
+			if (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z) return Vector3(x1, y1, z1);
 			else return Vector3(9999, 9999, 9999);
 		}
-		else if (z0 >= relativePos.z - tempScale.z && z0 <= relativePos.z + tempScale.z) return Vector3(x0, y0, z0);
+		else if (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z) return Vector3(x0, y0, z0);
 
 		return Vector3(9999, 9999, 9999);
 	}
