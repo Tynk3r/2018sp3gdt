@@ -338,6 +338,8 @@ void SceneTerrain::Init()
 
 	///init sound
 	SEngine = new CSoundEngine;
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
 }
 
 void SceneTerrain::Update(double dt)
@@ -383,6 +385,8 @@ void SceneTerrain::Update(double dt)
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetCanCast(false);
+		CSoundEngine::GetInstance()->PlayASound("Fireball");
+
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
@@ -532,37 +536,43 @@ void SceneTerrain::Update(double dt)
 	default:
 		break;
 	}
+	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getPos().y + targets[1]->getScale().y + 10; }
 	//if should change switches state
 	if (shouldChange)
 	{
-		switch (targetState)
+		stateChangeTimer--;
+		if (stateChangeTimer <= 0)
 		{
-		case T_MOVING:
-			targetState = T_STATIONARY;
-			for (int i = 0; i < 3; i++)
+			stateChangeTimer = 0;
+			switch (targetState)
 			{
-				targets[i]->setIsDone(false);
-				targets[i]->setType(CEntity::E_TARGET);
-				targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
-				targets[i]->setOriginPos(targets[i]->getPos());
-				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-				targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+			case T_MOVING:
+				targetState = T_STATIONARY;
+				for (int i = 0; i < 3; i++)
+				{
+					targets[i]->setIsDone(false);
+					targets[i]->setType(CEntity::E_TARGET);
+					targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+					targets[i]->setOriginPos(targets[i]->getPos());
+					targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+					targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+				}
+				break;
+			case T_STATIONARY:
+				targetState = T_MOVING;
+				for (int i = 0; i < 3; i++)
+				{
+					targetsMoving[i]->setIsDone(false);
+					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
+					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+					targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
+					targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
+					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
+				}
+				break;
+			default:
+				break;
 			}
-			break;
-		case T_STATIONARY:
-			targetState = T_MOVING;
-			for (int i = 0; i < 3; i++)
-			{
-				targetsMoving[i]->setIsDone(false);
-				targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-				targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
-				targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-				targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-				targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
-			}
-			break;
-		default:
-			break;
 		}
 	}
 	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
@@ -1092,7 +1102,9 @@ void SceneTerrain::RenderWorld()
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						meshList[GEO_TERRAIN]->texturePaintID = PaintTGAFunny(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+						meshList[GEO_TERRAIN]->texturePaintID = PaintTGABurst(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 					}
 				}
 			}
@@ -1147,6 +1159,19 @@ void SceneTerrain::RenderWorld()
 			}
 		}
 	}
+	if (stateChangeTimer > 0) 
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), 1500.f);
+			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_SPHERE], godlights);
+			modelStack.PopMatrix();
+		}
+	}
+
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
 
