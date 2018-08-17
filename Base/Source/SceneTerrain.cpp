@@ -249,7 +249,8 @@ void SceneTerrain::Init()
 
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
-
+	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
+	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -987,7 +988,10 @@ void SceneTerrain::RenderWorld()
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_FIREBALL], false);
+					if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+						RenderMesh(meshList[GEO_FIREBALL], false);
+					else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+						RenderMesh(meshList[GEO_ICEBALL], false);
 					modelStack.PopMatrix();
 					if (entPos.y < 0) //need to change eventually for proper collision
 					{
