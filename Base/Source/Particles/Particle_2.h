@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PARTICLE_2_H
+#define PARTICLE_2_H
 #include "Vector3.h"
 #include "../Entities/Entity.h"
 
@@ -39,3 +40,4 @@ private:
 	Vector3 originPosition;
 };
 
+#endif

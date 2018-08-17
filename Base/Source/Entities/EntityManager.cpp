@@ -1,6 +1,7 @@
 #include "EntityManager.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "Enemy.h"
+#include "Projectile.h"
 #include <iostream>
 using namespace std;
 
@@ -162,6 +163,8 @@ bool EntityManager::CheckForCollision(float dt)
 					{
 						(*it)->setIsDone(true);
 						(*it2)->setIsDone(true);
+						CProjectile* proj = static_cast<CProjectile*>((*it2));
+						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						switch ((*it)->getType())
 						{
 						case CEntity::E_ENEMY:

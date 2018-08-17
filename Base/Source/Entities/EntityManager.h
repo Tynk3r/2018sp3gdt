@@ -5,6 +5,7 @@
 #include <list>
 #include "Vector3.h"
 #include "Entity.h"
+//#include "../Particles/ParticleManager.h"
 
 class CEntity;
 

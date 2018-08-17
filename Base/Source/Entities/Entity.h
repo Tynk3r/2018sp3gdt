@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENTITY_H
+#define ENTITY_H
 #include "Vector3.h"
 #include "EntityManager.h"
 
@@ -69,3 +70,4 @@ protected:
 	Vector3 originPosition;
 };
 
+#endif
