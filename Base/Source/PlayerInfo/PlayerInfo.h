@@ -2,6 +2,7 @@
 #include "../Entities/Entity.h"
 #include "Vector3.h"
 #include "../Camera3.h"
+#include "MouseController.h"
 
 #include <fstream>
 #include <string>
@@ -25,6 +26,14 @@ protected:
 	CURRENT_POSTURE theCurrentPosture;
 
 public:
+	enum PLR_ANIM_STATE
+	{
+		PLR_ANIM_IDLE,
+		PLR_ANIM_CASTING,
+		PLR_ANIM_CASTED,
+
+		PLR_ANIM_TOTAL,
+	};
 	static CPlayerInfo *GetInstance()
 	{
 		if (!s_instance)
@@ -87,8 +96,17 @@ public:
 	// Get Fall Acceleration of the player
 	double GetFallAcceleration(void) const;
 
+	void SetAnimState(PLR_ANIM_STATE state);
+	void SetCanCast(bool cancast);
+
 	Vector3 GetScreenshake(void) const;
 	Vector3 GetCameraSway(void) const;
+	Vector3 GetLeftArmOffset() const;
+	Vector3 GetRightArmOffset() const;
+	Vector3 GetLeftArmRotation() const;
+	Vector3 GetRightArmRotation() const;
+	PLR_ANIM_STATE GetAnimState() const;
+	bool CanCast() const;
 
 	// Update Jump Upwards
 	void UpdateJumpUpwards(double dt = 0.0333f);
@@ -157,6 +175,12 @@ private:
 
 	double m_dElapsedTime;
 	Camera3* attachedCamera;
+
+	Vector3 leftArmOffset, rightArmOffset;
+	Vector3 leftArmRotation, rightArmRotation;//half bugged but it works well enough for basic anims
+	PLR_ANIM_STATE currentAnimState;
+	float animFrame;
+	bool canCast;
 
 public:
 	// Camera Sway
