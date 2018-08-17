@@ -211,6 +211,7 @@ private:
 	CEnemy* enemy1;
 	CDrone* drone1;
 	CEntity* targets[3];
+	CEntity* targetsMoving[3];
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

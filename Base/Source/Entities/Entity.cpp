@@ -27,15 +27,12 @@ void CEntity::Init()
 
 void CEntity::Update(double dt) 
 {
+	if (getTarget() == getPos()) { setTarget(getPos() + Vector3(0.001f, 0.001f, 0.001f)); }
 	Vector3 viewVector = (getTarget() - getPos()).Normalized();
 	switch (type) 
 	{
 	case E_ENEMY:
-	case E_MOVING_TARGET:
-		if ((getTarget() - getPos()).LengthSquared() < 1.f) 
-		{ 
-			viewVector.SetZero(); 
-		}
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) { viewVector.SetZero(); }
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
@@ -51,6 +48,15 @@ void CEntity::Update(double dt)
 		break;
 	case E_PLAYER:
 	case E_TARGET:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		break;
+	case E_MOVING_TARGET:
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) { 
+			setTarget(getOriginPos());
+			setOriginPos(getPos());
+			viewVector = (getTarget() - getPos()).Normalized();
+		}
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	default:
@@ -103,7 +109,3 @@ void CEntity::setCollider(const bool _value)
 	m_bCollider = _value;
 }
 
-Vector3 CEntity::getOriginPos()
-{
-	return this->originPosition;
-}

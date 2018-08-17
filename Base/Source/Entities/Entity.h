@@ -24,6 +24,8 @@ public:
 
 	Vector3 getPos(void) { return position; }
 	void setPos(Vector3 p) { position = p; }
+	Vector3 getOriginPos(void) { return originPosition; }
+	void setOriginPos(Vector3 p) { originPosition = p; }
 	Vector3 getScale(void) { return scale; }
 	void setScale(Vector3 s) { scale = s; }
 	TYPE getType(void) { return type; }
@@ -51,7 +53,6 @@ public:
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
 	virtual void setCollider(const bool _value);
-	Vector3 getOriginPos();
 private:
 	Vector3 position;
 	Vector3 scale;

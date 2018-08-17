@@ -292,12 +292,13 @@ void SceneTerrain::Init()
 
 	for (int i = 0; i < 3; i++) 
 	{
-		targets[i] = new CEntity();
-		targets[i]->Init();
-		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
-		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+		targetsMoving[i] = new CEntity();
+		targetsMoving[i]->Init();
+		targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
+		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
+		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
 	}
 
 	// Hardware Abstraction
