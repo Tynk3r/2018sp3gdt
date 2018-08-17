@@ -220,6 +220,7 @@ private:
 	CEntity* targets[3];
 	CEntity* targetsMoving[3];
 	TARGET_STATE targetState = T_STATIONARY;
+	int stateChangeTimer = 0;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
