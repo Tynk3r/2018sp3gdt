@@ -1,5 +1,5 @@
-#ifndef CONTROLS_H
-#define CONTROLS_H
+#ifndef CONTROLS1_H
+#define CONTROLS1_H
 
 #define PAINT_LENGTH 20
 
@@ -26,7 +26,7 @@
 
 using namespace std;
 
-class Controls : public Scene
+class Controls1 : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -145,7 +145,7 @@ class Controls : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
-		GEO_CONTROLS,
+		GEO_CONTROLS1,
 
 		NUM_GEOMETRY,
 	};
@@ -155,8 +155,8 @@ class Controls : public Scene
 		RENDER_PASS_MAIN,
 	};
 public:
-	Controls();
-	~Controls();
+	Controls1();
+	~Controls1();
 
 	virtual void Init();
 	virtual void Update(double dt);

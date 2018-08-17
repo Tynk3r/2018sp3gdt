@@ -83,3 +83,9 @@ float CProjectile::getElapsedTime()
 {
 	return this->elapsedTime;
 }
+
+void CProjectile::EmitParticles(int amt)
+{
+	for (int i = 0; i < amt; ++i)
+		ParticleManager::GetInstance()->AddParticle(this);
+}

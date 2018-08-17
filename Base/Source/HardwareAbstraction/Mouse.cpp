@@ -46,6 +46,13 @@ int CMouse::Read(const float deltaTime)
 	{
 		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
 		{
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_CASTHOLDING);
+		}
+	}
+	if (MouseController::GetInstance()->IsButtonUp(MouseController::LMB))
+	{
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_CASTHOLDING)
+		{
 			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_CASTING);
 		}
 	}

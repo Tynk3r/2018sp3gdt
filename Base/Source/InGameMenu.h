@@ -1,5 +1,5 @@
-#ifndef CONTROLS_H
-#define CONTROLS_H
+#ifndef IN_GAME_MENU_H
+#define IN_GAME_MENU_H
 
 #define PAINT_LENGTH 20
 
@@ -26,7 +26,7 @@
 
 using namespace std;
 
-class Controls : public Scene
+class InGameMenu : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -145,7 +145,7 @@ class Controls : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
-		GEO_CONTROLS,
+		GEO_INGAMEMENU,
 
 		NUM_GEOMETRY,
 	};
@@ -155,8 +155,8 @@ class Controls : public Scene
 		RENDER_PASS_MAIN,
 	};
 public:
-	Controls();
-	~Controls();
+	InGameMenu();
+	~InGameMenu();
 
 	virtual void Init();
 	virtual void Update(double dt);
