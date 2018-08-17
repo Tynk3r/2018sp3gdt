@@ -9,7 +9,8 @@ CEntity::CEntity():
 	done(false),
 	maxAABB(Vector3(0, 0, 0)), 
 	minAABB(Vector3(0, 0, 0)),
-	m_bCollider(false)
+	m_bCollider(false),
+	gravVel(Vector3(0, -0.25f, 0))
 {
 }
 
@@ -43,9 +44,8 @@ void CEntity::Update(double dt)
 		break;
 	case E_PROJECTILE:
 	{
-		Vector3 gravVel = Vector3(0, -0.25f, 0)*(float)dt;
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
-		setTarget(getPos() + (viewVector + gravVel).Normalized());
+		setTarget(getPos() + (viewVector + gravVel * (float)dt).Normalized());
 		setAABB(Vector3(position.x + scale.x * 1.1f, position.y + scale.y* 1.1f, position.z + scale.z* 1.1f), Vector3(position.x - scale.x* 1.1f, position.y - scale.y* 1.1f, position.z - scale.z* 1.1f));
 		break;
 	}

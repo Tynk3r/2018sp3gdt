@@ -50,6 +50,8 @@ public:
 	virtual bool isDone(void) { return done; }
 	void setIsDone(const bool _value);
 
+	virtual void setGrav(Vector3 _grav) { gravVel = _grav; }
+
 	// Check if this entity has a collider class parent
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
@@ -65,6 +67,7 @@ private:
 	// Vector3 variables to store coordinates of the AABB bounding box of an object
 	Vector3 maxAABB;
 	Vector3 minAABB;
+	Vector3 gravVel;
 	bool m_bCollider;
 protected:
 	Vector3 originPosition;

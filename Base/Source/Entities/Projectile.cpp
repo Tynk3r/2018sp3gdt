@@ -37,6 +37,8 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
+
+	if (projectileType == PTYPE_BEAM) setGrav(Vector3(0, 0, 0));
 }
 
 void CProjectile::Update(double dt)
