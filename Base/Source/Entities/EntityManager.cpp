@@ -147,6 +147,8 @@ bool EntityManager::CheckForCollision(float dt)
 					enemy->setPlayerRef(player);
 				}
 				break;
+			default:
+				break;
 			}
 			}						//pre-collision check updates <<<<<<<<<<<<END>>>>>>>>>>>>
 			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 
