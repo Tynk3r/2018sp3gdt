@@ -194,8 +194,8 @@ bool EntityManager::CheckForCollision(float dt)
 						CProjectile* tempProjectile = (CProjectile*)*it2;
 						if (tempProjectile->getProjType() == CProjectile::PTYPE_BEAM)
 						{
-							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z, 0) - Vector3(9999, 9999, 9999)).IsZero())
-							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z, 1) - Vector3(9999, 9999, 9999)).IsZero())
+							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.03, 0) - Vector3(9999, 9999, 9999)).IsZero() 
+								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.03, 1) - Vector3(9999, 9999, 9999)).IsZero())
 							{
 								(*it)->setIsDone(true);
 								//(*it2)->setIsDone(true);
@@ -234,78 +234,83 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 
 	if (abs(NP.x) <= Math::EPSILON) NP.x = 0;
 	if (abs(NP.y) <= Math::EPSILON) NP.y = 0;
-
 	Vector3 p0, p1, p2, p3;
 	if (times == false)
 	{
-		p0 = relativePos + Vector3(1, 0, 0) * tempScale.x * 0.5 + NP * tempScale.y * 0.5;
-		p1 = relativePos + Vector3(1, 0, 0) * tempScale.x * 0.5 - NP * tempScale.y * 0.5;
+		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p1 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 
-		p2 = relativePos - Vector3(1, 0, 0) * tempScale.x * 0.5 + NP * tempScale.y * 0.5;
-		p3 = relativePos - Vector3(1, 0, 0) * tempScale.x * 0.5 - NP * tempScale.y * 0.5;
+		p2 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p3 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 	}
 	else
 	{
-		p0 = relativePos + Vector3(1, 0, 0) * tempScale.x * 0.5 + NP * tempScale.y * 0.5;
-		p1 = relativePos - Vector3(1, 0, 0) * tempScale.x * 0.5 + NP * tempScale.y * 0.5;
+		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p1 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
 
-		p2 = relativePos + Vector3(1, 0, 0) * tempScale.x * 0.5 - NP * tempScale.y * 0.5;
-		p3 = relativePos - Vector3(1, 0, 0) * tempScale.x * 0.5 - NP * tempScale.y * 0.5;
+		p2 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
+		p3 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 	}
 
-	//std::cout << p0 << p1 << p2 << p3 << relativePos << mousePoint << std::endl;
+	//std::cout << p0 << p1 << p2 << p3 << relativePos << mousePoint << std::endl << std::endl;
 
-	//NEED THIS COMMENTED SECTION TO BE EDITED OR MAYBE NOT IDK ITS FOR A CERTAIN SPECIFIC ERROR
-	//if (abs(p1.x - p0.x) < Math::EPSILON)
-	//{
-	//	float excepY0, excepY1;
-	//	excepY0 = p0.x * (mousePoint.y / mousePoint.x);
-	//	excepY1 = p2.x * (mousePoint.y / mousePoint.x);
+	if (abs(p1.x - p0.x) < Math::EPSILON) /////////////////
+	{
+		float excepY0, excepY1;
+		excepY0 = p0.x * (mousePoint.y / mousePoint.x);
+		excepY1 = p2.x * (mousePoint.y / mousePoint.x);
 
-	//	if ((((excepY0 < p0.y || excepY0 > p1.y) && p1.y > p0.y) || ((excepY0 < p1.y || excepY0 > p0.y) && p0.y >= p1.y)) && (((excepY1 < p0.y || excepY1 > p1.y) && p1.y > p0.y) || ((excepY1 < p1.y || excepY1 > p0.y) && p0.y >= p1.y)))
-	//	{
-	//		return Vector3(9999, 9999, 9999);
-	//	}
-	//	else if (((excepY0 < p0.y || excepY0 > p1.y) && p1.y > p0.y) || ((excepY0 < p1.y || excepY0 > p0.y) && p0.y >= p1.y))
-	//	{
-	//		if (Vector3(p2.x, excepY1).Length() <= mousePoint.Length())
-	//		{
-	//			return Vector3(p2.x, excepY1);
-	//		}
-	//		else return Vector3(9999, 9999, 9999);
-	//	}
-	//	else if (((excepY1 < p0.y || excepY1 > p1.y) && p1.y > p0.y) || ((excepY1 < p1.y || excepY1 > p0.y) && p0.y >= p1.y))
-	//	{
-	//		if (Vector3(p0.x, excepY0).Length() <= mousePoint.Length())
-	//		{
-	//			return Vector3(p0.x, excepY0);
-	//		}
-	//		else return Vector3(9999, 9999, 9999);
-	//	}
-	//	else
-	//	{
-	//		if (Vector3(p0.x, excepY0).Length() > mousePoint.Length() && Vector3(p2.x, excepY1).Length() > mousePoint.Length())
-	//		{
-	//			return Vector3(9999, 9999, 9999);
-	//		}
-	//		if (Vector3(p0.x, excepY0).Length() > mousePoint.Length())
-	//		{
-	//			return Vector3(p2.x, excepY1);
-	//		}
-	//		if (Vector3(p2.x, excepY1).Length() > mousePoint.Length())
-	//		{
-	//			return Vector3(p0.x, excepY0);
-	//		}
-	//		if (Vector3(p0.x, excepY0).Length() > Vector3(p2.x, excepY1).Length())
-	//		{
-	//			return Vector3(p2.x, excepY1);
-	//		}
-	//		else return Vector3(p0.x, excepY0);
-	//		return Vector3(9999, 9999, 9999);
-	//	}
+		Vector3 tempNormalizedMV = mousePoint.Normalized();
+		float z0 = tempNormalizedMV.z * (p0.x / tempNormalizedMV.x);
+		float z1 = tempNormalizedMV.z * (p2.x / tempNormalizedMV.x);
 
-	//}
-	//else
+		if ((((excepY0 < p0.y || excepY0 > p1.y) && p1.y > p0.y) || ((excepY0 < p1.y || excepY0 > p0.y) && p0.y >= p1.y)) && (((excepY1 < p0.y || excepY1 > p1.y) && p1.y > p0.y) || ((excepY1 < p1.y || excepY1 > p0.y) && p0.y >= p1.y)))
+		{
+			return Vector3(9999, 9999, 9999);
+		}
+		else if (((excepY0 < p0.y || excepY0 > p1.y) && p1.y > p0.y) || ((excepY0 < p1.y || excepY0 > p0.y) && p0.y >= p1.y))
+		{
+			if (Vector3(p2.x, excepY1, z1).Length() <= mousePoint.Length() && (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z))
+			{
+				return Vector3(p2.x, excepY1, z1);
+			}
+			else return Vector3(9999, 9999, 9999);
+		}
+		else if (((excepY1 < p0.y || excepY1 > p1.y) && p1.y > p0.y) || ((excepY1 < p1.y || excepY1 > p0.y) && p0.y >= p1.y))
+		{
+			if (Vector3(p0.x, excepY0, z0).Length() <= mousePoint.Length() && (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z))
+			{
+				return Vector3(p0.x, excepY0, z0);
+			}
+			else return Vector3(9999, 9999, 9999);
+		}
+		else
+		{
+			if (Vector3(p0.x, excepY0, z0).Length() > mousePoint.Length() && Vector3(p2.x, excepY1, z1).Length() > mousePoint.Length())
+			{
+				return Vector3(9999, 9999, 9999);
+			}
+			if (Vector3(p0.x, excepY0, z0).Length() > mousePoint.Length())
+			{
+				if (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z) return Vector3(p2.x, excepY1, z1);
+				else return Vector3(9999, 9999, 9999);
+			}
+			if (Vector3(p2.x, excepY1, z1).Length() > mousePoint.Length() && (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z))
+			{
+				if (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z) return Vector3(p0.x, excepY0, z0);
+				else return Vector3(9999, 9999, 9999);
+			}
+			if (Vector3(p0.x, excepY0, z0).Length() > Vector3(p2.x, excepY1, z1).Length() && (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z))
+			{
+				if (z1 >= ent->getMinAABB().z - pivot.z && z1 <= ent->getMaxAABB().z - pivot.z) return Vector3(p2.x, excepY1, z1);
+				else return Vector3(9999, 9999, 9999);
+			}
+			else if (z0 >= ent->getMinAABB().z - pivot.z && z0 <= ent->getMaxAABB().z - pivot.z) return Vector3(p0.x, excepY0, z0);
+			return Vector3(9999, 9999, 9999);
+		}
+
+	}/////////////////////
+	else
 	{
 		if (p1.x > p0.x) grad0 = (p1.y - p0.y) / (p1.x - p0.x);
 		else grad0 = (p0.y - p1.y) / (p0.x - p1.x);
