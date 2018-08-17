@@ -21,6 +21,7 @@ public:
 	PROJECTILE_TYPE getProjType();
 	float getElapsedTime();
 	void SetLifespanTime(double time) { lifespanTime = time; }
+	void EmitParticles(int amt = 1);
 private:
 	PROJECTILE_TYPE projectileType;
 	Vector3 viewVector;

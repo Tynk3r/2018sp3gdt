@@ -42,7 +42,10 @@ void CParticle_2::Init()
 		if (this->parent != NULL)
 		{
 			Vector3 tarViewVec = (this->parent->getTarget() - this->parent->getPos()).Normalized();
-			this->vel = tarViewVec * Math::RandFloatMinMax(18, 150) + Vector3(Math::RandFloatMinMax(-40, 40), Math::RandFloatMinMax(-25, 25), Math::RandFloatMinMax(-40, 40));
+			if (this->parent->isDone())
+				this->vel = Vector3(Math::RandFloatMinMax(-600, 600), Math::RandFloatMinMax(-600, 600), Math::RandFloatMinMax(-600, 600));
+			else
+				this->vel = tarViewVec * Math::RandFloatMinMax(18, 150) + Vector3(Math::RandFloatMinMax(-40, 40), Math::RandFloatMinMax(-25, 25), Math::RandFloatMinMax(-40, 40));
 			this->setScale(this->parent->getScale()*Math::RandFloatMinMax(1.f, 1.3f));
 			this->startScale = this->getScale();
 		}
@@ -55,7 +58,10 @@ void CParticle_2::Init()
 		if (this->parent != NULL)
 		{
 			Vector3 tarViewVec = (this->parent->getTarget() - this->parent->getPos()).Normalized();
-			this->vel = tarViewVec * Math::RandFloatMinMax(15, 40) + Vector3(Math::RandFloatMinMax(-20, 20), Math::RandFloatMinMax(10, 35), Math::RandFloatMinMax(-20, 20));
+			if (this->parent->isDone())
+				this->vel = Vector3(Math::RandFloatMinMax(-600, 600), Math::RandFloatMinMax(-600, 600), Math::RandFloatMinMax(-600, 600));
+			else
+				this->vel = tarViewVec * Math::RandFloatMinMax(15, 40) + Vector3(Math::RandFloatMinMax(-20, 20), Math::RandFloatMinMax(10, 35), Math::RandFloatMinMax(-20, 20));
 			this->setScale(this->parent->getScale()*Math::RandFloatMinMax(0.9f, 1.15f));
 			this->startScale = this->getScale();
 		}

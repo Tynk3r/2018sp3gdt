@@ -369,11 +369,15 @@ void CPlayerInfo::Update(double dt)
 		float alpha = Math::Min((float)dt*10.f, 0.4f);
 		switch (this->currentAnimState)
 		{
+		case PLR_ANIM_CASTHOLDING:
+			newRightArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newRightArmRot = Vector3(40, 0, -150);
+			break;
 		case PLR_ANIM_CASTING:
 			this->animFrame += (float)dt;
 			newRightArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
 			newRightArmRot = Vector3(40, 0, -150);
-			if (this->animFrame > 0.4f)
+			if (this->animFrame > 0.05f)
 			{
 				this->animFrame = 0;
 				this->currentAnimState = PLR_ANIM_CASTED;
