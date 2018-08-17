@@ -36,6 +36,8 @@
     <ClCompile Include="Source\CameraEffects\CameraEffect.cpp" />
     <ClCompile Include="Source\CameraEffects\CameraEffectManager.cpp" />
     <ClCompile Include="Source\Controls.cpp" />
+    <ClCompile Include="Source\InGameMenu.cpp" />
+    <ClCompile Include="Source\Controls1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -77,5 +79,7 @@
     <ClInclude Include="Source\CameraEffects\CameraEffect.h" />
     <ClInclude Include="Source\CameraEffects\CameraEffectManager.h" />
     <ClInclude Include="Source\Controls.h" />
+    <ClInclude Include="Source\InGameMenu.h" />
+    <ClInclude Include="Source\Controls1.h" />
   </ItemGroup>
 </Project>

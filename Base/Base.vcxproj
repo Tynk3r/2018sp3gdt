@@ -18,6 +18,7 @@
     <ClCompile Include="Source\CameraEffects\CameraEffect.cpp" />
     <ClCompile Include="Source\CameraEffects\CameraEffectManager.cpp" />
     <ClCompile Include="Source\Controls.cpp" />
+    <ClCompile Include="Source\Controls1.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\Entities\Drone.cpp" />
     <ClCompile Include="Source\Entities\Enemy.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="Source\HardwareAbstraction\Controller.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Keyboard.cpp" />
     <ClCompile Include="Source\HardwareAbstraction\Mouse.cpp" />
+    <ClCompile Include="Source\InGameMenu.cpp" />
     <ClCompile Include="Source\LoadHmap.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
     <ClCompile Include="Source\LoadTGA.cpp" />
@@ -55,6 +57,7 @@
     <ClInclude Include="Source\CameraEffects\CameraEffect.h" />
     <ClInclude Include="Source\CameraEffects\CameraEffectManager.h" />
     <ClInclude Include="Source\Controls.h" />
+    <ClInclude Include="Source\Controls1.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Entities\Drone.h" />
     <ClInclude Include="Source\Entities\Enemy.h" />
@@ -66,6 +69,7 @@
     <ClInclude Include="Source\HardwareAbstraction\Controller.h" />
     <ClInclude Include="Source\HardwareAbstraction\Keyboard.h" />
     <ClInclude Include="Source\HardwareAbstraction\Mouse.h" />
+    <ClInclude Include="Source\InGameMenu.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\LoadHmap.h" />
     <ClInclude Include="Source\LoadOBJ.h" />

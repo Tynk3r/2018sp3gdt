@@ -20,6 +20,8 @@ public:
 		GAME_MENU,
 		GAME,
 		CONTROLS,
+		IN_GAME_MENU,
+		CONTROLS1,
 
 		TOTAL_SCENES
 	};
