@@ -69,11 +69,12 @@ void CParticle_2::Init()
 		{
 			Vector3 tarViewVec = (this->parent->getTarget() - this->parent->getPos()).Normalized();
 			this->vel = tarViewVec * Math::RandFloatMinMax(15, 40) + Vector3(Math::RandFloatMinMax(-20, 20), Math::RandFloatMinMax(10, 35), Math::RandFloatMinMax(-20, 20));
-			this->setScale(this->parent->getScale()*Math::RandFloatMinMax(0.9f, 1.15f));
+			this->setScale(Vector3(1.f, 1.f, 1.f)*Math::RandFloatMinMax(2.0f, 6.f));
 			this->startScale = this->getScale();
-			this->setPos(this->parent->getTarget());
+			//this->setPos((this->parent->getPos()) + tarViewVec * Math::RandFloatMinMax(this->parent->getScale().z * 0.1, this->parent->getScale().z));
+			this->setPos( (this->parent->getPos()) + tarViewVec * this->parent->getScale().z - Vector3(0, this->parent->getScale().y / 2, 0) );
 		}
-		this->acc = Vector3(-Math::RandFloatMinMax(200, 400), -Math::RandFloatMinMax(200, 400), -Math::RandFloatMinMax(200, 400));
+		this->acc = Vector3(Math::RandFloatMinMax(-40, -40), -Math::RandFloatMinMax(200, 400), Math::RandFloatMinMax(-40, 40));
 		this->endScale = Vector3(1.f, 1.f, 1.f) * Math::RandFloatMinMax(0.05f, 0.2f);
 		this->lifeSpan = Math::RandFloatMinMax(0.6f, 0.9f);
 		this->setSpeed(Math::RandFloatMinMax(-45, 45));//setting speed for ROTATION btw

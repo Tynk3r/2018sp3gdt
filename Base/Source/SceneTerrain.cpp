@@ -223,6 +223,9 @@ void SceneTerrain::Init()
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
 	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
 
+	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
+	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
@@ -384,12 +387,12 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key K was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
-		Vector3 campos = Vector3(0, -1, 0) + camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = Vector3(0, -1, 0) + camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
+		aa->Init(campos + viewvec * 5, camtar + viewvec* 6);
 		
-		aa->SetLifespanTime(1.0);
+		aa->SetLifespanTime(0.3);
 
 		//raycast check
 		Vector3 tempProj(9999, 9999, 9999);
@@ -404,23 +407,28 @@ void SceneTerrain::Update(double dt)
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
 					tempProj = tempTempProj;
-					(*it)->setTarget((*it)->getPos() + tempProj);
-					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+					//(*it)->setTarget((*it)->getPos() + tempProj);
+					//aa->setScale(aa->getScale() + Vector3(0, 0, tempProj.Length()));
 				}
 				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
 					tempProj = tempTempProj;
-					(*it)->setTarget((*it)->getPos() + tempProj);
-					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+					//(*it)->setTarget((*it)->getPos() + tempProj);
+					//aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
 				}
 			}
 		}
 
-		//add for ground also!!
+		//add for ground/wall/target entity also!!
 
-
-		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setScale(aa->getScale() + Vector3(-1, -1, -1));
+		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setIsDone(true);
+		else
+		{
+			aa->setTarget(aa->getPos() + tempProj);
+			aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
+			CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+		}
 
 		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
 		////if (tempScaleZ <= 0)
@@ -957,7 +965,7 @@ void SceneTerrain::RenderWorld()
 					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
 					modelStack.Translate(0, 0, -entSca.z / 2);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_CUBE], false);
+					RenderMesh(meshList[GEO_BOLT], false);
 					modelStack.PopMatrix();
 				}
 				else
@@ -1060,17 +1068,17 @@ void SceneTerrain::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
-			//case CParticle_2::PTYPE_BEAM:
-			//	modelStack.PushMatrix();
-			//	modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
-			//	modelStack.Rotate(bBoardRot, 0, 1, 0);
-			//	modelStack.Rotate(par->getRot(), 0, 0, 1);
-			//	modelStack.Scale(parSca.x, parSca.y, 0.1f);
-			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
-			//	RenderMesh(meshList[GEO_PARTICLE_ICE], false);
-			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
-			//	modelStack.PopMatrix();
-			//	break;
+			case CParticle_2::PTYPE_BEAM:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(0.2f, parSca.y, 0.2f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
 
 			}
 		}

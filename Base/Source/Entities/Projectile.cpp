@@ -46,7 +46,14 @@ void CProjectile::Update(double dt)
 	switch (projectileType)
 	{
 	case PTYPE_BEAM:
-		ParticleManager::GetInstance()->AddParticle(this);
+		if (!isDone())
+		{
+			ParticleManager::GetInstance()->AddParticle(this);
+			ParticleManager::GetInstance()->AddParticle(this);
+			ParticleManager::GetInstance()->AddParticle(this);
+			ParticleManager::GetInstance()->AddParticle(this);
+			ParticleManager::GetInstance()->AddParticle(this);
+		}
 		break;
 	default:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));

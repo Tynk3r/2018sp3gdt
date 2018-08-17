@@ -140,6 +140,7 @@ class SceneTerrain : public Scene
 		GEO_PARTICLE_ICE,
 		GEO_SPRITEANIM_ACTIONLINES,
 		GEO_FIREBALL,
+		GEO_BOLT,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
