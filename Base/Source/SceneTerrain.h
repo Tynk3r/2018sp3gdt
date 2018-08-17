@@ -127,15 +127,7 @@ class SceneTerrain : public Scene
 		//TSL
 		GEO_SKYPLANE,
 		GEO_TERRAIN,
-		GEO_WETER,
-		GEO_CAMPFIRE_BASE,
-		GEO_CAMPFIRE_POT,
-		GEO_CAMPFIRE_POT_STAND,
-		GEO_TENT,
 		GEO_SPRITE_ANIMATION,
-		GEO_DOG,
-		GEO_PARTICLE_SMOKE,
-		GEO_PARTICLE_SPARK,
 		GEO_LIGHT_DEPTH_QUAD,
 		GEO_TESTPAINTQUAD,
 		GEO_TESTPAINTQUAD2,
@@ -218,6 +210,7 @@ private:
 	CPlayerInfo* playerInfo;
 	CEnemy* enemy1;
 	CDrone* drone1;
+	CEntity* targets[3];
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

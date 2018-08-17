@@ -23,6 +23,7 @@ public:
 	PARTICLE_TYPE getParType();
 	float getRot();
 	float getTransparency();
+	Vector3 getOriginPos();
 private:
 	PARTICLE_TYPE particleType;
 	Vector3 viewVector;
@@ -35,5 +36,6 @@ private:
 	float lifeSpan;
 	float transparency;
 	CEntity* parent;
+	Vector3 originPosition;
 };
 

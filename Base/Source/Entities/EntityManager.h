@@ -29,6 +29,8 @@ public:
 	bool CheckAABBCollision(CEntity *ThisEntity, CEntity *ThatEntity);
 	// Check if any Collider is colliding with another Collider
 	bool CheckForCollision(float dt);
+	//Check for line intersection across an AABB box, all boxes are assumed to be non-rotated (wall collision is 2 sided so must be done twice)
+	Vector3 CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, bool times);
 
 };
 

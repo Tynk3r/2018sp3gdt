@@ -198,18 +198,20 @@ void SceneTerrain::Init()
 	}
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
+	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 10.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
-	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
+	/*meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);*/
 	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 1.f);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
 	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 1.f);
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
+	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
+	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0.5, 0));
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5));
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
@@ -240,22 +242,13 @@ void SceneTerrain::Init()
 	meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint = 64;
 	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
-	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
-	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//trans.tga");
 
-	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
-	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
-
-	meshList[GEO_PARTICLE_SMOKE] = MeshBuilder::GenerateQuad("PARTICLE_SMOKE", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SMOKE]->textureArray[0] = LoadTGA("Image//particle.tga");
-	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("PARTICLE_SPARK", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SPARK]->textureArray[0] = LoadTGA("Image//sparkparticle.tga");
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 1.f);
 
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
+
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -265,8 +258,7 @@ void SceneTerrain::Init()
 	meshList[GEO_SPRITE_ANIMATION] =
 		MeshBuilder::GenerateSpriteAnimation("fire", 4, 4);
 	//meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation
-		*>(meshList[GEO_SPRITE_ANIMATION]);
+	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
 		sa->m_anim = new Animation();
@@ -298,6 +290,17 @@ void SceneTerrain::Init()
 	drone1->setPos(Vector3(0, 20.f, 0));
 	drone1->setScale(Vector3(10.f, 10.f, 10.f));
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
+
+	for (int i = 0; i < 1; i++) 
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType(CEntity::E_TARGET);
+		targets[i]->setPos(Vector3(0, 75.f, 1500.f));
+		targets[i]->setScale(Vector3(5.f, 5.f, 5.f));
+		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+	}
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -383,28 +386,59 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key K was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = Vector3(0, -1, 0) + camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = Vector3(0, -1, 0) + camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*4.5f);
 		
-		aa->SetLifespanTime(0.3);
+		aa->SetLifespanTime(1.0);
 
-		//include the raycast check here
-
-		float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
-		if (tempScaleZ <= 0)
+		//raycast check
+		Vector3 tempProj(9999, 9999, 9999);
+		std::list<CEntity*>::iterator it, it2, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_DRONE)
+			{
+				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
+				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					(*it)->setTarget((*it)->getPos() + tempProj);
+					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					(*it)->setTarget((*it)->getPos() + tempProj);
+					aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+			}
 		}
-		else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
 
-		aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
-		for (int i = 0; i < 10; ++i)
-		{
-			ParticleManager::GetInstance()->AddParticle(aa);
-		}
-		aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		//add for ground also!!
+
+
+		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setScale(aa->getScale() + Vector3(-1, -1, -1));
+
+		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
+		////if (tempScaleZ <= 0)
+		////{
+		////	aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+		////}
+		////else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
+
+
+
+		//aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		//for (int i = 0; i < 10; ++i)
+		//{
+		//	ParticleManager::GetInstance()->AddParticle(aa);
+		//}
+		//aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
@@ -509,12 +543,11 @@ void SceneTerrain::RenderTerrain() {
 
 void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
-	if(!mesh || mesh->textureID <= 0)
+	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
-	
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(0, 80, 0, 60, -10, 10);
+	ortho.SetToOrtho(0, Application::GetInstance().GetWindowWidth() * 0.1f , 0, Application::GetInstance().GetWindowHeight() * 0.1f, -10, 10);
 	projectionStack.PushMatrix();
 		projectionStack.LoadMatrix(ortho);
 		viewStack.PushMatrix();
@@ -528,7 +561,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 				glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 				glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 				glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
 				for(unsigned i = 0; i < text.length(); ++i)
 				{
@@ -932,13 +965,13 @@ void SceneTerrain::RenderWorld()
 					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
 					modelStack.Translate(0, 0, -entSca.z / 2);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_CUBE], godlights);
+					RenderMesh(meshList[GEO_CUBE], false);
 					modelStack.PopMatrix();
 				}
 				else
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, proj->getOriginPos().x / 4000.f, proj->getOriginPos().z / 4000.f), entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
@@ -947,7 +980,7 @@ void SceneTerrain::RenderWorld()
 					if (entPos.y < 0) //need to change eventually for proper collision
 					{
 						proj->setIsDone(true);
-						meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+						meshList[GEO_TERRAIN]->texturePaintID = PaintTGABurst(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, 2);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 					}
 				}
 			}
@@ -986,6 +1019,17 @@ void SceneTerrain::RenderWorld()
 				
 			}
 				break;
+			case CEntity::E_TARGET:
+			case CEntity::E_MOVING_TARGET:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_QUAD], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}
@@ -1001,12 +1045,13 @@ void SceneTerrain::RenderWorld()
 			CParticle_2* par = *it;
 			Vector3 parPos = par->getPos();
 			Vector3 parSca = par->getScale();
+			Vector3 parOrigPos = par->getOriginPos();
 			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
 			switch (par->getParType())
 			{
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1017,7 +1062,7 @@ void SceneTerrain::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_ICE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1026,17 +1071,18 @@ void SceneTerrain::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
-			case CParticle_2::PTYPE_BEAM:
-				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
-				modelStack.Rotate(bBoardRot, 0, 1, 0);
-				modelStack.Rotate(par->getRot(), 0, 0, 1);
-				modelStack.Scale(parSca.x, parSca.y, 0.1f);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
-				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
-				modelStack.PopMatrix();
-				break;
+			//case CParticle_2::PTYPE_BEAM:
+			//	modelStack.PushMatrix();
+			//	modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+			//	modelStack.Rotate(bBoardRot, 0, 1, 0);
+			//	modelStack.Rotate(par->getRot(), 0, 0, 1);
+			//	modelStack.Scale(parSca.x, parSca.y, 0.1f);
+			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+			//	RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+			//	glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+			//	modelStack.PopMatrix();
+			//	break;
+
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1058,29 +1104,24 @@ void SceneTerrain::RenderWorld()
 	RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
 	modelStack.PopMatrix();
 
+	Vector3 tempDir = (camera.target - camera.position).Normalized();
 	modelStack.PushMatrix();
-	RenderMeshIn2D(meshList[GEO_LEFTARM], godlights, 40, 40, -2, -1);
-	RenderMeshIn2D(meshList[GEO_RIGHTARM], godlights, 40, 40, 2, -1);
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_LEFTARM], godlights);
 	modelStack.PopMatrix();
 
-	//Vector3 tempDir = (CPlayerInfo::GetInstance()->getTarget() - CPlayerInfo::GetInstance()->getPos()).Normalized();
-	//modelStack.PushMatrix();
-	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	//modelStack.Translate(-3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	//modelStack.Scale(1, 1, 1.5);
-	//RenderMesh(meshList[GEO_LEFTARM], godlights);
-	//modelStack.PopMatrix();
-
-	//modelStack.PushMatrix();
-	//modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	//modelStack.Translate(3 + CPlayerInfo::GetInstance()->GetCameraSway().x, -1.5, -1.5);
-	//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	//modelStack.Scale(1, 1, 1.5);
-	//RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	//modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Scale(1, 1, 1.5);
+	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	modelStack.PopMatrix();
 }
 
 void SceneTerrain::RenderPassMain()
@@ -1187,8 +1228,8 @@ void SceneTerrain::RenderPassMain()
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
+	ss << "Score: " << 8;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 1000, -128, -72);
 
 	std::ostringstream ss1;
 	ss1.precision(4);
