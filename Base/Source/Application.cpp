@@ -189,6 +189,9 @@ void Application::Init()
 			glfwGetJoystickAxes(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->axesCount)),
 			glfwGetJoystickButtons(GLFW_JOYSTICK_1, &(JoystickController::GetInstance()->buttonCount)));
 	}
+
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Click", "Sound//stone.mp3");
 }
 
 void Application::Run()
@@ -225,6 +228,7 @@ void Application::Run()
 		}
 		if (Application::IsKeyPressed(MK_LBUTTON) && !leftButtonDebounce)
 		{
+			
 			// if at how to play menu 
 			leftButtonDebounce = true;
 			// IN START MENU PAGE
@@ -236,6 +240,7 @@ void Application::Run()
 					// If CLick Anywhere
 					if (mouse_current_y >= 288 && mouse_current_y <= 372)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						//scene1->SEngine->stopMenu();
 						//scene2->SEngine->playGame();
 						sceneManager->GoToScene(CSceneManager::GAME_MENU);
@@ -247,6 +252,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 439 && mouse_current_y <= 523)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						break;
 					}
 				}
@@ -261,6 +267,7 @@ void Application::Run()
 					// If CLick Anywhere
 					if (mouse_current_y >= 239 && mouse_current_y <= 312)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						scene1->SEngine->stopMenu();
 						scene2->SEngine->playGame();
 						sceneManager->GoToScene(CSceneManager::GAME);
@@ -273,6 +280,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 343 && mouse_current_y <= 397)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::CONTROLS);
 					}
 				}
@@ -280,6 +288,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 498 && mouse_current_y <= 560)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::START_MENU);
 					}
 				}
@@ -303,6 +312,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 515 && mouse_current_y <= 595)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::IN_GAME_MENU);
 					}
 				}
@@ -328,6 +338,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 515 && mouse_current_y <= 595)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::GAME_MENU);
 					}
 				}
@@ -343,6 +354,7 @@ void Application::Run()
 					// If CLick Anywhere
 					if (mouse_current_y >= 239 && mouse_current_y <= 312)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						scene1->SEngine->stopMenu();
 						scene2->SEngine->playGame();
 						sceneManager->GoToScene(CSceneManager::GAME);
@@ -356,6 +368,7 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 343 && mouse_current_y <= 397)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::CONTROLS1);
 						
 					}
@@ -364,8 +377,10 @@ void Application::Run()
 				{
 					if (mouse_current_y >= 498 && mouse_current_y <= 560)
 					{
+						CSoundEngine::GetInstance()->PlayASound("Click");
 						sceneManager->GoToScene(CSceneManager::START_MENU);
-						
+						scene2->SEngine->stopMenu();
+						scene1->SEngine->playMenu();
 					}
 				}
 			}
