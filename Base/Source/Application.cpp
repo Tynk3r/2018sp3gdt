@@ -15,6 +15,7 @@
 #include "GameMenu.h"
 #include "SceneTest.h"
 #include "SceneManager.h"
+#include "Controls.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -196,11 +197,13 @@ void Application::Run()
 	Scene *scene1 = new SceneTest();
 	Scene *scene2 = new GameMenu();
 	Scene *scene3 = new SceneTerrain();
+	Scene *scene4 = new Controls();
 	
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
 	sceneManager->AddScene(scene2);
 	sceneManager->AddScene(scene3);
+	sceneManager->AddScene(scene4);
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	static bool leftButtonDebounce = false;
 	while (!glfwWindowShouldClose(m_window) && !Application::IsKeyPressed(VK_ESCAPE))
@@ -209,6 +212,7 @@ void Application::Run()
 		{
 			// if at how to play menu 
 			leftButtonDebounce = true;
+			// IN START MENU PAGE
 			if (sceneManager->GetCurrentSceneID() == CSceneManager::START_MENU)
 			{
 				
@@ -232,6 +236,8 @@ void Application::Run()
 					}
 				}
 			}
+
+			// IN GAME MENU PAGE
 			else if (sceneManager->GetCurrentSceneID() == CSceneManager::GAME_MENU)
 			{
 
@@ -247,11 +253,43 @@ void Application::Run()
 
 					}
 				}
+				if (mouse_current_x >= 526 && mouse_current_x <= 764)
+				{
+					if (mouse_current_y >= 343 && mouse_current_y <= 397)
+					{
+						sceneManager->GoToScene(CSceneManager::CONTROLS);
+					}
+				}
 				if (mouse_current_x >= 524 && mouse_current_x <= 756)
 				{
 					if (mouse_current_y >= 498 && mouse_current_y <= 560)
 					{
 						sceneManager->GoToScene(CSceneManager::START_MENU);
+					}
+				}
+			}
+
+			// IN CONTROLS PAGE
+			else if (sceneManager->GetCurrentSceneID() == CSceneManager::CONTROLS)
+			{
+
+				//if (mouse_current_x >= 513 && mouse_current_x <= 779)
+				//{
+				//	// If CLick Anywhere
+				//	if (mouse_current_y >= 239 && mouse_current_y <= 312)
+				//	{
+				//		scene1->SEngine->stopMenu();
+				//		scene2->SEngine->playGame();
+				//		sceneManager->GoToScene(CSceneManager::GAME);
+				//		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+				//	}
+				//}
+				if (mouse_current_x >= 464 && mouse_current_x <= 782)
+				{
+					if (mouse_current_y >= 515 && mouse_current_y <= 595)
+					{
+						sceneManager->GoToScene(CSceneManager::GAME_MENU);
 					}
 				}
 			}
