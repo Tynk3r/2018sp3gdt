@@ -401,7 +401,7 @@ void SceneTerrain::Update(double dt)
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_DRONE)
+			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
 			{
 				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
 				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
@@ -982,7 +982,7 @@ void SceneTerrain::RenderWorld()
 					if (entPos.y < 0) //need to change eventually for proper collision
 					{
 						proj->setIsDone(true);
-						meshList[GEO_TERRAIN]->texturePaintID = PaintTGABurst(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, 2);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+						meshList[GEO_TERRAIN]->texturePaintID = PaintTGAFunny(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 					}
 				}
 			}

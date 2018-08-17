@@ -16,6 +16,9 @@ GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, fl
 //Same as PaintTGA but the paint spreads out a lot more
 GLuint PaintTGABurst(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength, int spread = 2);
 
+//Same as PaintTGA but the paint is in the shape of... uh (note: DO NOT PRESENT THIS)
+GLuint PaintTGAFunny(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength);
+
 GLuint NewTGA(int size);
 
 #endif

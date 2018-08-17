@@ -1,6 +1,7 @@
 #include "EntityManager.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "Enemy.h"
+#include "Projectile.h"
 #include <iostream>
 using namespace std;
 
@@ -182,6 +183,37 @@ bool EntityManager::CheckForCollision(float dt)
 					break;
 				}
 				return true; 
+			}
+			else
+			{
+				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
+					if ((*it2)->getType() == CEntity::E_PROJECTILE)
+					{
+						CProjectile* tempProjectile = (CProjectile*)*it2;
+						if (tempProjectile->getProjType() == CProjectile::PTYPE_BEAM)
+						{
+							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z, 0) - Vector3(9999, 9999, 9999)).IsZero())
+							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z, 1) - Vector3(9999, 9999, 9999)).IsZero())
+							{
+								(*it)->setIsDone(true);
+								//(*it2)->setIsDone(true);
+								switch ((*it)->getType())
+								{
+								case CEntity::E_ENEMY:
+									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+									break;
+								case CEntity::E_MOVING_TARGET:
+									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+									break;
+								case CEntity::E_TARGET:
+									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+									break;
+								}
+								cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
+								break;
+							}
+						}
+					}
 			}
 		}
 	}
