@@ -31,6 +31,7 @@ void CEntity::Update(double dt)
 	switch (type) 
 	{
 	case E_ENEMY:
+	case E_MOVING_TARGET:
 		if ((getTarget() - getPos()).LengthSquared() < 1.f) 
 		{ 
 			viewVector.SetZero(); 
@@ -44,15 +45,13 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + 100, position.y + 200 + 150, position.z + 100), Vector3(position.x - 100, position.y /*- scale.y*/ + 150, position.z - 100));
 		break;
 	case E_PROJECTILE:
-	case E_MOVING_TARGET:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_PLAYER:
-		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
-		break;
 	case E_TARGET:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	default:
 		break;

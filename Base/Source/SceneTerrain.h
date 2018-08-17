@@ -140,6 +140,7 @@ class SceneTerrain : public Scene
 		GEO_PARTICLE_ICE,
 		GEO_SPRITEANIM_ACTIONLINES,
 		GEO_FIREBALL,
+		GEO_GOBLIN,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -188,7 +189,7 @@ private:
 	MS projectionStack;
 
 	Light lights[2];
-	bool godlights = true;
+	bool godlights = false;
 
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
