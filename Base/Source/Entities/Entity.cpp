@@ -42,10 +42,14 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + 100, position.y + 200 + 150, position.z + 100), Vector3(position.x - 100, position.y /*- scale.y*/ + 150, position.z - 100));
 		break;
 	case E_PROJECTILE:
+	{
+		Vector3 gravVel = Vector3(0, -0.25f, 0)*(float)dt;
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
-		setTarget(getPos() + viewVector);
+		setTarget(getPos() + (viewVector + gravVel).Normalized());
 		setAABB(Vector3(position.x + scale.x * 1.1f, position.y + scale.y* 1.1f, position.z + scale.z* 1.1f), Vector3(position.x - scale.x* 1.1f, position.y - scale.y* 1.1f, position.z - scale.z* 1.1f));
 		break;
+	}
+		
 	case E_PLAYER:
 	case E_TARGET:
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
