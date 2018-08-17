@@ -221,6 +221,8 @@ void SceneTerrain::Init()
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
 	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
 
+	meshList[GEO_GOBLIN] = MeshBuilder::GenerateOBJ("GEO_GOBLIN", "OBJ//goblin.obj");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
@@ -911,6 +913,12 @@ void SceneTerrain::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			}
+			modelStack.PushMatrix();
+			modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+			modelStack.Translate(-16, 18, -15);
+			modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+			RenderMesh(meshList[GEO_GOBLIN], false);
+			modelStack.PopMatrix();
 			case CEnemy::E_PROJECTILE:
 			{
 				CProjectile* proj = dynamic_cast<CProjectile*>(ent);
@@ -973,6 +981,9 @@ void SceneTerrain::RenderWorld()
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_DRONE_RWING], godlights);
 				modelStack.PopMatrix();
+
+
+				
 			}
 				break;
 			default:
