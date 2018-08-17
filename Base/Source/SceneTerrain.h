@@ -140,6 +140,7 @@ class SceneTerrain : public Scene
 		GEO_PARTICLE_ICE,
 		GEO_SPRITEANIM_ACTIONLINES,
 		GEO_FIREBALL,
+		GEO_ICEBALL,
 		GEO_BOLT,
 		GEO_GOBLIN,
 		NUM_GEOMETRY,
@@ -148,6 +149,11 @@ class SceneTerrain : public Scene
 	{
 		RENDER_PASS_PRE,
 		RENDER_PASS_MAIN,
+	};
+	enum TARGET_STATE
+	{
+		T_STATIONARY = 0,
+		T_MOVING,
 	};
 public:
 	SceneTerrain();
@@ -213,6 +219,7 @@ private:
 	CDrone* drone1;
 	CEntity* targets[3];
 	CEntity* targetsMoving[3];
+	TARGET_STATE targetState = T_STATIONARY;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

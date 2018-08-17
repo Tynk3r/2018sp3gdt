@@ -249,7 +249,8 @@ void SceneTerrain::Init()
 
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
-
+	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
+	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -293,6 +294,16 @@ void SceneTerrain::Init()
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
 
+	for (int i = 0; i < 3; i++)
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType(CEntity::E_TARGET);
+		targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+	}
 	for (int i = 0; i < 3; i++) 
 	{
 		targetsMoving[i] = new CEntity();
@@ -362,6 +373,16 @@ void SceneTerrain::Update(double dt)
 	else if(Application::IsKeyPressed('9'))
 	{
 		bLightEnabled = false;
+	}
+	if (playerInfo->CanCast())
+	{
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+		playerInfo->SetCanCast(false);
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
@@ -478,6 +499,13 @@ void SceneTerrain::Update(double dt)
 		sa_AL->Update(dt);
 	}
 
+	// Hardware Abstraction
+	theKeyboard->Read(dt);
+	theMouse->Read(dt);
+	// Update the player position and other details based on keyboard and mouse inputs
+	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
+	//playerInfo->Update(dt);
+
 	EntityManager::GetInstance()->Update(dt);
 	ParticleManager::GetInstance()->Update(dt);
 	CameraEffectManager::GetInstance()->Update(dt);
@@ -485,12 +513,78 @@ void SceneTerrain::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
-	// Hardware Abstraction
-	theKeyboard->Read(dt);
-	theMouse->Read(dt);
-	// Update the player position and other details based on keyboard and mouse inputs
-	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
-	//playerInfo->Update(dt);
+	bool shouldChange = true;
+	//check if shouldnt change (any targets still up)
+	switch (targetState)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 3; ++i)
+		{
+			if(!targetsMoving[i]->isDone()){ shouldChange = false; }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 3; ++i)
+		{
+			if (!targets[i]->isDone()) { shouldChange = false; }
+		}
+		break;
+	default:
+		break;
+	}
+	//if should change switches state
+	if (shouldChange)
+	{
+		switch (targetState)
+		{
+		case T_MOVING:
+			targetState = T_STATIONARY;
+			for (int i = 0; i < 3; i++)
+			{
+				targets[i]->setIsDone(false);
+				targets[i]->setType(CEntity::E_TARGET);
+				targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+				targets[i]->setOriginPos(targets[i]->getPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+			}
+			break;
+		case T_STATIONARY:
+			targetState = T_MOVING;
+			for (int i = 0; i < 3; i++)
+			{
+				targetsMoving[i]->setIsDone(false);
+				targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
+				targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+				targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
+				targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
+	switch (targetState)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 3; ++i)
+		{
+			targets[i]->setIsDone(true);
+			if(!targetsMoving[i]->isDone()){ targetsMoving[i]->setIsDone(false); }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 3; ++i)
+		{
+			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
+			targetsMoving[i]->setIsDone(true);
+		}
+		break;
+	default:
+		break;
+	}
 
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -789,6 +883,16 @@ void SceneTerrain::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
+
+	std::list<CEntity*>::iterator it, end;
+	end = EntityManager::GetInstance()->entityList.end();
+	it = EntityManager::GetInstance()->entityList.begin();
+	while (it != end)
+	{
+		delete *it;
+		it = EntityManager::GetInstance()->entityList.erase(it);
+		++it;
+	}
 	playerInfo->DetachCamera();
 
 	if (playerInfo->DropInstance() == false)
@@ -938,6 +1042,8 @@ void SceneTerrain::RenderWorld()
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
+			if ((*it)->isDone())
+				continue;
 			CEntity* ent = *it;
 			Vector3 entPos = ent->getPos();
 			Vector3 entTar = ent->getTarget();
@@ -977,7 +1083,10 @@ void SceneTerrain::RenderWorld()
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_FIREBALL], false);
+					if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+						RenderMesh(meshList[GEO_FIREBALL], false);
+					else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+						RenderMesh(meshList[GEO_ICEBALL], false);
 					modelStack.PopMatrix();
 					if (entPos.y < 0) //need to change eventually for proper collision
 					{
@@ -1026,7 +1135,7 @@ void SceneTerrain::RenderWorld()
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+				//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_SPHERE], godlights);
 				modelStack.PopMatrix();
@@ -1107,10 +1216,18 @@ void SceneTerrain::RenderWorld()
 	modelStack.PopMatrix();
 
 	Vector3 tempDir = (camera.target - camera.position).Normalized();
+	Vector3 lArmOffset, rArmOffset, lArmRot, rArmRot;
+	if (playerInfo)
+	{
+		lArmOffset = playerInfo->GetLeftArmOffset();
+		rArmOffset = playerInfo->GetRightArmOffset();
+		lArmRot = playerInfo->GetLeftArmRotation();
+		rArmRot = playerInfo->GetRightArmRotation();
+	}
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_LEFTARM], godlights);
@@ -1119,8 +1236,11 @@ void SceneTerrain::RenderWorld()
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/, -1.5, -1.5);
+	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	modelStack.Rotate(rArmRot.x, 1, 0, 0);
+	modelStack.Rotate(rArmRot.y, 0, 1, 0);
+	modelStack.Rotate(rArmRot.z, 0, 0, 1);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	modelStack.PopMatrix();
