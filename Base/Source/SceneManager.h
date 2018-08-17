@@ -19,6 +19,7 @@ public:
 		START_MENU,
 		GAME_MENU,
 		GAME,
+		CONTROLS,
 
 		TOTAL_SCENES
 	};

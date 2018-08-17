@@ -27,14 +27,12 @@ void CEntity::Init()
 
 void CEntity::Update(double dt) 
 {
+	if (getTarget() == getPos()) { setTarget(getPos() + Vector3(0.001f, 0.001f, 0.001f)); }
 	Vector3 viewVector = (getTarget() - getPos()).Normalized();
 	switch (type) 
 	{
 	case E_ENEMY:
-		if ((getTarget() - getPos()).LengthSquared() < 1.f) 
-		{ 
-			viewVector.SetZero(); 
-		}
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) { viewVector.SetZero(); }
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
@@ -44,15 +42,22 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + 100, position.y + 200 + 150, position.z + 100), Vector3(position.x - 100, position.y /*- scale.y*/ + 150, position.z - 100));
 		break;
 	case E_PROJECTILE:
-	case E_MOVING_TARGET:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setTarget(getPos() + viewVector);
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_PLAYER:
+	case E_TARGET:
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
-	case E_TARGET:
+	case E_MOVING_TARGET:
+		if ((getTarget() - getPos()).LengthSquared() < 1.f) { 
+			setTarget(getOriginPos());
+			setOriginPos(getPos());
+			viewVector = (getTarget() - getPos()).Normalized();
+		}
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	default:
 		break;
@@ -104,7 +109,3 @@ void CEntity::setCollider(const bool _value)
 	m_bCollider = _value;
 }
 
-Vector3 CEntity::getOriginPos()
-{
-	return this->originPosition;
-}
