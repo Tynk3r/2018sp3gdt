@@ -75,10 +75,13 @@ void CPlayerInfo::Init(void)
 
 	hasMoved = false;
 	hasRan = false;
+	canCast = false;
 
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
+	currentAnimState = PLR_ANIM_IDLE;
+	animFrame = 0;
 }
 
 // Returns true if the player is on ground
@@ -245,6 +248,16 @@ void CPlayerInfo::UpdateFreeFall(double dt)
 	}
 }
 
+void CPlayerInfo::SetAnimState(PLR_ANIM_STATE state)
+{
+	this->currentAnimState = state;
+}
+
+void CPlayerInfo::SetCanCast(bool cancast)
+{
+	this->canCast = cancast;
+}
+
 Vector3 CPlayerInfo::GetScreenshake() const
 {
 	return screenshakeOffset;
@@ -344,6 +357,48 @@ void CPlayerInfo::Update(double dt)
 		attachedCamera->position = getPos() + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
 		attachedCamera->target = getPos() + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
 		attachedCamera->up = up.Normalized();
+	}
+	
+	//Update Right & Left Arm offset & rotations
+	float mouseDelta_x, mouseDelta_y;
+	MouseController::GetInstance()->GetMouseDelta(mouseDelta_x, mouseDelta_y);
+	{
+		float swayMaxAmt = 0.85f;//the max amt of sway 
+		Vector3 newLeftArmPos, newRightArmPos;// the new "offsets" of the arms, they vary depending on the anim's curernt anim state
+		Vector3 newLeftArmRot, newRightArmRot;//new rotations
+		float alpha = Math::Min((float)dt*10.f, 0.4f);
+		switch (this->currentAnimState)
+		{
+		case PLR_ANIM_CASTING:
+			this->animFrame += (float)dt;
+			newRightArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newRightArmRot = Vector3(40, 0, -150);
+			if (this->animFrame > 0.4f)
+			{
+				this->animFrame = 0;
+				this->currentAnimState = PLR_ANIM_CASTED;
+				this->canCast = true;
+			}
+			break;
+		case PLR_ANIM_CASTED:
+			this->animFrame += (float)dt;
+			newRightArmPos = Vector3(0, 0.1f, -0.35f);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newRightArmRot = Vector3(-10, 20, -20);
+			if (this->animFrame > 0.5f)
+			{
+				this->animFrame = 0;
+				this->currentAnimState = PLR_ANIM_IDLE;
+			}
+			break;
+		}
+		float arm_sway_x = Math::Clamp(-mouseDelta_x*0.1f, -swayMaxAmt, swayMaxAmt);// the "sway" of the arms, varies depending on the mouse deltas
+		float arm_sway_y = Math::Clamp(mouseDelta_y*0.1f, -swayMaxAmt, swayMaxAmt);
+		Vector3 leftArmGoal = newLeftArmPos + Vector3(arm_sway_x, arm_sway_y);
+		Vector3 rightArmGoal = newRightArmPos + Vector3(arm_sway_x, arm_sway_y);
+		leftArmOffset = leftArmOffset.lerped(leftArmGoal, alpha);
+		rightArmOffset = rightArmOffset.lerped(rightArmGoal, alpha);
+		leftArmRotation = leftArmRotation.lerped(newLeftArmRot, alpha);
+		rightArmRotation = rightArmRotation.lerped(newRightArmRot, alpha);
 	}
 	CEntity::Update(dt);
 }
@@ -567,4 +622,34 @@ int CPlayerInfo::GetHealth(void) const
 int CPlayerInfo::GetScore(void) const
 {
 	return m_dScore;
+}
+
+Vector3 CPlayerInfo::GetLeftArmOffset() const
+{
+	return this->leftArmOffset;
+}
+
+Vector3 CPlayerInfo::GetRightArmOffset() const
+{
+	return this->rightArmOffset;
+}
+
+Vector3 CPlayerInfo::GetLeftArmRotation() const
+{
+	return this->leftArmRotation;
+}
+
+Vector3 CPlayerInfo::GetRightArmRotation() const
+{
+	return this->rightArmRotation;
+}
+
+CPlayerInfo::PLR_ANIM_STATE CPlayerInfo::GetAnimState() const
+{
+	return this->currentAnimState;
+}
+
+bool CPlayerInfo::CanCast() const
+{
+	return this->canCast;
 }
