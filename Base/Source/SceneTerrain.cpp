@@ -290,13 +290,13 @@ void SceneTerrain::Init()
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
 
-	for (int i = 0; i < 1; i++) 
+	for (int i = 0; i < 3; i++) 
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
 		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(0, 75.f, 1500.f));
-		targets[i]->setScale(Vector3(5.f, 5.f, 5.f));
+		targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
 	}
 
@@ -1019,7 +1019,7 @@ void SceneTerrain::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_QUAD], godlights);
+				RenderMesh(meshList[GEO_SPHERE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1221,13 +1221,12 @@ void SceneTerrain::RenderPassMain()
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
-	ss << "Score: " << 8;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 1000, -128, -72);
-
+	ss << "Score: " << playerInfo->GetScore();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
 	std::ostringstream ss1;
-	ss1.precision(4);
-	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
+	ss1.precision(5);
+	ss1 << "Health: " << playerInfo->GetHealth();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 }
 void SceneTerrain::RenderPassGPass()
 {

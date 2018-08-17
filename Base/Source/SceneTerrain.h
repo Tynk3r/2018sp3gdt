@@ -189,7 +189,7 @@ private:
 	MS projectionStack;
 
 	Light lights[2];
-	bool godlights = true;
+	bool godlights = false;
 
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
