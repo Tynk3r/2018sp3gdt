@@ -1,5 +1,5 @@
 #ifndef CONTROLS_H
-#define CIBTRIKS_H
+#define CONTROLS_H
 
 #define PAINT_LENGTH 20
 
