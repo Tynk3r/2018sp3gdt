@@ -338,6 +338,8 @@ void SceneTerrain::Init()
 
 	///init sound
 	SEngine = new CSoundEngine;
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
 }
 
 void SceneTerrain::Update(double dt)
@@ -383,6 +385,8 @@ void SceneTerrain::Update(double dt)
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetCanCast(false);
+		CSoundEngine::GetInstance()->PlayASound("Fireball");
+
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
@@ -1098,6 +1102,8 @@ void SceneTerrain::RenderWorld()
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 						meshList[GEO_TERRAIN]->texturePaintID = PaintTGABurst(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.5, 1, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 					}
 				}

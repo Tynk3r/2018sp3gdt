@@ -3,6 +3,7 @@
 #include "Enemy.h"
 #include "Projectile.h"
 #include <iostream>
+#include "../SoundEngine.h"
 using namespace std;
 
 // Update all entities
@@ -165,6 +166,8 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it2)->setIsDone(true);
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
+						CSoundEngine::GetInstance()->PlayASound("Death");
 						switch ((*it)->getType())
 						{
 						case CEntity::E_ENEMY:
