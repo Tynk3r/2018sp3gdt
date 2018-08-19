@@ -66,7 +66,7 @@ GLuint LoadTGA(const char *file_path)				// load TGA file to memory
 	return texture;						
 }
 
-GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength)
+GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength, PAINT_PATTERNS type)
 {
 	GLuint		bytesPerPixel;								    // number of bytes per pixel in TGA gile
 	GLuint		imageSize;									    // for setting memory
@@ -95,141 +95,138 @@ GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, fl
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-	data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4] = color.z * 255;  //BLUE
-	data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 1] = color.y * 255; //GREEN
-	data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 2] = color.x * 255; ///RED
-	data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 3] = alpha * 255; //ALPHA
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	float maxAnisotropy = 1.f;
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)maxAnisotropy);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	delete[]data;
-
-	return texture;
-}
-
-GLuint PaintTGABurst(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength, int spread)
-{
-	GLuint		bytesPerPixel;								    // number of bytes per pixel in TGA gile
-	GLuint		imageSize;									    // for setting memory
-	GLubyte *	data;
-	unsigned	width, height;
-
-	width = tgaLength;
-	height = tgaLength;
-
-	//Note : Each pixel contains the 4 variables RGBA
-	bytesPerPixel = 4;					//divide by 8 to get bytes per pixel
-	imageSize = width * height * bytesPerPixel;	// calculate memory required for TGA data
-
-	data = new GLubyte[imageSize]; //'data' is a temporary storage of the texture info
-
-								   //target position of the texture to edit
-	int targetX = (int)(x * width);
-	int targetY = (int)(y * height);
-
-	//keeping the target position within the texture ID size
-	if (targetX >= width) targetX = width - 1;
-	if (targetX < 0) targetX = 0;
-	if (targetY >= height) targetY = height - 1;
-	if (targetY < 0) targetY = 0;
-
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-
-	for (int tempY = -spread; tempY <= spread; ++tempY)
+	switch (type)
 	{
-		for (int tempX = -spread + abs(tempY); tempX <= spread - abs(tempY); ++tempX)
+	case PAINT_DOT:
 		{
-			if (targetX + tempX < width && targetX + tempX >= 0 && targetY + tempY < height && targetY + tempY >= 0 )
+			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4] = color.z * 255;  //BLUE
+			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 1] = color.y * 255; //GREEN
+			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 2] = color.x * 255; ///RED
+			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 3] = alpha * 255; //ALPHA
+		}
+		break;
+	case PAINT_BURST:
+		{
+			for (int tempY = -2; tempY <= 2; ++tempY)
 			{
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;  //BLUE
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255; //GREEN
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255; ///RED
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255; //ALPHA
+				for (int tempX = -2 + abs(tempY); tempX <= 2 - abs(tempY); ++tempX)
+				{
+					if (targetX + tempX < width && targetX + tempX >= 0 && targetY + tempY < height && targetY + tempY >= 0)
+					{
+						data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+						data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+						data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+						data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+					}
+				}
 			}
 		}
-	}
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	float maxAnisotropy = 1.f;
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)maxAnisotropy);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	delete[]data;
-
-	return texture;
-}
-
-GLuint PaintTGAFunny(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength)
-{
-	GLuint		bytesPerPixel;								    // number of bytes per pixel in TGA gile
-	GLuint		imageSize;									    // for setting memory
-	GLubyte *	data;
-	unsigned	width, height;
-
-	width = tgaLength;
-	height = tgaLength;
-
-	//Note : Each pixel contains the 4 variables RGBA
-	bytesPerPixel = 4;					//divide by 8 to get bytes per pixel
-	imageSize = width * height * bytesPerPixel;	// calculate memory required for TGA data
-
-	data = new GLubyte[imageSize]; //'data' is a temporary storage of the texture info
-
-								   //target position of the texture to edit
-	int targetX = (int)(x * width);
-	int targetY = (int)(y * height);
-
-	//keeping the target position within the texture ID size
-	if (targetX >= width) targetX = width - 1;
-	if (targetX < 0) targetX = 0;
-	if (targetY >= height) targetY = height - 1;
-	if (targetY < 0) targetY = 0;
-
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-
-	for (int tempY = -1; tempY <= 3; ++tempY)
-	{
-		for (int tempX = -2; tempX <= 2; ++tempX)
+		break;
+	case PAINT_UNIQUE_FIRE:
 		{
-			if (tempY > 0 && tempX != 0)
+			for (int tempY = -2; tempY <= 2; ++tempY)
 			{
+				for (int tempX = -2; tempX <= 2; ++tempX)
+				{
+					if (tempX == -2 && tempY == -2)
+					{
 
-			}
-			else if (tempY == -1 && tempX == 0)
-			{
+					}
+					else if (tempX == -2 && tempY == 2)
+					{
 
-			}
-			else if (targetX + tempX < width && targetX + tempX >= 0 && targetY + tempY < height && targetY + tempY >= 0)
-			{
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;  //BLUE
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255; //GREEN
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255; ///RED
-				data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255; //ALPHA
+					}
+					else if (tempX == 2 && tempY == -2)
+					{
+
+					}
+					else if (tempX == 2 && tempY == 2)
+					{
+
+					}
+					else if (targetX + tempX < width && targetX + tempX >= 0 && targetY + tempY < height && targetY + tempY >= 0)
+					{
+						if (tempX == 0 && tempY == 0)
+						{
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = 0 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = 0.32 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = 0.8 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+						}
+						else
+						{
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = 0 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = 0 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = 0 * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+						}
+					}
+				}
 			}
 		}
+		break;
+	case PAINT_MAGICCIRCLE:
+		{
+			for (int tempY = -7; tempY <= 7; ++tempY)
+			{
+				for (int tempX = -7; tempX <= 7; ++tempX)
+				{
+					if (targetX + tempX < width && targetX + tempX >= 0 && targetY + tempY < height && targetY + tempY >= 0)
+					{
+						if (sqrtf(tempX * tempX + tempY * tempY) <= 8 && sqrtf(tempX * tempX + tempY * tempY) >= 6) //magic ring
+						{
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+							data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+						}
+						else //magic eye
+						{
+							if (tempX == 0 || tempY == 0)
+							{
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+							}
+							else if (abs(tempX) == 2 && (abs(tempY) >= 1 && abs(tempY) <= 3))
+							{
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+							}
+							else if (tempX == 4 && ((tempY) >= -3 && (tempY) <= -1))
+							{
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+							}
+							else if (tempX == -4 && ((tempY) >= 1 && (tempY) <= 2))
+							{
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+							}
+							else if (tempY == -3 && ((tempX) >= -4 && (tempX) <= -3))
+							{
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4] = color.z * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 1] = color.y * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 2] = color.x * 255;
+								data[(targetY + tempY) * (int)sqrt(imageSize) * 2 + (targetX + tempX) * 4 + 3] = alpha * 255;
+							}
+
+						}
+					}
+				}
+			}
+		}
+		break;
+	default:
+		break;
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
