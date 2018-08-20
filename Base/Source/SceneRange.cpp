@@ -392,17 +392,20 @@ void SceneRange::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
-	if (playerInfo->CanCast())
+	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
+			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
+			aa = new CProjectile(CProjectile::PTYPE_ICE);
 		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
-		playerInfo->SetCanCast(false);
+		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
 		CSoundEngine::GetInstance()->PlayASound("Fireball");
-
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))

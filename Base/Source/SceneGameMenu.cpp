@@ -302,7 +302,7 @@ void SceneGameMenu::Update(double dt)
 				CSoundEngine::GetInstance()->PlayASound("Click");
 				SEngine->stopMenu();
 				SEngine->playGame();
-				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_TERRAIN);
 			}
 		}
 		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
