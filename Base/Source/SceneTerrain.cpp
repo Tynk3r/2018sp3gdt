@@ -227,6 +227,9 @@ void SceneTerrain::Init()
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 
+	meshList[GEO_LIBRARIAN] = MeshBuilder::GenerateOBJ("Librarian", "OBJ//Librarian.obj");
+	meshList[GEO_LIBRARIAN]->textureArray[0] = LoadTGA("Image//Librarian.tga");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
@@ -1086,7 +1089,7 @@ void SceneTerrain::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1172,7 +1175,7 @@ void SceneTerrain::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1189,7 +1192,7 @@ void SceneTerrain::RenderWorld()
 			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), 1500.f);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale(40.f, 40.f, 40.f);
-			RenderMesh(meshList[GEO_SPHERE], godlights);
+			RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 			modelStack.PopMatrix();
 		}
 	}
