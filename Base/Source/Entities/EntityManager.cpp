@@ -168,6 +168,8 @@ bool EntityManager::CheckForCollision(float dt)
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+
 						switch ((*it)->getType())
 						{
 						case CEntity::E_ENEMY:
