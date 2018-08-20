@@ -127,6 +127,9 @@ void SceneTerrain::Init()
 	m_parameters[U_PAINT_TGASTRETCH_Y] = glGetUniformLocation(m_programID, "paintTgaStrY");
 	//transparency/alpha uniform value parameters
 	m_parameters[U_COLOR_ALPHA] = glGetUniformLocation(m_programID, "colorAlpha");
+	//uv offset uniform value paprameters
+	m_parameters[U_UV_OFFSET_ENABLED] = glGetUniformLocation(m_programID, "uvOffsetEnabled");
+	m_parameters[U_UV_OFFSET] = glGetUniformLocation(m_programID, "uvOffset");
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -190,6 +193,9 @@ void SceneTerrain::Init()
 
 	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	glUniform2f(m_parameters[U_UV_OFFSET], 0, 0);
+
 	m_lightDepthFBO.Init(1024, 1024);
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -219,6 +225,10 @@ void SceneTerrain::Init()
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
 	meshList[GEO_RIGHTARM]->textureArray[0] = LoadTGA("Image//rightArm.tga");
+	meshList[GEO_RIGHTARM_AURA_FIRE] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM_AURA_FIRE", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM_AURA_FIRE]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
+	meshList[GEO_RIGHTARM_AURA_ICE] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM_AURA_ICE", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
@@ -226,6 +236,9 @@ void SceneTerrain::Init()
 
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
+
+	meshList[GEO_LIBRARIAN] = MeshBuilder::GenerateOBJ("Librarian", "OBJ//Librarian.obj");
+	meshList[GEO_LIBRARIAN]->textureArray[0] = LoadTGA("Image//Librarian.tga");
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
@@ -384,13 +397,21 @@ void SceneTerrain::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
+	if (Application::IsKeyPressed('R'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+	}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
-		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		CProjectile* aa;
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
+		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
+		{
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
+		}
 		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
@@ -1086,7 +1107,7 @@ void SceneTerrain::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1172,7 +1193,7 @@ void SceneTerrain::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1189,7 +1210,7 @@ void SceneTerrain::RenderWorld()
 			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), 1500.f);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale(40.f, 40.f, 40.f);
-			RenderMesh(meshList[GEO_SPHERE], godlights);
+			RenderMesh(meshList[GEO_LIBRARIAN], godlights);
 			modelStack.PopMatrix();
 		}
 	}
@@ -1297,6 +1318,20 @@ void SceneTerrain::RenderWorld()
 	modelStack.Rotate(lArmRot.z, 0, 0, 1);
 	modelStack.Scale(-1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTED)
+	{
+		modelStack.PushMatrix();
+		float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+		float cosVar = cosf(timeElapsed*8.f);
+		modelStack.Scale(1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - (0.2f + 0.2f * cosVar));
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+		glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.3f, timeElapsed * 0.3f);
+		RenderMesh(meshList[GEO_RIGHTARM_AURA_ICE], godlights);
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
@@ -1309,6 +1344,20 @@ void SceneTerrain::RenderWorld()
 	modelStack.Rotate(rArmRot.z, 0, 0, 1);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTED)
+	{
+		modelStack.PushMatrix();
+		float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+		float cosVar = cosf(timeElapsed*8.f);
+		modelStack.Scale(1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - (0.2f + 0.2f * cosVar));
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+		glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.3f, timeElapsed * 0.3f);
+		RenderMesh(meshList[GEO_RIGHTARM_AURA_FIRE], godlights);
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
 }
 

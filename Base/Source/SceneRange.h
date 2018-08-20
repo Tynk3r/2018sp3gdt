@@ -146,6 +146,7 @@ class SceneRange : public Scene
 		GEO_BOLT,
 		GEO_GOBLIN,
 		GEO_BARREL,
+		GEO_LIBRARIAN,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
