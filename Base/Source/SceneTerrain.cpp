@@ -517,10 +517,18 @@ void SceneTerrain::Update(double dt)
 		}
 		else if (!playerInfo->rocketMode)
 		{
+			playerInfo->rocketRotateUp = 0;
+			playerInfo->rocketRotateRight = 0;
+			playerInfo->rocketRotateTarget = 0;
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
 			playerInfo->rocketTarget = playerInfo->rocketPosition + Vector3(0, 0, -1);
 		}
+	}
+
+	if (playerInfo->rocketMode && playerInfo->rocketPosition.y + 400 <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000))
+	{
+		playerInfo->rocketMode = false;
 	}
 
 	//if(Application::IsKeyPressed('I'))
@@ -1310,13 +1318,28 @@ void SceneTerrain::RenderWorld()
 	}
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Rotate(lArmRot.x, 1, 0, 0);
-	modelStack.Rotate(lArmRot.y, 0, 1, 0);
-	modelStack.Rotate(lArmRot.z, 0, 0, 1);
-	modelStack.Scale(-1, 1, 1.5);
+	if (!playerInfo->rocketMode)
+	{
+		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+		modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
+		modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+		modelStack.Rotate(lArmRot.x, 1, 0, 0);
+		modelStack.Rotate(lArmRot.y, 0, 1, 0);
+		modelStack.Rotate(lArmRot.z, 0, 0, 1);
+		modelStack.Scale(-1, 1, 1.5);
+	}
+	else if (playerInfo->rocketMode)
+	{
+		modelStack.Translate(tempDir.x * 10, tempDir.y * 10, tempDir.z * 10);
+
+		//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+		//modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
+		//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+	//	modelStack.Rotate(-playerInfo->rocketRotateUp, 0, 1, 0); //rotate about up
+		modelStack.Rotate(playerInfo->rocketRotateRight,1,0,0); //rotate about right
+		modelStack.Rotate(-playerInfo->rocketRotateTarget, 0, 0, 1); //rotate about target
+		modelStack.Scale(-1, 1, 1.5);
+	}
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTED)
 	{

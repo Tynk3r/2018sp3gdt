@@ -168,6 +168,7 @@ public:
 	bool rocketMode = false;
 
 	Vector3 rocketPosition, rocketUp, rocketRight, rocketTarget;
+	float rocketRotateUp = 0, rocketRotateRight = 0, rocketRotateTarget = 0;
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
