@@ -237,7 +237,7 @@ void SceneTerrain::Init()
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 
-	meshList[GEO_LIBRARIAN] = MeshBuilder::GenerateOBJ("Librarian", "OBJ//Librarian.obj");
+	meshList[GEO_LIBRARIAN] = MeshBuilder::GenerateOBJ("Librarian", "OBJ//droneFullSmall.obj");
 	meshList[GEO_LIBRARIAN]->textureArray[0] = LoadTGA("Image//Librarian.tga");
 
 	// For Ter Rain
