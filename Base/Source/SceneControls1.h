@@ -1,5 +1,5 @@
-#ifndef GAME_MENU_H
-#define GAME_MENU_H
+#ifndef SCENE_CONTROLS1_H
+#define SCENE_CONTROLS1_H
 
 #define PAINT_LENGTH 20
 
@@ -12,6 +12,8 @@
 #include "Light.h"
 #include "DepthFBO.h"
 #include <vector>
+
+#include "SceneManager.h"
 #include "KeyboardController.h"
 #include "MouseController.h"
 #include "JoystickController.h"
@@ -26,7 +28,7 @@
 
 using namespace std;
 
-class GameMenu : public Scene
+class SceneControls1 : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -145,7 +147,7 @@ class GameMenu : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
-		GEO_GAMEMENU,
+		GEO_CONTROLS1,
 
 		NUM_GEOMETRY,
 	};
@@ -155,8 +157,8 @@ class GameMenu : public Scene
 		RENDER_PASS_MAIN,
 	};
 public:
-	GameMenu();
-	~GameMenu();
+	SceneControls1();
+	~SceneControls1();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -213,9 +215,6 @@ private:
 
 	CKeyboard* theKeyboard;
 	CMouse* theMouse;
-	CPlayerInfo* playerInfo;
-	CEnemy* enemy1;
-	CDrone* drone1;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

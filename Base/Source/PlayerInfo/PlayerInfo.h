@@ -29,11 +29,20 @@ public:
 	enum PLR_ANIM_STATE
 	{
 		PLR_ANIM_IDLE,
-		PLR_ANIM_CASTHOLDING,
-		PLR_ANIM_CASTING,
-		PLR_ANIM_CASTED,
+		PLR_ANIM_LEFTARM_CASTHOLDING,
+		PLR_ANIM_LEFTARM_CASTING,
+		PLR_ANIM_LEFTARM_CASTED,
+		PLR_ANIM_RIGHTARM_CASTHOLDING,
+		PLR_ANIM_RIGHTARM_CASTING,
+		PLR_ANIM_RIGHTARM_CASTED,
 
 		PLR_ANIM_TOTAL,
+	};
+	enum SPELL_TYPE
+	{
+		SPELL_NONE,
+		SPELL_FIREBALL,
+		SPELL_ICEBALL,
 	};
 	static CPlayerInfo *GetInstance()
 	{
@@ -43,7 +52,7 @@ public:
 	}
 	static bool DropInstance()
 	{
-		if (s_instance)
+		if (s_instance && s_instance != NULL)
 		{
 			delete s_instance;
 			s_instance = NULL;
@@ -98,7 +107,7 @@ public:
 	double GetFallAcceleration(void) const;
 
 	void SetAnimState(PLR_ANIM_STATE state);
-	void SetCanCast(bool cancast);
+	void SetSpellType(SPELL_TYPE spelltype);
 
 	Vector3 GetScreenshake(void) const;
 	Vector3 GetCameraSway(void) const;
@@ -107,7 +116,7 @@ public:
 	Vector3 GetLeftArmRotation() const;
 	Vector3 GetRightArmRotation() const;
 	PLR_ANIM_STATE GetAnimState() const;
-	bool CanCast() const;
+	SPELL_TYPE GetSpellType() const;
 
 	// Update Jump Upwards
 	void UpdateJumpUpwards(double dt = 0.0333f);
@@ -190,7 +199,7 @@ private:
 	Vector3 leftArmRotation, rightArmRotation;//half bugged but it works well enough for basic anims
 	PLR_ANIM_STATE currentAnimState;
 	float animFrame;
-	bool canCast;
+	SPELL_TYPE spelltype;
 
 public:
 	// Camera Sway

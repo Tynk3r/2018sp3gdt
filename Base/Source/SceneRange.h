@@ -1,5 +1,5 @@
-#ifndef IN_GAME_MENU_H
-#define IN_GAME_MENU_H
+#ifndef SCENE_RANGE_H
+#define SCENE_RANGE_H
 
 #define PAINT_LENGTH 20
 
@@ -12,6 +12,8 @@
 #include "Light.h"
 #include "DepthFBO.h"
 #include <vector>
+
+#include "SceneManager.h"
 #include "KeyboardController.h"
 #include "MouseController.h"
 #include "JoystickController.h"
@@ -23,10 +25,11 @@
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
+#include "CameraEffects\CameraEffectManager.h"
 
 using namespace std;
 
-class InGameMenu : public Scene
+class SceneRange : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -126,18 +129,10 @@ class InGameMenu : public Scene
 		//TSL
 		GEO_SKYPLANE,
 		GEO_TERRAIN,
-		GEO_WETER,
-		GEO_CAMPFIRE_BASE,
-		GEO_CAMPFIRE_POT,
-		GEO_CAMPFIRE_POT_STAND,
-		GEO_TENT,
 		GEO_SPRITE_ANIMATION,
-		GEO_DOG,
-		GEO_PARTICLE_SMOKE,
-		GEO_PARTICLE_SPARK,
 		GEO_LIGHT_DEPTH_QUAD,
-		GEO_TESTPAINTQUAD,
-		GEO_TESTPAINTQUAD2,
+		//GEO_TESTPAINTQUAD,
+		//GEO_TESTPAINTQUAD2,
 		GEO_LEFTARM,
 		GEO_RIGHTARM,
 		GEO_DRONE_HEAD,
@@ -145,8 +140,12 @@ class InGameMenu : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
-		GEO_INGAMEMENU,
-
+		GEO_SPRITEANIM_ACTIONLINES,
+		GEO_FIREBALL,
+		GEO_ICEBALL,
+		GEO_BOLT,
+		GEO_GOBLIN,
+		GEO_BARREL,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -154,9 +153,14 @@ class InGameMenu : public Scene
 		RENDER_PASS_PRE,
 		RENDER_PASS_MAIN,
 	};
+	enum TARGET_STATE
+	{
+		T_STATIONARY = 0,
+		T_MOVING,
+	};
 public:
-	InGameMenu();
-	~InGameMenu();
+	SceneRange();
+	~SceneRange();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -195,7 +199,7 @@ private:
 	MS projectionStack;
 
 	Light lights[2];
-	bool godlights = true;
+	bool godlights = false;
 
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
@@ -214,8 +218,18 @@ private:
 	CKeyboard* theKeyboard;
 	CMouse* theMouse;
 	CPlayerInfo* playerInfo;
-	CEnemy* enemy1;
-	CDrone* drone1;
+	//CEnemy* enemy1;
+	//CDrone* drone1;
+
+	CEntity* targets[3];
+	CEntity* targetsMoving[3];
+	TARGET_STATE targetState = T_STATIONARY;
+	int stateChangeTimer = 0;
+
+	CEntity* targets1[3];
+	CEntity* targetsMoving1[3];
+	TARGET_STATE targetState1 = T_STATIONARY;
+	int stateChangeTimer1 = 0;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

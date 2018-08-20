@@ -75,7 +75,7 @@ void CPlayerInfo::Init(void)
 
 	hasMoved = false;
 	hasRan = false;
-	canCast = false;
+	spelltype = SPELL_NONE;
 
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
@@ -258,9 +258,9 @@ void CPlayerInfo::SetAnimState(PLR_ANIM_STATE state)
 	this->currentAnimState = state;
 }
 
-void CPlayerInfo::SetCanCast(bool cancast)
+void CPlayerInfo::SetSpellType(SPELL_TYPE spelltype)
 {
-	this->canCast = cancast;
+	this->spelltype = spelltype;
 }
 
 Vector3 CPlayerInfo::GetScreenshake() const
@@ -411,25 +411,50 @@ void CPlayerInfo::Update(double dt)
 		float alpha = Math::Min((float)dt*10.f, 0.4f);
 		switch (this->currentAnimState)
 		{
-		case PLR_ANIM_CASTHOLDING:
+		case PLR_ANIM_RIGHTARM_CASTHOLDING:
 			newRightArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
 			newRightArmRot = Vector3(40, 0, -150);
 			break;
-		case PLR_ANIM_CASTING:
+		case PLR_ANIM_RIGHTARM_CASTING:
 			this->animFrame += (float)dt;
 			newRightArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
 			newRightArmRot = Vector3(40, 0, -150);
 			if (this->animFrame > 0.05f)
 			{
 				this->animFrame = 0;
-				this->currentAnimState = PLR_ANIM_CASTED;
-				this->canCast = true;
+				this->currentAnimState = PLR_ANIM_RIGHTARM_CASTED;
+				this->spelltype = SPELL_FIREBALL;
 			}
 			break;
-		case PLR_ANIM_CASTED:
+		case PLR_ANIM_RIGHTARM_CASTED:
 			this->animFrame += (float)dt;
 			newRightArmPos = Vector3(0, 0.1f, -0.35f);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
 			newRightArmRot = Vector3(-10, 20, -20);
+			if (this->animFrame > 0.5f)
+			{
+				this->animFrame = 0;
+				this->currentAnimState = PLR_ANIM_IDLE;
+			}
+			break;
+		case PLR_ANIM_LEFTARM_CASTHOLDING:
+			newLeftArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newLeftArmRot = Vector3(40, 0, 150);
+			break;
+		case PLR_ANIM_LEFTARM_CASTING:
+			this->animFrame += (float)dt;
+			newLeftArmPos = Vector3(0, 0.15f, 0);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newLeftArmRot = Vector3(40, 0, 150);
+			if (this->animFrame > 0.05f)
+			{
+				this->animFrame = 0;
+				this->currentAnimState = PLR_ANIM_LEFTARM_CASTED;
+				this->spelltype = SPELL_ICEBALL;
+			}
+			break;
+		case PLR_ANIM_LEFTARM_CASTED:
+			this->animFrame += (float)dt;
+			newLeftArmPos = Vector3(0, 0.1f, -0.35f);//newLeftArmPos.lerped(Vector3(0,0.1f,0), alpha*1.)
+			newLeftArmRot = Vector3(-10, -20, 20);
 			if (this->animFrame > 0.5f)
 			{
 				this->animFrame = 0;
@@ -720,7 +745,7 @@ CPlayerInfo::PLR_ANIM_STATE CPlayerInfo::GetAnimState() const
 	return this->currentAnimState;
 }
 
-bool CPlayerInfo::CanCast() const
+CPlayerInfo::SPELL_TYPE CPlayerInfo::GetSpellType() const
 {
-	return this->canCast;
+	return this->spelltype;
 }

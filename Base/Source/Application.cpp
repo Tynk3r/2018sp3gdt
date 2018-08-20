@@ -11,13 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SceneTerrain.h"
-#include "GameMenu.h"
-#include "SceneTest.h"
 #include "SceneManager.h"
-#include "Controls.h"
-#include "InGameMenu.h"
-#include "Controls1.h"
+
+#include "SceneStartMenu.h"
+#include "SceneGameMenu.h"
+#include "SceneInGameMenu.h"
+#include "SceneControls.h"
+#include "SceneControls1.h"
+#include "SceneTerrain.h"
+#include "SceneRange.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -27,6 +29,7 @@ double Application::mouse_last_x = 0.0, Application::mouse_last_y = 0.0,
 	   Application::mouse_diff_x = 0.0, Application::mouse_diff_y = 0.0;
 double Application::camera_yaw = 0.0, Application::camera_pitch = 0.0;
 bool Application::wrapAroundEnabled = false;
+bool Application::shouldContinue = true;
 
 //Define an error callback
 static void error_callback(int error, const char* description)
@@ -199,12 +202,13 @@ void Application::Run()
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	//Main Loop
 	// init scenes
-	Scene *scene1 = new SceneTest();
-	Scene *scene2 = new GameMenu();
-	Scene *scene3 = new SceneTerrain();
-	Scene *scene4 = new Controls();
-	Scene *scene5 = new InGameMenu();
-	Scene *scene6 = new Controls1();
+	Scene *scene1 = new SceneStartMenu();
+	Scene *scene2 = new SceneGameMenu();
+	Scene *scene3 = new SceneInGameMenu();
+	Scene *scene4 = new SceneControls();
+	Scene *scene5 = new SceneControls1();
+	Scene *scene6 = new SceneTerrain();
+	Scene *scene7 = new SceneRange();
 	
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -213,196 +217,42 @@ void Application::Run()
 	sceneManager->AddScene(scene4);
 	sceneManager->AddScene(scene5);
 	sceneManager->AddScene(scene6);
+	sceneManager->AddScene(scene7);
+	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
+	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	static bool leftButtonDebounce = false;
-	while (!glfwWindowShouldClose(m_window))// && !Application::IsKeyPressed(VK_ESCAPE))
+	while (!glfwWindowShouldClose(m_window) && shouldContinue)// && !Application::IsKeyPressed(VK_ESCAPE))
 	{
-		if (sceneManager->GetCurrentSceneID() == CSceneManager::GAME)
+		switch (sceneManager->GetCurrentSceneID())
 		{
-			if (Application::IsKeyPressed(VK_ESCAPE))
-			{
+		case CSceneManager::SCENE_START_MENU:
+		case CSceneManager::SCENE_GAME_MENU:
+		case CSceneManager::SCENE_IN_GAME_MENU:
+		case CSceneManager::SCENE_CONTROLS:
+		case CSceneManager::SCENE_CONTROLS1:
 				wrapAroundEnabled = false;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				sceneManager->GoToScene(CSceneManager::IN_GAME_MENU);
-			}
+				break;
+		case CSceneManager::SCENE_TERRAIN:
+		case CSceneManager::SCENE_RANGE:
+		default:
+				wrapAroundEnabled = false;
+				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				break;
 		}
-		if (Application::IsKeyPressed(MK_LBUTTON) && !leftButtonDebounce)
-		{
-			
-			// if at how to play menu 
-			leftButtonDebounce = true;
-			// IN START MENU PAGE
-			if (sceneManager->GetCurrentSceneID() == CSceneManager::START_MENU)
-			{
-				
-				if (mouse_current_x >= 485 && mouse_current_x <= 793)
-				{
-					// If CLick Anywhere
-					if (mouse_current_y >= 288 && mouse_current_y <= 372)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						//scene1->SEngine->stopMenu();
-						//scene2->SEngine->playGame();
-						sceneManager->GoToScene(CSceneManager::GAME_MENU);
-					//	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-					}
-				}
-				if (mouse_current_x >= 485 && mouse_current_x <= 788)
-				{
-					if (mouse_current_y >= 439 && mouse_current_y <= 523)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						break;
-					}
-				}
-			}
-
-			// IN GAME MENU PAGE
-			else if (sceneManager->GetCurrentSceneID() == CSceneManager::GAME_MENU)
-			{
-
-				if (mouse_current_x >= 513 && mouse_current_x <= 779)
-				{
-					// If CLick Anywhere
-					if (mouse_current_y >= 239 && mouse_current_y <= 312)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						scene1->SEngine->stopMenu();
-						scene2->SEngine->playGame();
-						sceneManager->GoToScene(CSceneManager::GAME);
-						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-						wrapAroundEnabled = true;
-
-					}
-				}
-				if (mouse_current_x >= 526 && mouse_current_x <= 764)
-				{
-					if (mouse_current_y >= 343 && mouse_current_y <= 397)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::CONTROLS);
-					}
-				}
-				if (mouse_current_x >= 524 && mouse_current_x <= 756)
-				{
-					if (mouse_current_y >= 498 && mouse_current_y <= 560)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::START_MENU);
-					}
-				}
-			}
-			else if (sceneManager->GetCurrentSceneID() == CSceneManager::CONTROLS1)
-			{
-
-				//if (mouse_current_x >= 513 && mouse_current_x <= 779)
-				//{
-				//	// If CLick Anywhere
-				//	if (mouse_current_y >= 239 && mouse_current_y <= 312)
-				//	{
-				//		scene1->SEngine->stopMenu();
-				//		scene2->SEngine->playGame();
-				//		sceneManager->GoToScene(CSceneManager::GAME);
-				//		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-				//	}
-				//}
-				if (mouse_current_x >= 464 && mouse_current_x <= 782)
-				{
-					if (mouse_current_y >= 515 && mouse_current_y <= 595)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::IN_GAME_MENU);
-					}
-				}
-			}
-
-			// IN CONTROLS PAGE
-			else if (sceneManager->GetCurrentSceneID() == CSceneManager::CONTROLS)
-			{
-
-				//if (mouse_current_x >= 513 && mouse_current_x <= 779)
-				//{
-				//	// If CLick Anywhere
-				//	if (mouse_current_y >= 239 && mouse_current_y <= 312)
-				//	{
-				//		scene1->SEngine->stopMenu();
-				//		scene2->SEngine->playGame();
-				//		sceneManager->GoToScene(CSceneManager::GAME);
-				//		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-				//	}
-				//}
-				if (mouse_current_x >= 464 && mouse_current_x <= 782)
-				{
-					if (mouse_current_y >= 515 && mouse_current_y <= 595)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::GAME_MENU);
-					}
-				}
-			}
-
-			// IN GAME MENU
-			else if (sceneManager->GetCurrentSceneID() == CSceneManager::IN_GAME_MENU)
-			{
-
-
-				if (mouse_current_x >= 513 && mouse_current_x <= 779)
-				{
-					// If CLick Anywhere
-					if (mouse_current_y >= 239 && mouse_current_y <= 312)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						scene1->SEngine->stopMenu();
-						scene2->SEngine->playGame();
-						sceneManager->GoToScene(CSceneManager::GAME);
-						glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-						wrapAroundEnabled = true;
-
-
-					}
-				}
-				if (mouse_current_x >= 526 && mouse_current_x <= 764)
-				{
-					if (mouse_current_y >= 343 && mouse_current_y <= 397)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::CONTROLS1);
-						
-					}
-				}
-				if (mouse_current_x >= 524 && mouse_current_x <= 756)
-				{
-					if (mouse_current_y >= 498 && mouse_current_y <= 560)
-					{
-						CSoundEngine::GetInstance()->PlayASound("Click");
-						sceneManager->GoToScene(CSceneManager::START_MENU);
-						scene2->SEngine->stopMenu();
-						scene1->SEngine->playMenu();
-					}
-				}
-			}
-		}
-		else if (!Application::IsKeyPressed(MK_LBUTTON) && leftButtonDebounce)
-		{
-			leftButtonDebounce = false;
-		}
-	
-		{
-			GetMouseUpdate();
-			UpdateInput();
-			//scene1->Update(m_timer.getElapsedTime());
-			//scene1->Render();
-			sceneManager->Update(&m_timer);
-			//Swap buffers
-			glfwSwapBuffers(m_window);
-			//Get and organize events, like keyboard and mouse input, window resizing, etc...
-			glfwPollEvents();
-			m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
-			PostUpdateInput();
-		}//Check if the ESC key had been pressed or if the window had been closed
+		GetMouseUpdate();
+		UpdateInput();
+		//scene1->Update(m_timer.getElapsedTime());
+		//scene1->Render();
+		CSceneManager::Instance()->Update(&m_timer);
+		//Swap buffers
+		glfwSwapBuffers(m_window);
+		//Get and organize events, like keyboard and mouse input, window resizing, etc...
+		glfwPollEvents();
+		m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
+		PostUpdateInput();
 	}
 	scene1->Exit();
 	delete scene1;

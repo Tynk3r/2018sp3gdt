@@ -3,7 +3,7 @@
 // Init Everything to 0 first
 CSceneManager* CSceneManager::instance = nullptr;
 CSceneManager::CSceneManager() {
-	this->currentSceneID = Scenes::START_MENU;
+	this->currentSceneID = Scenes::SCENE_START_MENU;
 	this->added = false;
 }
 
@@ -19,29 +19,29 @@ CSceneManager* CSceneManager::Instance() {
 void CSceneManager::AddScene(Scene* newScene) {
 
 	// Warning
-	if (sceneList.size() >= Scenes::TOTAL_SCENES) {
-		std::cout << "Scenes in Vector is more than Enum!!" << std::endl;
-		std::cout << "new Scene was NOT Added, check your Enum AGAIN!" << std::endl;
+	if (sceneList.size() >= Scenes::SCENE_TOTAL) 
+	{
+		std::cout << "Scenes in Vector is more than Enum" << std::endl;
+		std::cout << "new Scene was not Added, check the Enum" << std::endl;
 	}
 	// If not more than Enum
-	else {
+	else 
+	{
 		// Add new Scene to Vector
 		this->sceneList.push_back(newScene);
 		// Init the new scene
-		InitScene();
+		//InitScene();
 	}
 }
 
 void CSceneManager::InitScene() {
 	// Init Latest Scene
-	sceneList[sceneList.size() - 1]->Init();
+	sceneList[currentSceneID]->Init();
 }
 
 void CSceneManager::GoToScene(Scenes SceneID) {
 	// Not more than total ammount of Scenes
-	if (SceneID < Scenes::TOTAL_SCENES) {
-		this->currentSceneID = SceneID;
-	}
+	nextSceneID = SceneID;
 }
 
 void CSceneManager::Update(StopWatch* m_timer) {
@@ -60,13 +60,13 @@ void CSceneManager::Update(StopWatch* m_timer) {
 }
 
 void CSceneManager::ChangeScene() {
-
-	// Check if in Main Game
-	if (currentSceneID == Scenes::GAME) {
-		/*if (sceneList[currentSceneID]->waveCount) {
-
-		}*/
+	if (nextSceneID != currentSceneID)
+	{
+		sceneList[currentSceneID]->Exit();
+		currentSceneID = nextSceneID;
+		sceneList[currentSceneID]->Init();
 	}
+	
 }
 
 int CSceneManager::GetCurrentSceneID() {

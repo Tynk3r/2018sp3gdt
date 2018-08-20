@@ -1,4 +1,4 @@
-#include "Controls.h"
+#include "SceneInGameMenu.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -10,19 +10,18 @@
 #include <sstream>
 #include "SceneManager.h"
 #include "SoundEngine.h"
-
 #define SP3_DEBUG
 
-Controls::Controls()
+SceneInGameMenu::SceneInGameMenu()
 {
 }
 
-Controls::~Controls()
+SceneInGameMenu::~SceneInGameMenu()
 {
 	
 }
 
-void Controls::Init()
+void SceneInGameMenu::Init()
 {
 
 	// Black background
@@ -245,9 +244,9 @@ void Controls::Init()
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	//LOAD MAIN MENU
-	meshList[GEO_CONTROLS] = MeshBuilder::GenerateQuad("Controls",1.f);
+	meshList[GEO_SceneInGameMenu] = MeshBuilder::GenerateQuad("SceneInGameMenu",1.f);
 	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_CONTROLS]->textureArray[i] = LoadTGA("Image//controls.tga");
+		meshList[GEO_SceneInGameMenu]->textureArray[i] = LoadTGA("Image//ingame.tga");
 
 
 
@@ -288,8 +287,47 @@ void Controls::Init()
 	
 }
 
-void Controls::Update(double dt)
+void SceneInGameMenu::Update(double dt)
 {
+
+	static bool bLButtonState = false;
+	if (Application::IsKeyPressed(MK_LBUTTON) && !bLButtonState)
+	{
+		if (Application::mouse_current_x >= 513 && Application::mouse_current_x <= 779)
+		{
+			// If CLick Anywhere
+			if (Application::mouse_current_y >= 239 && Application::mouse_current_y <= 312)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				SEngine->stopMenu();
+				SEngine->playGame();
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_TERRAIN);
+			}
+		}
+		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
+		{
+			if (Application::mouse_current_y >= 343 && Application::mouse_current_y <= 397)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_CONTROLS1);
+			}
+		}
+		if (Application::mouse_current_x >= 524 && Application::mouse_current_x <= 756)
+		{
+			if (Application::mouse_current_y >= 498 && Application::mouse_current_y <= 560)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
+				SEngine->stopMenu();
+				SEngine->playMenu();
+			}
+		}
+	}
+	else if (!Application::IsKeyPressed(MK_LBUTTON) && bLButtonState)
+	{
+		bLButtonState = false;
+	}
+
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if(Application::IsKeyPressed('2'))
@@ -355,7 +393,7 @@ void Controls::Update(double dt)
 	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
-void Controls::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneInGameMenu::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -382,7 +420,7 @@ void Controls::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Controls::RenderTerrain() {
+void SceneInGameMenu::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -391,7 +429,7 @@ void Controls::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void Controls::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneInGameMenu::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -431,7 +469,7 @@ void Controls::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Controls::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneInGameMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -485,7 +523,7 @@ void Controls::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float 
 
 }
 
-void Controls::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneInGameMenu::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -575,7 +613,7 @@ void Controls::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void Controls::RenderGround()
+void SceneInGameMenu::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -599,7 +637,7 @@ void Controls::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void Controls::Render()
+void SceneInGameMenu::Render()
 {
 
 	
@@ -609,7 +647,7 @@ void Controls::Render()
 		RenderPassMain();
 }
 
-void Controls::Exit()
+void SceneInGameMenu::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -623,20 +661,12 @@ void Controls::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
-	/*playerInfo->DetachCamera();
-
-	if (playerInfo->DropInstance() == false)
-	{
-#if _DEBUGMODE==1
-		cout << "Unable to drop PlayerInfo class" << endl;
-#endif
-	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void Controls::RenderTrees() 
+void SceneInGameMenu::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -651,7 +681,7 @@ void Controls::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* Controls::GetParticle(void)
+ParticleObject* SceneInGameMenu::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -675,7 +705,7 @@ ParticleObject* Controls::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void Controls::UpdateParticles(double dt)
+void SceneInGameMenu::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -739,7 +769,7 @@ void Controls::UpdateParticles(double dt)
 	}
 }
 
-void Controls::RenderParticles(ParticleObject *particle)
+void SceneInGameMenu::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -764,7 +794,7 @@ void Controls::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void Controls::RenderWorld()
+void SceneInGameMenu::RenderWorld()
 {
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -807,7 +837,7 @@ void Controls::RenderWorld()
 
 }
 
-void Controls::RenderPassMain()
+void SceneInGameMenu::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -879,7 +909,7 @@ void Controls::RenderPassMain()
 	//RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
 	modelStack.PushMatrix();
 	modelStack.Scale(100.f, 70.f, 5.f);
-	RenderMeshIn2D(meshList[GEO_CONTROLS], false, 255.f, 143.3f);
+	RenderMeshIn2D(meshList[GEO_SceneInGameMenu], false, 255.f, 143.3f);
 	
 	modelStack.PopMatrix();
 
@@ -896,7 +926,7 @@ void Controls::RenderPassMain()
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
 }
-void Controls::RenderPassGPass()
+void SceneInGameMenu::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();

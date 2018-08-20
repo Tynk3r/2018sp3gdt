@@ -5,7 +5,9 @@
 
 CProjectile::CProjectile(PROJECTILE_TYPE projectileType) :
 	projectileType(projectileType),
-	elapsedTime(0)
+	elapsedTime(0),
+	particleRate(1.f / 60.f),
+	projRot(0)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -21,13 +23,16 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	case PTYPE_FIRE:
 		this->setSpeed(1000);
 		this->setScale(Vector3(10, 10, 10));
+		this->particleRate = 1.f / 60.f;
 		break;
 	case PTYPE_ICE:
 		this->setSpeed(750);
 		this->setScale(Vector3(2, 2, 2));
+		this->particleRate = 1.f / 60.f;
 		break;
 	case PTYPE_BEAM:
 		this->setSpeed(0);
+		this->particleRate = 1.f / 60.f;
 		break;
 	}
 	this->setPos(pos);
@@ -45,6 +50,7 @@ void CProjectile::Update(double dt)
 {
 	CEntity::Update(dt);
 	this->elapsedTime += (float)dt;
+	this->projRot += (float)dt*2;
 	switch (projectileType)
 	{
 	case PTYPE_BEAM:
@@ -59,7 +65,11 @@ void CProjectile::Update(double dt)
 		break;
 	default:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
-		ParticleManager::GetInstance()->AddParticle(this);
+		if (this->elapsedTime > this->particleRate)
+		{
+			ParticleManager::GetInstance()->AddParticle(this);
+			this->elapsedTime = 0;
+		}
 		break;
 	}
 	lifespanTime -= dt;
@@ -84,6 +94,11 @@ CProjectile::PROJECTILE_TYPE CProjectile::getProjType()
 float CProjectile::getElapsedTime()
 {
 	return this->elapsedTime;
+}
+
+float CProjectile::getProjRot()
+{
+	return this->projRot;
 }
 
 void CProjectile::EmitParticles(int amt)
