@@ -131,6 +131,10 @@ uniform float paintTgaStrY = 1;
 //TRANSPARENCY/ALPHA UNIFORM VALUES
 uniform float colorAlpha;
 
+//MOVING TEXTURE UNIFORM VALUES
+uniform bool uvOffsetEnabled;
+uniform vec2 uvOffset;
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -157,7 +161,7 @@ void main(){
 		{
 			if(colorTextureEnabled[i] == true)
 			{
-				materialColor += texture2D( colorTexture[i], texCoord );
+				materialColor += texture2D( colorTexture[i], texCoord + (uvOffsetEnabled ? uvOffset : vec2(0,0)) );
 				++texCount;
 
 			}		
@@ -219,7 +223,7 @@ void main(){
 	{
 		if(colorTextureEnabled[0] == true && textEnabled == true)
 		{
-			color = texture2D( colorTexture[0], texCoord ) * vec4( textColor, colorAlpha );
+			color = texture2D( colorTexture[0], texCoord + (uvOffsetEnabled ? uvOffset : vec2(0,0)) ) * vec4( textColor, colorAlpha );
 		}
 		else
 		{
@@ -230,7 +234,7 @@ void main(){
 			{
 				if(colorTextureEnabled[i] == true)
 				{
-					color += texture2D( colorTexture[i], texCoord ) * vec4(1, 1, 1, colorAlpha);
+					color += texture2D( colorTexture[i], texCoord + (uvOffsetEnabled ? uvOffset : vec2(0,0)) ) * vec4(1, 1, 1, colorAlpha);
 					++texCount;
 				}
 			}
@@ -248,7 +252,7 @@ void main(){
 	if(paintTextureEnabled == true)
 	{
 		vec4 paintcol;
-		paintcol = texture2D( paintTexture, vec2( texCoord.x * (1 / paintTexco ) * (1 / paintTgaStrX ), texCoord.y * (1 / paintTexco ) * (1 / paintTgaStrY ) ) ); //For x and y coordinate, first divide it by 'paintTexco' so that it appears as 1 texture if texCoord is not bound by 0 to 1. Then, divide it by ((paint texture id length * 20) / ( scale of that coordinate ))
+		paintcol = texture2D( paintTexture, vec2( texCoord.x * (1 / paintTexco ) * (1 / paintTgaStrX ), texCoord.y * (1 / paintTexco ) * (1 / paintTgaStrY ) ) + (uvOffsetEnabled ? uvOffset : vec2(0,0)) ); //For x and y coordinate, first divide it by 'paintTexco' so that it appears as 1 texture if texCoord is not bound by 0 to 1. Then, divide it by ((paint texture id length * 20) / ( scale of that coordinate ))
 		if (paintcol.a > 0)
 		{
 			vec4 tempCol = color;
