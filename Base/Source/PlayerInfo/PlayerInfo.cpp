@@ -643,19 +643,46 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 
 	return true;
 }
-
+//rotate about the up vector
 bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+
+	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
+	Mtx44 rotation;
+	rotation.SetToRotation(yaw, rocketUp.x, rocketUp.y, rocketUp.z);
+	tempView = rotation * tempView;
+	rocketTarget = rocketPosition + tempView;
+	rocketRight = tempView.Cross(rocketUp);
+	rocketRight.Normalize();
 
 	return true;
 }
 bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+
+	float pitch = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
+	Mtx44 rotation;
+	rotation.SetToRotation(pitch, rocketRight.x, rocketRight.y, rocketRight.z);
+	tempView = rotation * tempView;
+	rocketTarget = rocketPosition + tempView;
+	rocketUp = rocketRight.Cross(tempView);
+	rocketUp.Normalize();
 
 	return true;
 }
 bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+
+	float roll = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
+	if (direction == false) roll = -roll;
+	Mtx44 rotation;
+	rotation.SetToRotation(roll, tempView.x, tempView.y, tempView.z);
+	rocketUp = rotation * rocketUp;
+	rocketRight = tempView.Cross(rocketUp);
+	rocketRight.Normalize();
 
 	return true;
 }

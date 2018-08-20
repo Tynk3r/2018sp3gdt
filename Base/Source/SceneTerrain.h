@@ -153,6 +153,7 @@ class SceneTerrain : public Scene
 		GEO_ICEBALL,
 		GEO_BOLT,
 		GEO_GOBLIN,
+		GEO_LIBRARIAN,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
