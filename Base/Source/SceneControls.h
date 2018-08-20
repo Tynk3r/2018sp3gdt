@@ -1,5 +1,5 @@
-#ifndef SCENE_TERRAIN_H
-#define SCENE_TERRAIN_H
+#ifndef SCENE_CONTROLS_H
+#define SCENE_CONTROLS_H
 
 #define PAINT_LENGTH 20
 
@@ -25,11 +25,10 @@
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
-#include "CameraEffects\CameraEffectManager.h"
 
 using namespace std;
 
-class SceneTerrain : public Scene
+class SceneControls : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -129,10 +128,18 @@ class SceneTerrain : public Scene
 		//TSL
 		GEO_SKYPLANE,
 		GEO_TERRAIN,
+		GEO_WETER,
+		GEO_CAMPFIRE_BASE,
+		GEO_CAMPFIRE_POT,
+		GEO_CAMPFIRE_POT_STAND,
+		GEO_TENT,
 		GEO_SPRITE_ANIMATION,
+		GEO_DOG,
+		GEO_PARTICLE_SMOKE,
+		GEO_PARTICLE_SPARK,
 		GEO_LIGHT_DEPTH_QUAD,
-		//GEO_TESTPAINTQUAD,
-		//GEO_TESTPAINTQUAD2,
+		GEO_TESTPAINTQUAD,
+		GEO_TESTPAINTQUAD2,
 		GEO_LEFTARM,
 		GEO_RIGHTARM,
 		GEO_DRONE_HEAD,
@@ -140,11 +147,8 @@ class SceneTerrain : public Scene
 		GEO_DRONE_RWING,
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
-		GEO_SPRITEANIM_ACTIONLINES,
-		GEO_FIREBALL,
-		GEO_ICEBALL,
-		GEO_BOLT,
-		GEO_GOBLIN,
+		GEO_CONTROLS,
+
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -152,14 +156,9 @@ class SceneTerrain : public Scene
 		RENDER_PASS_PRE,
 		RENDER_PASS_MAIN,
 	};
-	enum TARGET_STATE
-	{
-		T_STATIONARY = 0,
-		T_MOVING,
-	};
 public:
-	SceneTerrain();
-	~SceneTerrain();
+	SceneControls();
+	~SceneControls();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -198,7 +197,7 @@ private:
 	MS projectionStack;
 
 	Light lights[2];
-	bool godlights = false;
+	bool godlights = true;
 
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
@@ -216,15 +215,6 @@ private:
 
 	CKeyboard* theKeyboard;
 	CMouse* theMouse;
-	CPlayerInfo* playerInfo;
-
-	CEnemy* enemy1;
-	CDrone* drone1;
-
-	CEntity* targets[3];
-	CEntity* targetsMoving[3];
-	TARGET_STATE targetState = T_STATIONARY;
-	int stateChangeTimer = 0;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

@@ -16,14 +16,15 @@ class CSceneManager {
 public:
 	// Total Amount of Scenes
 	enum Scenes {
-		START_MENU,
-		GAME_MENU,
-		GAME,
-		CONTROLS,
-		IN_GAME_MENU,
-		CONTROLS1,
+		SCENE_START_MENU,
+		SCENE_GAME_MENU,
+		SCENE_IN_GAME_MENU,
+		SCENE_CONTROLS,
+		SCENE_CONTROLS1,
+		SCENE_TERRAIN,
+		SCENE_RANGE,
 
-		TOTAL_SCENES
+		SCENE_TOTAL
 	};
 
 	CSceneManager();
@@ -43,6 +44,9 @@ public:
 	// Get Current SceneID
 	int GetCurrentSceneID();
 
+	// Init the Scene
+	void InitScene();
+
 	// Get Current Scene
 	Scene* GetCurrentScene();
 
@@ -57,9 +61,8 @@ private:
 
 	// To Store the Current Scene enum
 	int currentSceneID;
+	int nextSceneID;
 
-	// Init the Scene
-	void InitScene();
 
 	// Change Scene?
 	void ChangeScene();

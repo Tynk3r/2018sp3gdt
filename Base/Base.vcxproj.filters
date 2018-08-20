@@ -31,13 +31,14 @@
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
-    <ClCompile Include="Source\SceneTest.cpp" />
-    <ClCompile Include="Source\GameMenu.cpp" />
     <ClCompile Include="Source\CameraEffects\CameraEffect.cpp" />
     <ClCompile Include="Source\CameraEffects\CameraEffectManager.cpp" />
-    <ClCompile Include="Source\Controls.cpp" />
-    <ClCompile Include="Source\InGameMenu.cpp" />
-    <ClCompile Include="Source\Controls1.cpp" />
+    <ClCompile Include="Source\SceneRange.cpp" />
+    <ClCompile Include="Source\SceneStartMenu.cpp" />
+    <ClCompile Include="Source\SceneGameMenu.cpp" />
+    <ClCompile Include="Source\SceneInGameMenu.cpp" />
+    <ClCompile Include="Source\SceneControls1.cpp" />
+    <ClCompile Include="Source\SceneControls.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -74,12 +75,13 @@
     <ClInclude Include="Source\SpriteAnimation.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
-    <ClInclude Include="Source\SceneTest.h" />
-    <ClInclude Include="Source\GameMenu.h" />
     <ClInclude Include="Source\CameraEffects\CameraEffect.h" />
     <ClInclude Include="Source\CameraEffects\CameraEffectManager.h" />
-    <ClInclude Include="Source\Controls.h" />
-    <ClInclude Include="Source\InGameMenu.h" />
-    <ClInclude Include="Source\Controls1.h" />
+    <ClInclude Include="Source\SceneRange.h" />
+    <ClInclude Include="Source\SceneStartMenu.h" />
+    <ClInclude Include="Source\SceneGameMenu.h" />
+    <ClInclude Include="Source\SceneInGameMenu.h" />
+    <ClInclude Include="Source\SceneControls1.h" />
+    <ClInclude Include="Source\SceneControls.h" />
   </ItemGroup>
 </Project>

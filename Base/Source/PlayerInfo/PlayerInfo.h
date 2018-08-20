@@ -43,7 +43,7 @@ public:
 	}
 	static bool DropInstance()
 	{
-		if (s_instance)
+		if (s_instance && s_instance != NULL)
 		{
 			delete s_instance;
 			s_instance = NULL;

@@ -1,4 +1,4 @@
-#include "SceneTerrain.h"
+#include "SceneRange.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -11,11 +11,11 @@
 #include <sstream>
 #define SP3_DEBUG
 
-SceneTerrain::SceneTerrain()
+SceneRange::SceneRange()
 {
 }
 
-SceneTerrain::~SceneTerrain()
+SceneRange::~SceneRange()
 {
 	if (theMouse)
 	{
@@ -29,7 +29,7 @@ SceneTerrain::~SceneTerrain()
 	}
 }
 
-void SceneTerrain::Init()
+void SceneRange::Init()
 {
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -281,19 +281,6 @@ void SceneTerrain::Init()
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
 
-	enemy1 = new CEnemy();
-	enemy1->Init();
-	enemy1->setPos(Vector3(-100.f, 20.f, -100.f));
-	enemy1->setScale(Vector3(10.f, 10.f, 10.f));
-	enemy1->setTarget(Vector3(100.f, 20.f, 100.f));
-
-	drone1 = new CDrone();
-	drone1->Init();
-	drone1->setPos(Vector3(0, 20.f, 0));
-	drone1->setScale(Vector3(10.f, 10.f, 10.f));
-	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
-	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
-
 	for (int i = 0; i < 3; i++)
 	{
 		targets[i] = new CEntity();
@@ -313,6 +300,27 @@ void SceneTerrain::Init()
 		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		targets1[i] = new CEntity();
+		targets1[i]->Init();
+		targets1[i]->setType(CEntity::E_TARGET);
+		targets1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+		targets1[i]->setOriginPos(targets1[i]->getPos());
+		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+	}
+	for (int i = 0; i < 3; i++) 
+	{
+		targetsMoving1[i] = new CEntity();
+		targetsMoving1[i]->Init();
+		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
+		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 75.f, -1500.f));
 	}
 
 	// Hardware Abstraction
@@ -342,7 +350,7 @@ void SceneTerrain::Init()
 	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
 }
 
-void SceneTerrain::Update(double dt)
+void SceneRange::Update(double dt)
 {
 
 	if (Application::IsKeyPressed(VK_ESCAPE))
@@ -453,11 +461,6 @@ void SceneTerrain::Update(double dt)
 		}
 
 		//add for ground/wall/target entity also!!
-		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
-		{
-			tempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
-			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, (((aa->getPos() + tempProj).x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), (((aa->getPos() + tempProj).z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0, 0, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_BURST);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-		}
 
 		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setIsDone(true);
 		else
@@ -466,7 +469,7 @@ void SceneTerrain::Update(double dt)
 			aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
 			CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 
-			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(Math::RandFloatMinMax(0.7, 1.0), Math::RandFloatMinMax(0.0, 0.1), Math::RandFloatMinMax(0.7, 1.0)), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(1, 0, 1), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 		}
 
 		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
@@ -609,6 +612,84 @@ void SceneTerrain::Update(double dt)
 		break;
 	}
 
+	bool shouldChange1 = true;
+	//check if shouldnt change (any targets still up)
+	switch (targetState1)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 3; ++i)
+		{
+			if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 3; ++i)
+		{
+			if (!targets1[i]->isDone()) { shouldChange1 = false; }
+		}
+		break;
+	default:
+		break;
+	}
+	if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
+	//if should change switches state
+	if (shouldChange1)
+	{
+		stateChangeTimer1--;
+		if (stateChangeTimer1 <= 0)
+		{
+			stateChangeTimer1 = 0;
+			switch (targetState1)
+			{
+			case T_MOVING:
+				targetState1 = T_STATIONARY;
+				for (int i = 0; i < 3; i++)
+				{
+					targets1[i]->setIsDone(false);
+					targets1[i]->setType(CEntity::E_TARGET);
+					targets1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+					targets1[i]->setOriginPos(targets1[i]->getPos());
+					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+					targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+				}
+				break;
+			case T_STATIONARY:
+				targetState1 = T_MOVING;
+				for (int i = 0; i < 3; i++)
+				{
+					targetsMoving1[i]->setIsDone(false);
+					targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
+					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+					targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 75.f, -1500.f));
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
+	switch (targetState1)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 3; ++i)
+		{
+			targets1[i]->setIsDone(true);
+			if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 3; ++i)
+		{
+			if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
+			targetsMoving1[i]->setIsDone(true);
+		}
+		break;
+	default:
+		break;
+	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -617,9 +698,9 @@ void SceneTerrain::Update(double dt)
 
 	testvar += 0.05 * dt;
 
-	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -629,7 +710,7 @@ void SceneTerrain::Update(double dt)
 	//std::cout << camera.position << std::endl;
 }
 
-void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -656,7 +737,7 @@ void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTerrain::RenderTerrain() {
+void SceneRange::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -665,7 +746,7 @@ void SceneTerrain::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneRange::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -704,7 +785,7 @@ void SceneTerrain::RenderTextOnScreen(Mesh* mesh, std::string text, Color color,
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneRange::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -770,7 +851,7 @@ void SceneTerrain::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, fl
 
 }
 
-void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneRange::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -860,7 +941,7 @@ void SceneTerrain::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneTerrain::RenderGround()
+void SceneRange::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -884,7 +965,7 @@ void SceneTerrain::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneTerrain::Render()
+void SceneRange::Render()
 {
 	//******************************* PRE RENDER PASS*************************************
 		RenderPassGPass();
@@ -892,7 +973,7 @@ void SceneTerrain::Render()
 		RenderPassMain();
 }
 
-void SceneTerrain::Exit()
+void SceneRange::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -914,18 +995,18 @@ void SceneTerrain::Exit()
 	}
 	playerInfo->DetachCamera();
 
-	if (playerInfo->DropInstance() == false)
+	/*if (playerInfo->DropInstance() == false)
 	{
 #if _DEBUGMODE==1
 		cout << "Unable to drop PlayerInfo class" << endl;
 #endif
-	}
+	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneTerrain::RenderTrees() 
+void SceneRange::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -940,7 +1021,7 @@ void SceneTerrain::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneTerrain::GetParticle(void)
+ParticleObject* SceneRange::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -964,7 +1045,7 @@ ParticleObject* SceneTerrain::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneTerrain::UpdateParticles(double dt)
+void SceneRange::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -1028,7 +1109,7 @@ void SceneTerrain::UpdateParticles(double dt)
 	}
 }
 
-void SceneTerrain::RenderParticles(ParticleObject *particle)
+void SceneRange::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -1053,7 +1134,7 @@ void SceneTerrain::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneTerrain::RenderWorld()
+void SceneRange::RenderWorld()
 {
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
@@ -1181,6 +1262,18 @@ void SceneTerrain::RenderWorld()
 			modelStack.PopMatrix();
 		}
 	}
+	if (stateChangeTimer1 > 0)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), -1500.f);
+			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_SPHERE], godlights);
+			modelStack.PopMatrix();
+		}
+	}
 
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -1282,7 +1375,7 @@ void SceneTerrain::RenderWorld()
 	modelStack.PopMatrix();
 }
 
-void SceneTerrain::RenderPassMain()
+void SceneRange::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1393,7 +1486,7 @@ void SceneTerrain::RenderPassMain()
 	ss1 << "Health: " << playerInfo->GetHealth();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 }
-void SceneTerrain::RenderPassGPass()
+void SceneRange::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();

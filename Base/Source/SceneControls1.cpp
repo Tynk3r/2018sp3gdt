@@ -1,4 +1,4 @@
-#include "Controls1.h"
+#include "SceneControls1.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -12,16 +12,16 @@
 #include "SoundEngine.h"
 #define SP3_DEBUG
 
-Controls1::Controls1()
+SceneControls1::SceneControls1()
 {
 }
 
-Controls1::~Controls1()
+SceneControls1::~SceneControls1()
 {
 	
 }
 
-void Controls1::Init()
+void SceneControls1::Init()
 {
 
 	// Black background
@@ -287,8 +287,28 @@ void Controls1::Init()
 	
 }
 
-void Controls1::Update(double dt)
+void SceneControls1::Update(double dt)
 {
+
+	static bool bLButtonState = false;
+	if (Application::IsKeyPressed(MK_LBUTTON) && !bLButtonState)
+	{
+		// if at how to play menu 
+		bLButtonState = true;
+		if (Application::mouse_current_x >= 464 && Application::mouse_current_x <= 782)
+		{
+			if (Application::mouse_current_y >= 515 && Application::mouse_current_y <= 595)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+			}
+		}
+	}
+	else if (!Application::IsKeyPressed(MK_LBUTTON) && bLButtonState)
+	{
+		bLButtonState = false;
+	}
+
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if(Application::IsKeyPressed('2'))
@@ -354,7 +374,7 @@ void Controls1::Update(double dt)
 	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
-void Controls1::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneControls1::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -381,7 +401,7 @@ void Controls1::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Controls1::RenderTerrain() {
+void SceneControls1::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -390,7 +410,7 @@ void Controls1::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void Controls1::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneControls1::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -430,7 +450,7 @@ void Controls1::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, fl
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Controls1::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneControls1::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -484,7 +504,7 @@ void Controls1::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float
 
 }
 
-void Controls1::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneControls1::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -574,7 +594,7 @@ void Controls1::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void Controls1::RenderGround()
+void SceneControls1::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -598,7 +618,7 @@ void Controls1::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void Controls1::Render()
+void SceneControls1::Render()
 {
 
 	
@@ -608,7 +628,7 @@ void Controls1::Render()
 		RenderPassMain();
 }
 
-void Controls1::Exit()
+void SceneControls1::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -622,20 +642,12 @@ void Controls1::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
-	/*playerInfo->DetachCamera();
-
-	if (playerInfo->DropInstance() == false)
-	{
-#if _DEBUGMODE==1
-		cout << "Unable to drop PlayerInfo class" << endl;
-#endif
-	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void Controls1::RenderTrees() 
+void SceneControls1::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -650,7 +662,7 @@ void Controls1::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* Controls1::GetParticle(void)
+ParticleObject* SceneControls1::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -674,7 +686,7 @@ ParticleObject* Controls1::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void Controls1::UpdateParticles(double dt)
+void SceneControls1::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -738,7 +750,7 @@ void Controls1::UpdateParticles(double dt)
 	}
 }
 
-void Controls1::RenderParticles(ParticleObject *particle)
+void SceneControls1::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -763,7 +775,7 @@ void Controls1::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void Controls1::RenderWorld()
+void SceneControls1::RenderWorld()
 {
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -806,7 +818,7 @@ void Controls1::RenderWorld()
 
 }
 
-void Controls1::RenderPassMain()
+void SceneControls1::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -895,7 +907,7 @@ void Controls1::RenderPassMain()
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
 }
-void Controls1::RenderPassGPass()
+void SceneControls1::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();

@@ -1,4 +1,4 @@
-#include "SceneTest.h"
+#include "SceneGameMenu.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -12,16 +12,16 @@
 #include "SoundEngine.h"
 #define SP3_DEBUG
 
-SceneTest::SceneTest()
+SceneGameMenu::SceneGameMenu()
 {
 }
 
-SceneTest::~SceneTest()
+SceneGameMenu::~SceneGameMenu()
 {
 	
 }
 
-void SceneTest::Init()
+void SceneGameMenu::Init()
 {
 
 	// Black background
@@ -244,11 +244,9 @@ void SceneTest::Init()
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	//LOAD MAIN MENU
-	meshList[GEO_MAINMENU] = MeshBuilder::GenerateQuad("Menu",1.f);
+	meshList[GEO_SceneGameMenu] = MeshBuilder::GenerateQuad("GameMenu",1.f);
 	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_MAINMENU]->textureArray[i] = LoadTGA("Image//menu.tga");
-
-
+		meshList[GEO_SceneGameMenu]->textureArray[i] = LoadTGA("Image//GameMenu.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -284,11 +282,51 @@ void SceneTest::Init()
 	// Sound
 
 	SEngine = new CSoundEngine;
-	SEngine->playMenu();
+	
 }
 
-void SceneTest::Update(double dt)
+void SceneGameMenu::Update(double dt)
 {
+
+	static bool bLButtonState = false;
+	if (Application::IsKeyPressed(MK_LBUTTON) && !bLButtonState)
+	{
+		// if at how to play menu 
+		bLButtonState = true;
+
+		if (Application::mouse_current_x >= 513 && Application::mouse_current_x <= 779)
+		{
+			// If CLick Anywhere
+			if (Application::mouse_current_y >= 239 && Application::mouse_current_y <= 312)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				SEngine->stopMenu();
+				SEngine->playGame();
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+			}
+		}
+		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
+		{
+			if (Application::mouse_current_y >= 343 && Application::mouse_current_y <= 397)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_CONTROLS);
+			}
+		}
+		if (Application::mouse_current_x >= 524 && Application::mouse_current_x <= 756)
+		{
+			if (Application::mouse_current_y >= 498 && Application::mouse_current_y <= 560)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
+			}
+		}
+	}
+	else if (!Application::IsKeyPressed(MK_LBUTTON) && bLButtonState)
+	{
+		bLButtonState = false;
+	}
+
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if(Application::IsKeyPressed('2'))
@@ -350,9 +388,11 @@ void SceneTest::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+
+	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
-void SceneTest::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneGameMenu::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -379,7 +419,7 @@ void SceneTest::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTest::RenderTerrain() {
+void SceneGameMenu::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -388,7 +428,7 @@ void SceneTest::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneTest::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneGameMenu::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -428,7 +468,7 @@ void SceneTest::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, fl
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneTest::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneGameMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -482,7 +522,7 @@ void SceneTest::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float
 
 }
 
-void SceneTest::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneGameMenu::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -572,7 +612,7 @@ void SceneTest::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneTest::RenderGround()
+void SceneGameMenu::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -596,7 +636,7 @@ void SceneTest::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneTest::Render()
+void SceneGameMenu::Render()
 {
 
 	
@@ -606,7 +646,7 @@ void SceneTest::Render()
 		RenderPassMain();
 }
 
-void SceneTest::Exit()
+void SceneGameMenu::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -620,20 +660,12 @@ void SceneTest::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
-	/*playerInfo->DetachCamera();
-
-	if (playerInfo->DropInstance() == false)
-	{
-#if _DEBUGMODE==1
-		cout << "Unable to drop PlayerInfo class" << endl;
-#endif
-	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneTest::RenderTrees() 
+void SceneGameMenu::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -648,7 +680,7 @@ void SceneTest::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneTest::GetParticle(void)
+ParticleObject* SceneGameMenu::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -672,7 +704,7 @@ ParticleObject* SceneTest::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneTest::UpdateParticles(double dt)
+void SceneGameMenu::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -736,7 +768,7 @@ void SceneTest::UpdateParticles(double dt)
 	}
 }
 
-void SceneTest::RenderParticles(ParticleObject *particle)
+void SceneGameMenu::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -761,7 +793,7 @@ void SceneTest::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneTest::RenderWorld()
+void SceneGameMenu::RenderWorld()
 {
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -804,7 +836,7 @@ void SceneTest::RenderWorld()
 
 }
 
-void SceneTest::RenderPassMain()
+void SceneGameMenu::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -876,8 +908,7 @@ void SceneTest::RenderPassMain()
 	//RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
 	modelStack.PushMatrix();
 	modelStack.Scale(100.f, 70.f, 5.f);
-	RenderMeshIn2D(meshList[GEO_MAINMENU], false, 255.f, 143.3f);
-	
+	RenderMeshIn2D(meshList[GEO_SceneGameMenu], false, 255.f, 143.3f);
 	modelStack.PopMatrix();
 
 
@@ -893,7 +924,7 @@ void SceneTest::RenderPassMain()
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
 }
-void SceneTest::RenderPassGPass()
+void SceneGameMenu::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();
