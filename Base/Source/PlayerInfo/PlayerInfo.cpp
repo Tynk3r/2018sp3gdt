@@ -82,6 +82,11 @@ void CPlayerInfo::Init(void)
 	setCollider(true);
 	currentAnimState = PLR_ANIM_IDLE;
 	animFrame = 0;
+
+	rocketPosition.Set(0, 0, 0);
+	rocketTarget.Set(0, 0, 1);
+	rocketUp.Set(0, 1, 0);
+	rocketRight.Set(1, 0, 0);
 }
 
 // Returns true if the player is on ground
@@ -273,90 +278,127 @@ Vector3 CPlayerInfo::GetCameraSway() const
  ********************************************************************************/
 void CPlayerInfo::Update(double dt)
 {
-	if (KeyboardController::GetInstance()->IsKeyReleased('Z'))
+	if (!rocketMode)
 	{
-		theCurrentPosture = (CURRENT_POSTURE)(theCurrentPosture + 1);
-		if (theCurrentPosture == NUM_POSTURE)
-			theCurrentPosture = STAND;
-		Vector3 viewDirection = getTarget() - getPos();
-		switch (theCurrentPosture)
+		if (KeyboardController::GetInstance()->IsKeyReleased('Z'))
 		{
-		case STAND:
-			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			setPos(getPos() + Vector3(0.f, 8.0f, 0.f));
-			setTarget(getPos() + viewDirection);
-			m_dSpeed = 200.f;
-			break;
-		case CROUCH:
-			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			setPos(getPos() + Vector3(0.f, -3.0f, 0.f));
-			setTarget(getPos() + viewDirection);
-			m_dSpeed = 150.f;
-			break;
-		case PRONE:
-			//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
-			setPos(getPos() + Vector3(0.f, -5.0f, 0.f));
-			setTarget(getPos() + viewDirection);
-			m_dSpeed = 50.f;
-			break;
-		default:
-			break;
+			theCurrentPosture = (CURRENT_POSTURE)(theCurrentPosture + 1);
+			if (theCurrentPosture == NUM_POSTURE)
+				theCurrentPosture = STAND;
+			Vector3 viewDirection = getTarget() - getPos();
+			switch (theCurrentPosture)
+			{
+			case STAND:
+				//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
+				setPos(getPos() + Vector3(0.f, 8.0f, 0.f));
+				setTarget(getPos() + viewDirection);
+				m_dSpeed = 200.f;
+				break;
+			case CROUCH:
+				//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
+				setPos(getPos() + Vector3(0.f, -3.0f, 0.f));
+				setTarget(getPos() + viewDirection);
+				m_dSpeed = 150.f;
+				break;
+			case PRONE:
+				//position.y = m_pTerrain->Get0.f(Vector3(position.x, 0.0f, position.z));
+				setPos(getPos() + Vector3(0.f, -5.0f, 0.f));
+				setTarget(getPos() + viewDirection);
+				m_dSpeed = 50.f;
+				break;
+			default:
+				break;
+			}
 		}
+
+		// Constrain the position
+		Constrain();
+		UpdateJumpUpwards(dt);
+		UpdateFreeFall(dt);
+
+		double timeLim = camBobMaxTimeWalk;
+
+		if (hasMoved && camBobTime <= 0.0) camBobTime = timeLim;
+
+		if (camBobTime > 0.0 && camBobTime <= timeLim && hasMoved)
+		{
+			camBobTime -= dt;
+			camBobHeight = -Math::FAbs(0.01 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI));
+			camBobRotate = 0.008 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI);
+		}
+		else
+		{
+			camBobHeight = 0;
+			camBobRotate = 0;
+			camBobTime = 0.0;
+		}
+
+		if (up.y < 0) up = -up;
+
+		if (cameraSway.x > 0)
+		{
+			cameraSway.x -= 2 * dt;
+			if (cameraSway.x < 0) cameraSway.x = 0;
+		}
+		else if (cameraSway.x < 0)
+		{
+			cameraSway.x += 2 * dt;
+			if (cameraSway.x > 0) cameraSway.x = 0;
+		}
+
 	}
 
-	// Constrain the position
-	Constrain();
-	UpdateJumpUpwards(dt);
-	UpdateFreeFall(dt);
-		
-	double timeLim = camBobMaxTimeWalk;
-
-	if (hasMoved && camBobTime <= 0.0) camBobTime = timeLim;
-
-	if (camBobTime > 0.0 && camBobTime <= timeLim && hasMoved)
+	if (rocketMode)
 	{
-		camBobTime -= dt;
-		camBobHeight = -Math::FAbs(0.01 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI));
-		camBobRotate = 0.008 * sinf(((timeLim - camBobTime) / timeLim) * (2 + hasRan * 0.4) * Math::PI);
-	}
-	else
-	{
-		camBobHeight = 0;
-		camBobRotate = 0;
-		camBobTime = 0.0;
-	}
+		Vector3 viewVector = (rocketTarget - rocketPosition).Normalized();
 
-	if (up.y < 0) up = -up;
-
-	if (cameraSway.x > 0)
-	{
-		cameraSway.x -= 2 * dt;
-		if (cameraSway.x < 0) cameraSway.x = 0;
-	}
-	else if (cameraSway.x < 0)
-	{
-		cameraSway.x += 2 * dt;
-		if (cameraSway.x > 0) cameraSway.x = 0;
+			rocketPosition += viewVector * (float)m_dSpeed * (float)dt;
+			//std::list<CEntity*>::iterator it, end;
+			//end = EntityManager::GetInstance()->entityList.end();
+			//for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+			//{
+			//	if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			//	{
+			//		if ((*it)->getType() != E_PROJECTILE)
+			//			setPos(getPos() - (viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime) - (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
+			//		break;
+			//	}
+			//}
+			////	 Constrain the position
+			//Constrain();
+			// Update the target
+			rocketTarget = rocketPosition + viewVector;
 	}
 
 	if (screenShakeOn) { screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5)); }
 	else { screenshakeOffset.SetZero(); }
 
 	// Update minimap rotation angle
-	Vector3 viewUV = (getTarget() - getPos()).Normalized();/*
-	CMinimap::GetInstance()->SetAngle(atan2(viewUV.z, viewUV.x) * 57.2883513685549146);*/
+	//Vector3 viewUV = (getTarget() - getPos()).Normalized();
+	//CMinimap::GetInstance()->SetAngle(atan2(viewUV.z, viewUV.x) * 57.2883513685549146);
 
 	// If a camera is attached to this playerInfo class, then update it
 	if (attachedCamera)
 	{
-		Vector3 camDir = viewUV;
-		float crot = cosf(camBobRotate);
-		float srot = sinf(camBobRotate);
-		camDir.Set(camDir.x * crot + camDir.z * srot, camDir.y, -camDir.x * srot + camDir.z * crot);
+		if (!rocketMode)
+		{
+			Vector3 camDir = (getTarget() - getPos()).Normalized();
+			float crot = cosf(camBobRotate);
+			float srot = sinf(camBobRotate);
+			camDir.Set(camDir.x * crot + camDir.z * srot, camDir.y, -camDir.x * srot + camDir.z * crot);
 
-		attachedCamera->position = getPos() + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
-		attachedCamera->target = getPos() + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
-		attachedCamera->up = up.Normalized();
+			attachedCamera->position = getPos() + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->target = getPos() + camDir + Vector3(0, camBobHeight, 0) + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->up = up.Normalized();
+		}
+		else
+		{
+			Vector3 camDir = (rocketTarget - rocketPosition).Normalized();
+
+			attachedCamera->position = rocketPosition + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->target = rocketPosition + camDir + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->up = rocketUp.Normalized();
+		}
 	}
 	
 	//Update Right & Left Arm offset & rotations
@@ -435,6 +477,8 @@ void CPlayerInfo::Update(double dt)
 // Detect and process front / back movement on the controller
 bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	if (rocketMode) return false;
+
 	hasMoved = true;
 	if (speedMultiplier > 1) hasRan = true;
 	// Add camera sway
@@ -499,6 +543,8 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 // Detect and process left / right movement on the controller
 bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, const float speedMultiplier)
 {
+	if (rocketMode) return Rocket_Roll(deltaTime, direction, speedMultiplier);
+	
 	hasMoved = true;
 
 	Vector3 viewVector = getTarget() - getPos();
@@ -552,6 +598,8 @@ bool CPlayerInfo::Look_UpDown(const float deltaTime, const bool direction, const
 	if (speedMultiplier == 0.0f)
 		return false;
 
+	if (rocketMode) return Rocket_Pitch(deltaTime, direction, speedMultiplier);
+
 	Vector3 viewUV = (getTarget() - getPos()).Normalized();
 	Vector3 rightUV;
 
@@ -575,6 +623,8 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 	if (speedMultiplier == 0.0f)
 		return false;
 
+	if (rocketMode) return Rocket_Yaw(deltaTime, direction, speedMultiplier);
+
 	cameraSway.x -= speedMultiplier / 40;
 	if (cameraSway.x > 1.0) cameraSway.x = 1.0;
 	else if (cameraSway.x < -1.0) cameraSway.x = -1.0;
@@ -590,6 +640,22 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 	rightUV.y = 0;
 	rightUV.Normalize();
 	up = rightUV.Cross(viewUV).Normalized();
+
+	return true;
+}
+
+bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+{
+
+	return true;
+}
+bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+{
+
+	return true;
+}
+bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+{
 
 	return true;
 }

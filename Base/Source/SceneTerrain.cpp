@@ -492,18 +492,32 @@ void SceneTerrain::Update(double dt)
 		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
 
-	if(Application::IsKeyPressed('I'))
-		lights[0].position.z -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('K'))
-		lights[0].position.z += (float)(10.f * dt);
-	if(Application::IsKeyPressed('J'))
-		lights[0].position.x -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('L'))
-		lights[0].position.x += (float)(10.f * dt);
-	if(Application::IsKeyPressed('O'))
-		lights[0].position.y -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('P'))
-		lights[0].position.y += (float)(10.f * dt);
+	if (KeyboardController::GetInstance()->IsKeyPressed('U'))
+	{
+		if (playerInfo->rocketMode)
+		{
+			playerInfo->rocketMode = false;
+		}
+		else if (!playerInfo->rocketMode)
+		{
+			playerInfo->rocketMode = true;
+			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
+			playerInfo->rocketTarget = playerInfo->rocketPosition + (playerInfo->getTarget() - playerInfo->getPos()).Normalized();
+		}
+	}
+
+	//if(Application::IsKeyPressed('I'))
+	//	lights[0].position.z -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('K'))
+	//	lights[0].position.z += (float)(10.f * dt);
+	//if(Application::IsKeyPressed('J'))
+	//	lights[0].position.x -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('L'))
+	//	lights[0].position.x += (float)(10.f * dt);
+	//if(Application::IsKeyPressed('O'))
+	//	lights[0].position.y -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('P'))
+	//	lights[0].position.y += (float)(10.f * dt);
 
 	rotateAngle += (float)(10 * dt);
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);

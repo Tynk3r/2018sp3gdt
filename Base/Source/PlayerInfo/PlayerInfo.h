@@ -140,6 +140,12 @@ public:
 	bool Look_UpDown(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f);
 	// Detect and process look left / right on the controller
 	bool Look_LeftRight(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f);
+
+	//Rocket movement
+	bool Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //left and right
+	bool Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //up and down
+	bool Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //roll
+
 	// Stop sway
 	bool StopSway(const float deltaTime);
 
@@ -159,6 +165,9 @@ public:
 	float camBobRotate, camBobHeight;
 	double camBobTime, camBobMaxTimeWalk, camBobMaxTimeRun;
 	bool screenShakeOn = false;
+	bool rocketMode = false;
+
+	Vector3 rocketPosition, rocketUp, rocketRight, rocketTarget;
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
