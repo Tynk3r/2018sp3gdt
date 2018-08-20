@@ -1,5 +1,6 @@
 #include "Particle_2.h"
-
+#include "EasingStyles\QuadEase.h"
+#include "EasingStyles\BackEase.h"
 CParticle_2::CParticle_2(PARTICLE_TYPE particleType, Vector3 pos, Vector3 vel, Vector3 scale) :
 	parent(NULL),
 	animFrame(0),
@@ -26,6 +27,21 @@ CParticle_2::CParticle_2(PARTICLE_TYPE particleType, CEntity * parent) :
 {
 	this->setType(E_PARTICLE);
 	this->setPos(parent->getPos());
+	this->originPosition = parent->getOriginPos();
+	this->Init();
+}
+
+CParticle_2::CParticle_2(std::string text, CEntity * parent, Color color) :
+	parent(parent),
+	text(text),
+	animFrame(0),
+	transparency(0),
+	endScale(parent->getScale()),
+	rot(0)
+{
+	this->setType(E_PARTICLE);
+	this->particleType = PTYPE_TEXT;
+	this->startColor = this->endColor = this->color = color;
 	this->originPosition = parent->getOriginPos();
 	this->Init();
 }
@@ -101,6 +117,21 @@ void CParticle_2::Init()
 		this->lifeSpan = Math::RandFloatMinMax(0.6f, 0.9f);
 		this->setSpeed(Math::RandFloatMinMax(-45, 45));//setting speed for ROTATION btw
 		break;
+	case PTYPE_TEXT:
+		this->acc = Vector3(0, -Math::RandFloatMinMax(600, 1000), 0);
+		//this->endScale = Vector3(1.f, 1.f, 1.f) * Math::RandFloatMinMax(0.05f, 0.2f);
+		this->setSpeed(0);
+		this->lifeSpan = Math::RandFloatMinMax(1.f, 1.5f);
+		if (this->parent != NULL)
+		{
+			this->setPos(this->parent->getPos());
+			this->vel = Vector3(Math::RandFloatMinMax(-150, 150) , 500, Math::RandFloatMinMax(-150, 150));
+			this->setScale(Vector3(0.1f, 0.1f, 0.1f));
+			this->startScale = this->getScale();
+			this->endScale = this->parent->getScale()*Math::RandFloatMinMax(5.f, 7.15f);
+			
+		}
+		break;
 	}
 }
 
@@ -120,6 +151,27 @@ void CParticle_2::Update(double dt)
 	case PTYPE_ICE:
 		this->transparency = Math::lerp(0.1f, 1.f, alphaVal);
 		break;
+	case PTYPE_TEXT:
+		if (this->animFrame < this->lifeSpan * 0.35f)
+		{
+			alphaVal = this->animFrame / (this->lifeSpan*0.35f);
+			float backAlpha = Back::easeOut(alphaVal, 0, 1, 1);//can b optimised evnetual;ly
+			float cosVar = cosf(this->animFrame*12.f);//coul dbe substituted with elapsedTime evebtuyaly
+			std::cout << cosVar << std::endl;
+			this->setScale(this->startScale.lerped(this->endScale, backAlpha));
+			this->transparency = Math::lerp(1.f, 0.1f, backAlpha);
+			this->color.Set(this->startColor.r + 0.2f * cosVar, this->startColor.g + 0.2f * cosVar, this->startColor.b + 0.2f * cosVar);
+		}
+		else
+		{
+			alphaVal = (this->animFrame - this->lifeSpan * 0.35f) / (this->lifeSpan*0.65f);
+			float quadAlpha = Quad::easeIn(alphaVal, 0, 1, 1);//can b optimised evnetual;ly
+			float cosVar = cosf(this->animFrame*12.f);//coul dbe substituted with elapsedTime evebtuyaly
+			std::cout << cosVar << std::endl;
+			this->setScale(this->endScale.lerped(this->startScale, quadAlpha));
+			this->transparency = Math::lerp(0.1f, 1.f, quadAlpha);
+			this->color.Set(this->startColor.r + 0.2f * cosVar, this->startColor.g + 0.2f * cosVar, this->startColor.b + 0.2f * cosVar);
+		}
 	}
 }
 
@@ -146,4 +198,9 @@ float CParticle_2::getTransparency()
 Vector3 CParticle_2::getOriginPos()
 {
 	return this->originPosition;
+}
+
+Color CParticle_2::getColor() const
+{
+	return this->color;
 }

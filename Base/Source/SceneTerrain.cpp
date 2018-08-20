@@ -625,7 +625,7 @@ void SceneTerrain::Update(double dt)
 
 void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
 {
-	if(!mesh || mesh->textureID <= 0)
+	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
 	
 	glDisable(GL_DEPTH_TEST);
@@ -634,7 +634,7 @@ void SceneTerrain::RenderText(Mesh* mesh, std::string text, Color color)
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+	glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
 	for(unsigned i = 0; i < text.length(); ++i)
 	{
@@ -1192,7 +1192,7 @@ void SceneTerrain::RenderWorld()
 			Vector3 parSca = par->getScale();
 			Vector3 parOrigPos = par->getOriginPos();
 			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
-			switch (par->getParType())
+			switch (par->getParType()) // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Switch Statement START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 			{
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
@@ -1227,8 +1227,23 @@ void SceneTerrain::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
-
+			case CParticle_2::PTYPE_TEXT:
+			{
+				int textLength = par->text.length() + 1;
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Translate(-parSca.x*textLength*0.4f, 0, 0);
+				//RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderText(meshList[GEO_TEXT], par->text, par->getColor());
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
 			}
+			}					// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Switch Statement END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	//modelStack.PushMatrix();
@@ -1277,6 +1292,12 @@ void SceneTerrain::RenderWorld()
 	modelStack.Rotate(rArmRot.z, 0, 0, 1);
 	modelStack.Scale(1, 1, 1.5);
 	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 0, 0);
+	modelStack.Scale(100, 100, 1);
+	RenderText(meshList[GEO_TEXT], "heck", Color(0, 1, 0));
 	modelStack.PopMatrix();
 }
 
