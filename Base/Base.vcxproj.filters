@@ -83,5 +83,9 @@
     <ClInclude Include="Source\SceneInGameMenu.h" />
     <ClInclude Include="Source\SceneControls1.h" />
     <ClInclude Include="Source\SceneControls.h" />
+    <ClInclude Include="Source\Controls.h" />
+    <ClInclude Include="Source\InGameMenu.h" />
+    <ClInclude Include="Source\Controls1.h" />
+    <ClInclude Include="Source\TimeTrackerManager.h" />
   </ItemGroup>
 </Project>
