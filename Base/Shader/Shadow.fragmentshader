@@ -249,7 +249,12 @@ void main(){
 	{
 		vec4 paintcol;
 		paintcol = texture2D( paintTexture, vec2( texCoord.x * (1 / paintTexco ) * (1 / paintTgaStrX ), texCoord.y * (1 / paintTexco ) * (1 / paintTgaStrY ) ) ); //For x and y coordinate, first divide it by 'paintTexco' so that it appears as 1 texture if texCoord is not bound by 0 to 1. Then, divide it by ((paint texture id length * 20) / ( scale of that coordinate ))
-		if (paintcol.a > 0) color += paintcol;
+		if (paintcol.a > 0)
+		{
+			vec4 tempCol = color;
+			color.xyz = mix(color.xyz, paintcol.xyz, paintcol.a * 0.7);
+			//color.xyz += tempCol.xyz;
+		}
 	}
 
 	if(fogParam.enabled)

@@ -1,6 +1,15 @@
 #ifndef LOAD_TGA_H
 #define LOAD_TGA_H
 
+enum PAINT_PATTERNS
+{
+	PAINT_DOT, //single drop of paint
+	PAINT_BURST, //'+' shape paint
+	PAINT_UNIQUE_FIRE, //color cannot be changed
+	PAINT_MAGICCIRCLE, //cool looking circle
+	PAINT_TOTAL
+};
+
 struct Vector3;
 GLuint LoadTGA(const char *file_path);
 
@@ -11,13 +20,8 @@ GLuint LoadTGA(const char *file_path);
 //Fourth parameter : Color of paint
 //Fifth parameter : Alpha of paint
 //Sixth parameter : Length of texture ID (e.g for 256x256 texture size, put in 256)
-GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength);
-
-//Same as PaintTGA but the paint spreads out a lot more
-GLuint PaintTGABurst(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength, int spread = 2);
-
-//Same as PaintTGA but the paint is in the shape of... uh (note: DO NOT PRESENT THIS)
-GLuint PaintTGAFunny(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength);
+//Seventh parameter : Type of paint shape you want
+GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, float tgaLength, PAINT_PATTERNS type);
 
 GLuint NewTGA(int size);
 
