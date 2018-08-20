@@ -498,7 +498,7 @@ void SceneTerrain::Update(double dt)
 		{
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
-			playerInfo->rocketTarget = playerInfo->rocketPosition + (playerInfo->getTarget() - playerInfo->getPos()).Normalized();
+			playerInfo->rocketTarget = playerInfo->rocketPosition + Vector3(0, 0, -1);
 		}
 	}
 
