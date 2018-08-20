@@ -437,6 +437,7 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 		{
 			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
 			{
+				if ((*it)->getType() != E_PROJECTILE)
 				setPos(getPos() - (viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime) - (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
 				break;
 			}

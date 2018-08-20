@@ -16,6 +16,7 @@ public:
 
 	void AddParticle(CParticle_2* _newParticle);
 	void AddParticle(CEntity* entity);//automatically create a CParticle_2 based on the entity
+	void AddParticle(std::string text, CEntity* entity, Color color = Color());
 	bool RemoveParticle(CParticle_2* _existingEntity);
 /*
 	std::list<CEntity*> getList() { return entityList; }*/
