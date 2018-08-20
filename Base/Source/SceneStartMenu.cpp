@@ -281,7 +281,7 @@ void SceneStartMenu::Init()
 
 	// Sound
 
-	SEngine = new CSoundEngine;
+	SEngine = CSoundEngine::GetInstance();
 	SEngine->playMenu();
 }
 
@@ -297,7 +297,7 @@ void SceneStartMenu::Update(double dt)
 			// If CLick Anywhere
 			if (Application::mouse_current_y >= 288 && Application::mouse_current_y <= 372)
 			{
-				CSoundEngine::GetInstance()->PlayASound("Click");
+				SEngine->PlayASound("Click");
 				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
 			}
 		}

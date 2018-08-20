@@ -348,9 +348,9 @@ void SceneRange::Init()
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 
 	///init sound
-	SEngine = new CSoundEngine;
-	CSoundEngine::GetInstance()->Init();
-	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
+	SEngine = CSoundEngine::GetInstance();
+	//CSoundEngine::GetInstance()->Init();
+	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 }
 
 void SceneRange::Update(double dt)

@@ -283,7 +283,7 @@ void SceneControls1::Init()
 
 	// Sound
 
-	SEngine = new CSoundEngine;
+	SEngine = CSoundEngine::GetInstance();
 	
 }
 
@@ -299,7 +299,7 @@ void SceneControls1::Update(double dt)
 		{
 			if (Application::mouse_current_y >= 515 && Application::mouse_current_y <= 595)
 			{
-				CSoundEngine::GetInstance()->PlayASound("Click");
+				SEngine->PlayASound("Click");
 				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 			}
 		}
