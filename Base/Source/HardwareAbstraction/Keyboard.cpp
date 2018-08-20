@@ -4,6 +4,7 @@ using namespace std;
 
 #include "KeyboardController.h"
 #include "../PlayerInfo/PlayerInfo.h"
+#include "../TimeTrackerManager.h"
 
 const bool _CONTROLLER_KEYBOARD_DEBUG = false;
 
@@ -29,6 +30,7 @@ bool CKeyboard::Create(CPlayerInfo* thePlayerInfo)
 // Read from the controller
 int CKeyboard::Read(const float deltaTime)
 {
+	TimeTrackerManager* tTracker = TimeTrackerManager::GetInstance();
 	CController::Read(deltaTime);
 	if (_CONTROLLER_KEYBOARD_DEBUG)
 		cout << "CKeyboard::Read()" << endl;
@@ -68,6 +70,12 @@ int CKeyboard::Read(const float deltaTime)
 	// If the user presses R key, then reset the view to default values
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 		Reset();
+
+	// If the user presses - or = key, then adjust timetracker speed
+	if (KeyboardController::GetInstance()->IsKeyDown('N'))
+		tTracker->setSpeed(tTracker->getSpeed() - deltaTime);
+	if (KeyboardController::GetInstance()->IsKeyDown('M'))
+		tTracker->setSpeed(tTracker->getSpeed() + deltaTime);
 
 	return 0;
 }

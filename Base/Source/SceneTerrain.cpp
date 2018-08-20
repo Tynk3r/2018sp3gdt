@@ -340,10 +340,13 @@ void SceneTerrain::Init()
 	SEngine = new CSoundEngine;
 	CSoundEngine::GetInstance()->Init();
 	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
+	TimeTrackerManager::GetInstance()->Reset();
 }
 
 void SceneTerrain::Update(double dt)
 {
+	TimeTrackerManager::GetInstance()->Update(dt);
+	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if(Application::IsKeyPressed('2'))
@@ -1091,7 +1094,7 @@ void SceneTerrain::RenderWorld()
 					modelStack.PushMatrix();
 					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, proj->getOriginPos().x / 4000.f, proj->getOriginPos().z / 4000.f), entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
-					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
+					modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
 					if (proj->getProjType() == CProjectile::PTYPE_FIRE)
 						RenderMesh(meshList[GEO_FIREBALL], false);
@@ -1404,6 +1407,13 @@ void SceneTerrain::RenderPassMain()
 	ss1.precision(5);
 	ss1 << "Health: " << playerInfo->GetHealth();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+
+#ifdef SP3_DEBUG
+	ss1.str("");
+	ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 8);
+#endif
+
 }
 void SceneTerrain::RenderPassGPass()
 {

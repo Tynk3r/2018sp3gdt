@@ -24,6 +24,7 @@
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
+#include "TimeTrackerManager.h"
 
 using namespace std;
 

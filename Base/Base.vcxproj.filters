@@ -81,5 +81,6 @@
     <ClInclude Include="Source\Controls.h" />
     <ClInclude Include="Source\InGameMenu.h" />
     <ClInclude Include="Source\Controls1.h" />
+    <ClInclude Include="Source\TimeTrackerManager.h" />
   </ItemGroup>
 </Project>
