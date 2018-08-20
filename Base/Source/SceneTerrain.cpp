@@ -218,6 +218,7 @@ void SceneTerrain::Init()
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM]->textureArray[0] = LoadTGA("Image//rightArm.tga");
 
 	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
@@ -1271,8 +1272,8 @@ void SceneTerrain::RenderWorld()
 	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
 	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_LEFTARM], godlights);
+	modelStack.Scale(-1, 1, 1.5);
+	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
