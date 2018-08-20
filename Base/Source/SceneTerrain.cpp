@@ -384,6 +384,10 @@ void SceneTerrain::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
+	if (Application::IsKeyPressed('R'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+	}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);

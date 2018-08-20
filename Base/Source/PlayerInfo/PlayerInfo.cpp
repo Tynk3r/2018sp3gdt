@@ -51,7 +51,7 @@ void CPlayerInfo::Init(void)
 	// Set the current values
 	setPos(Vector3(100, 0, 0));
 	setTarget(Vector3(0, 0, 50));
-	setScale(Vector3(20, 10, 20));
+	setScale(Vector3(20, 20, 20));
 	up.Set(0, 1, 0);
 
 	// Set Boundary
@@ -462,7 +462,8 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 		{
 			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
 			{
-				if ((*it)->getType() != E_PROJECTILE)
+				if ((*it)->getType() == E_PROJECTILE)
+					continue;
 				setPos(getPos() - (viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime) - (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
 				break;
 			}

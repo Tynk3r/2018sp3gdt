@@ -288,7 +288,7 @@ void SceneRange::Init()
 		targets[i] = new CEntity();
 		targets[i]->Init();
 		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+		targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
 		targets[i]->setOriginPos(targets[i]->getPos());
 		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
@@ -298,10 +298,10 @@ void SceneRange::Init()
 		targetsMoving[i] = new CEntity();
 		targetsMoving[i]->Init();
 		targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
 		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
+		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
 	}
 
 	for (int i = 0; i < 3; i++)
@@ -309,7 +309,7 @@ void SceneRange::Init()
 		targets1[i] = new CEntity();
 		targets1[i]->Init();
 		targets1[i]->setType(CEntity::E_TARGET);
-		targets1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targets1[i]->setOriginPos(targets1[i]->getPos());
 		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
@@ -319,10 +319,10 @@ void SceneRange::Init()
 		targetsMoving1[i] = new CEntity();
 		targetsMoving1[i]->Init();
 		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 75.f, -1500.f));
+		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
 	// Hardware Abstraction
@@ -573,7 +573,7 @@ void SceneRange::Update(double dt)
 				{
 					targets[i]->setIsDone(false);
 					targets[i]->setType(CEntity::E_TARGET);
-					targets[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+					targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
 					targets[i]->setOriginPos(targets[i]->getPos());
 					targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
 					targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
@@ -585,10 +585,10 @@ void SceneRange::Update(double dt)
 				{
 					targetsMoving[i]->setIsDone(false);
 					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 75.f, 1500.f));
+					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
 					targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 					targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 75.f, 1500.f));
+					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
 				}
 				break;
 			default:
@@ -652,7 +652,7 @@ void SceneRange::Update(double dt)
 				{
 					targets1[i]->setIsDone(false);
 					targets1[i]->setType(CEntity::E_TARGET);
-					targets1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+					targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targets1[i]->setOriginPos(targets1[i]->getPos());
 					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
 					targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
@@ -664,10 +664,10 @@ void SceneRange::Update(double dt)
 				{
 					targetsMoving1[i]->setIsDone(false);
 					targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 75.f, -1500.f));
+					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 75.f, -1500.f));
+					targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 				}
 				break;
 			default:
