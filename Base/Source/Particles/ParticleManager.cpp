@@ -65,6 +65,11 @@ void ParticleManager::AddParticle(CEntity * entity)
 		this->AddParticle(newPar);
 }
 
+void ParticleManager::AddParticle(std::string text, CEntity * entity, Color color)
+{
+	particleList.push_back(new CParticle_2(text, entity, color));
+}
+
 // Remove a particle from this ParticleManager
 bool ParticleManager::RemoveParticle(CParticle_2* _existingParticle)
 {

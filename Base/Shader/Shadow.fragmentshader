@@ -219,7 +219,7 @@ void main(){
 	{
 		if(colorTextureEnabled[0] == true && textEnabled == true)
 		{
-			color = texture2D( colorTexture[0], texCoord ) * vec4( textColor, 1 );
+			color = texture2D( colorTexture[0], texCoord ) * vec4( textColor, colorAlpha );
 		}
 		else
 		{
