@@ -429,14 +429,21 @@ void SceneTerrain::Update(double dt)
 			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
 			{
 				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
-				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
+				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, 0);
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
 					tempProj = tempTempProj;
 					//(*it)->setTarget((*it)->getPos() + tempProj);
 					//aa->setScale(aa->getScale() + Vector3(0, 0, tempProj.Length()));
 				}
-				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
+				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, 1);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					//(*it)->setTarget((*it)->getPos() + tempProj);
+					//aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, 2);
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
 					tempProj = tempTempProj;
@@ -446,7 +453,9 @@ void SceneTerrain::Update(double dt)
 			}
 		}
 
-		//add for ground/wall/target entity also!!
+		//add for wall entity also!!
+
+
 		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
 		{
 			tempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
@@ -462,22 +471,6 @@ void SceneTerrain::Update(double dt)
 
 			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(Math::RandFloatMinMax(0.7, 1.0), Math::RandFloatMinMax(0.0, 0.1), Math::RandFloatMinMax(0.7, 1.0)), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 		}
-
-		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
-		////if (tempScaleZ <= 0)
-		////{
-		////	aa->setScale(aa->getScale() + Vector3(0, 0, 400));
-		////}
-		////else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
-
-
-
-		//aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
-		//for (int i = 0; i < 10; ++i)
-		//{
-		//	ParticleManager::GetInstance()->AddParticle(aa);
-		//}
-		//aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
 
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	

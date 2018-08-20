@@ -197,8 +197,9 @@ bool EntityManager::CheckForCollision(float dt)
 						CProjectile* tempProjectile = (CProjectile*)*it2;
 						if (tempProjectile->getProjType() == CProjectile::PTYPE_BEAM)
 						{
-							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.03, 0) - Vector3(9999, 9999, 9999)).IsZero() 
-								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.03, 1) - Vector3(9999, 9999, 9999)).IsZero())
+							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 0) - Vector3(9999, 9999, 9999)).IsZero() 
+								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 1) - Vector3(9999, 9999, 9999)).IsZero()
+								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 2) - Vector3(9999, 9999, 9999)).IsZero())
 							{
 								(*it)->setIsDone(true);
 								//(*it2)->setIsDone(true);
@@ -225,8 +226,10 @@ bool EntityManager::CheckForCollision(float dt)
 	return false;
 }
 
-Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, bool times)
+Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, int times)
 {
+	if (times == 2) return CheckForLineIntersectionZFace(pivot, ent, mousePoint);
+
 	Vector3 tempScale = ent->getMaxAABB() - ent->getMinAABB();
 	tempScale *= 0.5;
 
@@ -238,7 +241,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 	if (abs(NP.x) <= Math::EPSILON) NP.x = 0;
 	if (abs(NP.y) <= Math::EPSILON) NP.y = 0;
 	Vector3 p0, p1, p2, p3;
-	if (times == false)
+	if (times == 0)
 	{
 		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
 		p1 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
@@ -246,7 +249,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 		p2 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
 		p3 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 	}
-	else
+	else if (times == 1)
 	{
 		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
 		p1 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
@@ -383,4 +386,31 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 	}
 
 	return Vector3(9999, 9999, 9999);
+}
+
+Vector3 EntityManager::CheckForLineIntersectionZFace(Vector3 pivot, CEntity *ent, Vector3 mousePoint)
+{
+	Vector3 tempScale = ent->getMaxAABB() - ent->getMinAABB();
+	tempScale *= 0.5;
+
+	Vector3 relativePos = ent->getPos() - pivot;
+
+	Vector3 tempDir = mousePoint.Normalized();
+
+	Vector3 point0, point1, pointOutput(9999, 9999, 9999);
+	point0 = tempDir * ((ent->getMinAABB().z - pivot.z) / tempDir.z);
+	point1 = tempDir * ((ent->getMaxAABB().z - pivot.z) / tempDir.z);
+
+	if (point0.x < ent->getMaxAABB().x - pivot.x && point0.x > ent->getMinAABB().x - pivot.x && point0.y < ent->getMaxAABB().y - pivot.y && point0.y > ent->getMinAABB().y - pivot.y)
+	{
+		if (point0.Length() <= mousePoint.Length()) pointOutput = point0;
+	}
+	if (point1.x < ent->getMaxAABB().x - pivot.x && point1.x > ent->getMinAABB().x - pivot.x && point1.y < ent->getMaxAABB().y - pivot.y && point1.y > ent->getMinAABB().y - pivot.y)
+	{
+		if (point1.Length() <= mousePoint.Length() && point1.Length() <= pointOutput.Length()) pointOutput = point1;
+	}
+
+	if (pointOutput.Dot(mousePoint) < 0) return Vector3(9999, 9999, 9999);
+
+	return pointOutput;
 }
