@@ -46,17 +46,30 @@ int CMouse::Read(const float deltaTime)
 	{
 		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
 		{
-			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_CASTHOLDING);
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING);
 		}
 	}
-	if (MouseController::GetInstance()->IsButtonUp(MouseController::LMB))
+	else if (MouseController::GetInstance()->IsButtonUp(MouseController::LMB))
 	{
-		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_CASTHOLDING)
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING)
 		{
-			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_CASTING);
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_RIGHTARM_CASTING);
 		}
 	}
-
+	if (MouseController::GetInstance()->IsButtonDown(MouseController::RMB))//if pressed lmb
+	{
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
+		{
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING);
+		}
+	}
+	else if (MouseController::GetInstance()->IsButtonUp(MouseController::RMB))
+	{
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING)
+		{
+			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_LEFTARM_CASTING);
+		}
+	}
 	/*if (MouseController::GetInstance()->GetMouseScrollStatus(MouseController::SCROLL_TYPE_YOFFSET) != thePlayerInfo->GetWeapon())
 		Change(deltaTime);
 
