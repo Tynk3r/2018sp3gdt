@@ -157,7 +157,6 @@ void CParticle_2::Update(double dt)
 			alphaVal = this->animFrame / (this->lifeSpan*0.35f);
 			float backAlpha = Back::easeOut(alphaVal, 0, 1, 1);//can b optimised evnetual;ly
 			float cosVar = cosf(this->animFrame*12.f);//coul dbe substituted with elapsedTime evebtuyaly
-			std::cout << cosVar << std::endl;
 			this->setScale(this->startScale.lerped(this->endScale, backAlpha));
 			this->transparency = Math::lerp(1.f, 0.1f, backAlpha);
 			this->color.Set(this->startColor.r + 0.2f * cosVar, this->startColor.g + 0.2f * cosVar, this->startColor.b + 0.2f * cosVar);
@@ -167,7 +166,6 @@ void CParticle_2::Update(double dt)
 			alphaVal = (this->animFrame - this->lifeSpan * 0.35f) / (this->lifeSpan*0.65f);
 			float quadAlpha = Quad::easeIn(alphaVal, 0, 1, 1);//can b optimised evnetual;ly
 			float cosVar = cosf(this->animFrame*12.f);//coul dbe substituted with elapsedTime evebtuyaly
-			std::cout << cosVar << std::endl;
 			this->setScale(this->endScale.lerped(this->startScale, quadAlpha));
 			this->transparency = Math::lerp(0.1f, 1.f, quadAlpha);
 			this->color.Set(this->startColor.r + 0.2f * cosVar, this->startColor.g + 0.2f * cosVar, this->startColor.b + 0.2f * cosVar);
