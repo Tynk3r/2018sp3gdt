@@ -137,6 +137,16 @@ void CSoundEngine::playMenu()
 	engine->play2D("Sound//mainmenumusic.mp3", true);
 }
 
+void CSoundEngine::stopGameMenu()
+{
+	engine->stopAllSounds();
+}
+
+void CSoundEngine::playGameMenu()
+{
+	engine->play2D("Sound//gamemusic.mp3", true);
+}
+
 void CSoundEngine::stopGame()
 {
 	engine->stopAllSounds();
