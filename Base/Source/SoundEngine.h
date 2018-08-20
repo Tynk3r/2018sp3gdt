@@ -40,5 +40,7 @@ public:
 	void stopMenu();
 	void playGame();
 	void stopGame();
+	void playGameMenu();
+	void stopGameMenu();
 };
 

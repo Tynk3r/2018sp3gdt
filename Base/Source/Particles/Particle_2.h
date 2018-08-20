@@ -2,6 +2,8 @@
 #define PARTICLE_2_H
 #include "Vector3.h"
 #include "../Entities/Entity.h"
+#include "../Vertex.h"
+#include <string>
 
 // a projectile class
 class CParticle_2 : public CEntity
@@ -11,11 +13,13 @@ public:
 		PTYPE_FIRE,
 		PTYPE_ICE,
 		PTYPE_BEAM,
+		PTYPE_TEXT,
 		PTYPE_TOTAL
 	};
 
 	CParticle_2(PARTICLE_TYPE particleType, Vector3 pos, Vector3 vel = Vector3(0, 0, 0) , Vector3 scale = Vector3(5, 5, 5));
 	CParticle_2(PARTICLE_TYPE particleType, CEntity* parent);
+	CParticle_2(std::string text, CEntity* parent, Color color = Color());
 	~CParticle_2();
 
 	void Init();
@@ -25,6 +29,8 @@ public:
 	float getRot();
 	float getTransparency();
 	Vector3 getOriginPos();
+	Color getColor() const;
+	std::string text;
 private:
 	PARTICLE_TYPE particleType;
 	Vector3 viewVector;
@@ -38,6 +44,9 @@ private:
 	float transparency;
 	CEntity* parent;
 	Vector3 originPosition;
+	Color startColor;
+	Color endColor;
+	Color color;
 };
 
 #endif

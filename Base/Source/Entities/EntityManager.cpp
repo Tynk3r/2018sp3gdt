@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include <iostream>
 #include "../SoundEngine.h"
+#include "../Particles/ParticleManager.h"
 using namespace std;
 
 // Update all entities
@@ -168,16 +169,21 @@ bool EntityManager::CheckForCollision(float dt)
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+
 						switch ((*it)->getType())
 						{
 						case CEntity::E_ENEMY:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+							ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f,1,0.1f));
 							break;
 						case CEntity::E_MOVING_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
 							break;
 						case CEntity::E_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
 							break;
 						}
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
