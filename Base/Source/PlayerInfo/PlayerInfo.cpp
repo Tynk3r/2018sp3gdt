@@ -644,17 +644,17 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 	return true;
 }
 
-bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier)
 {
 
 	return true;
 }
-bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier)
 {
 
 	return true;
 }
-bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f)
+bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier)
 {
 
 	return true;
