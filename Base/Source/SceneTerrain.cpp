@@ -348,7 +348,7 @@ void SceneTerrain::Init()
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 	m_gravity.Set(0, -9.8f, 0);
-
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
@@ -418,8 +418,8 @@ void SceneTerrain::Update(double dt)
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 		}
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -431,8 +431,8 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key H was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -441,8 +441,8 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key J was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -451,8 +451,15 @@ void SceneTerrain::Update(double dt)
 	{
 		cout << "key K was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		//Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		//Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+
+		//Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0) + Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f) - playerInfo->FirstHeight, 0);
+		//Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0) + Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f) - playerInfo->FirstHeight, 0);
+
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec * 5, camtar + viewvec* 6);
 		
@@ -464,7 +471,11 @@ void SceneTerrain::Update(double dt)
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
+			if ((*it)->isDone())
+			{
+
+			}
+			else if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
 			{
 				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
 				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, 0);
@@ -496,8 +507,21 @@ void SceneTerrain::Update(double dt)
 
 		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
 		{
-			tempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
-			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, (((aa->getPos() + tempProj).x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), (((aa->getPos() + tempProj).z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0, 0, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_BURST);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+
+			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
+			if (tempTempProj.Length() >= tempProj.Length())
+			{
+
+			}
+			else if (Math::FAbs((aa->getPos() + tempTempProj).x) >= 2000 || Math::FAbs((aa->getPos() + tempTempProj).z) >= 2000)
+			{
+
+			}
+			else
+			{
+				tempProj = tempTempProj;
+				meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, (((aa->getPos() + tempProj).x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), (((aa->getPos() + tempProj).z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0, 0, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_BURST);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+			}
 		}
 
 		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setIsDone(true);
@@ -514,7 +538,7 @@ void SceneTerrain::Update(double dt)
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
 #endif // SP3_DEBUG
-
+	std::cout << playerInfo->getPos() << std::endl;
 	if (KeyboardController::GetInstance()->IsKeyPressed('U'))
 	{
 		if (playerInfo->rocketMode)
@@ -523,9 +547,6 @@ void SceneTerrain::Update(double dt)
 		}
 		else if (!playerInfo->rocketMode)
 		{
-			playerInfo->rocketRotateUp = 0;
-			playerInfo->rocketRotateRight = 0;
-			playerInfo->rocketRotateTarget = 0;
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
 			playerInfo->rocketTarget = playerInfo->rocketPosition + Vector3(0, 0, -1);
@@ -569,6 +590,9 @@ void SceneTerrain::Update(double dt)
 	theMouse->Read(dt);
 	// Update the player position and other details based on keyboard and mouse inputs
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
+	
+
+	
 	//playerInfo->Update(dt);
 
 	EntityManager::GetInstance()->Update(dt);
@@ -1135,7 +1159,8 @@ void SceneTerrain::RenderWorld()
 				{
 					modelStack.PushMatrix();
 					//modelStack.Translate(camera.position.x, camera.position.y - 1, camera.position.z);
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					//modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
 					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
 					modelStack.Translate(0, 0, -entSca.z / 2);
@@ -1146,7 +1171,7 @@ void SceneTerrain::RenderWorld()
 				else
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, proj->getOriginPos().x / 4000.f, proj->getOriginPos().z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 					modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
@@ -1155,7 +1180,7 @@ void SceneTerrain::RenderWorld()
 					else if (proj->getProjType() == CProjectile::PTYPE_ICE)
 						RenderMesh(meshList[GEO_ICEBALL], false);
 					modelStack.PopMatrix();
-					if (entPos.y < 0) //need to change eventually for proper collision
+					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight)
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
@@ -1246,7 +1271,7 @@ void SceneTerrain::RenderWorld()
 			{
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1257,7 +1282,7 @@ void SceneTerrain::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_ICE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1268,7 +1293,7 @@ void SceneTerrain::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_BEAM:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(0.2f, parSca.y, 0.2f);

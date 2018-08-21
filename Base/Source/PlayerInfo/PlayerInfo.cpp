@@ -527,6 +527,8 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 		{
 			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
 			{
+				if ((*it)->getType() == E_PROJECTILE)
+					continue;
 				setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime + (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
 				break;
 			}
@@ -561,6 +563,8 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		{
 			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
 			{
+				if ((*it)->getType() == E_PROJECTILE)
+					continue;
 				setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime + (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
 				break;
 			}
@@ -581,6 +585,8 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		{
 			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
 			{
+				if ((*it)->getType() == E_PROJECTILE)
+					continue;
 				setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime - (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
 				break;
 			}
@@ -649,7 +655,7 @@ bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const 
 	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
 
 	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
-	rocketRotateUp += yaw;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(yaw, rocketUp.x, rocketUp.y, rocketUp.z);
 	tempView = rotation * tempView;
@@ -664,7 +670,7 @@ bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, cons
 	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
 
 	float pitch = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
-	rocketRotateRight += pitch;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(pitch, rocketRight.x, rocketRight.y, rocketRight.z);
 	tempView = rotation * tempView;
@@ -680,7 +686,7 @@ bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const
 
 	float roll = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 	if (direction == false) roll = -roll;
-	rocketRotateTarget += roll;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(roll, tempView.x, tempView.y, tempView.z);
 	rocketUp = rotation * rocketUp;
