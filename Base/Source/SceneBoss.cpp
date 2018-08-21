@@ -268,6 +268,12 @@ void SceneBoss::Init()
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
 	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
+	meshList[GEO_OCTO_HEAD] = MeshBuilder::GenerateOBJ("octoHead", "OBJ//octoHead.obj");
+	meshList[GEO_OCTO_HEAD]->textureArray[0]= LoadTGA("Image//octoHead.tga");
+	meshList[GEO_OCTO_BODY] = MeshBuilder::GenerateOBJ("octoBody", "OBJ//octoBody.obj");
+	meshList[GEO_OCTO_BODY]->textureArray[0] = LoadTGA("Image//octoBody.tga");
+	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
+	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -1064,6 +1070,11 @@ void SceneBoss::RenderParticles(ParticleObject *particle)
 
 void SceneBoss::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 400, 0);
+	modelStack.Scale(20, 20, 20);
+	RenderMesh(meshList[GEO_OCTO_HEAD], false);
+	modelStack.PopMatrix();
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
 		std::list<CEntity*>::iterator it, end;

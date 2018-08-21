@@ -157,6 +157,9 @@ class SceneBoss : public Scene
 		GEO_GOBLIN,
 		GEO_BARREL,
 		GEO_LIBRARIAN,
+		GEO_OCTO_HEAD,
+		GEO_OCTO_BODY,
+		GEO_OCTO_TRIDENT,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
