@@ -157,9 +157,5 @@ void CSoundEngine::playGame()
 }
 
 
-void CSoundEngine::stopWalking()
-{
-	theSoundEngine->stopAllSounds();
-}
 
 

@@ -28,6 +28,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_fCameraSwayAngle_RightLimit(0.3f)
 	, m_bCameraSwayDirection(false)
 	, m_dHealth(5)
+	, m_dMana(50)
 	, m_dScore(0)
 {
 }
@@ -45,6 +46,7 @@ void CPlayerInfo::Init(void)
 	defaultUp.Set(0,1,0);
 
 	m_dHealth = 100;
+	m_dMana = 100;
 	m_dScore = 0;
 	setType(E_PLAYER);
 
@@ -278,6 +280,9 @@ Vector3 CPlayerInfo::GetCameraSway() const
  ********************************************************************************/
 void CPlayerInfo::Update(double dt)
 {
+	if (m_dMana < 100) { m_dMana += 1 * dt; }
+	if (m_dMana >= 100) { m_dMana = 100; }
+
 	if (!rocketMode)
 	{
 		if (KeyboardController::GetInstance()->IsKeyReleased('Z'))
@@ -510,7 +515,7 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 
 			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				setPos(tempPos - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+				setPos(tempPos - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime *2);
 				break;
 			}
 		}
@@ -534,7 +539,7 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 
 			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				setPos(tempPos + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+				setPos(tempPos + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime * 2);
 				break;
 			}
 		}
@@ -574,7 +579,7 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 
 			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				setPos(tempPos + rightUV * (float)m_dSpeed * deltaTime);
+				setPos(tempPos + rightUV * (float)m_dSpeed * deltaTime * 2);
 				break;
 			}
 		}
@@ -599,7 +604,7 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 
 			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				setPos(tempPos - rightUV * (float)m_dSpeed * deltaTime);
+				setPos(tempPos - rightUV * (float)m_dSpeed * deltaTime * 2);
 				break;
 			}
 		}
