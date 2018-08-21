@@ -15,6 +15,7 @@ public:
 		E_DRONE,
 		E_PARTICLE,
 		E_WALL,
+		E_NPC,
 		E_TOTAL
 	};
 

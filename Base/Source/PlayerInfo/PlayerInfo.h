@@ -108,6 +108,7 @@ public:
 
 	void SetAnimState(PLR_ANIM_STATE state);
 	void SetSpellType(SPELL_TYPE spelltype);
+	void SetCurrentNPC(CEntity* npc = NULL);
 
 	Vector3 GetScreenshake(void) const;
 	Vector3 GetCameraSway(void) const;
@@ -117,6 +118,7 @@ public:
 	Vector3 GetRightArmRotation() const;
 	PLR_ANIM_STATE GetAnimState() const;
 	SPELL_TYPE GetSpellType() const;
+	CEntity* GetCurrentNPC() const;
 
 	// Update Jump Upwards
 	void UpdateJumpUpwards(double dt = 0.0333f);
@@ -157,6 +159,9 @@ public:
 	void DetachCamera();
 
 	int GetHealth(void) const;
+	void setHealth(int h) { m_dHealth = h; }
+	int getMana(void) const { return m_dMana; }
+	void setMana(int m) { m_dMana = m; }
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
 
@@ -182,6 +187,7 @@ private:
 	bool hasMoved, hasRan;
 
 	int m_dHealth;
+	int m_dMana;
 	int m_dScore;
 	double m_dSpeed;
 	double m_dAcceleration;
@@ -202,7 +208,7 @@ private:
 	PLR_ANIM_STATE currentAnimState;
 	float animFrame;
 	SPELL_TYPE spelltype;
-
+	CEntity* currentNPC;//the npc that the player is currently talkin to
 public:
 	// Camera Sway
 	float m_fCameraSwayAngle;

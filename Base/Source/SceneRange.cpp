@@ -1554,6 +1554,10 @@ void SceneRange::RenderPassMain()
 	ss1.precision(5);
 	ss1 << "Health: " << playerInfo->GetHealth();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+	std::ostringstream ss2;
+	ss2.precision(5);
+	ss2 << "Mana: " << playerInfo->getMana();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 }
 void SceneRange::RenderPassGPass()
 {

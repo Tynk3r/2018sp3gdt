@@ -21,6 +21,7 @@
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
 #include "Entities/Drone.h"
+#include "Entities/NPC.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
