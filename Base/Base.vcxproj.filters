@@ -40,6 +40,9 @@
     <ClCompile Include="Source\SceneControls1.cpp" />
     <ClCompile Include="Source\SceneControls.cpp" />
     <ClCompile Include="Source\Entities\NPC.cpp" />
+    <ClCompile Include="Source\Rigs\RigInfo.cpp" />
+    <ClCompile Include="Source\Rigs\JointInfo.cpp" />
+    <ClCompile Include="Source\SceneBoss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -86,5 +89,8 @@
     <ClInclude Include="Source\SceneControls.h" />
     <ClInclude Include="Source\TimeTrackerManager.h" />
     <ClInclude Include="Source\Entities\NPC.h" />
+    <ClInclude Include="Source\Rigs\RigInfo.h" />
+    <ClInclude Include="Source\Rigs\JointInfo.h" />
+    <ClInclude Include="Source\SceneBoss.h" />
   </ItemGroup>
 </Project>

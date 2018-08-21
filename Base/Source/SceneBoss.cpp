@@ -1,4 +1,4 @@
-#include "SceneRange.h"
+#include "SceneBoss.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -11,11 +11,11 @@
 #include <sstream>
 #define SP3_DEBUG
 
-SceneRange::SceneRange()
+SceneBoss::SceneBoss()
 {
 }
 
-SceneRange::~SceneRange()
+SceneBoss::~SceneBoss()
 {
 	if (theMouse)
 	{
@@ -29,7 +29,7 @@ SceneRange::~SceneRange()
 	}
 }
 
-void SceneRange::Init()
+void SceneBoss::Init()
 {
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -297,8 +297,6 @@ void SceneRange::Init()
 	playerInfo->Init();
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
-	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
-	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 
 	CNPC* npc = new CNPC(
 		Vector3(0, 0, 80),
@@ -307,7 +305,7 @@ void SceneRange::Init()
 	);
 	npc->setPlayerRef(playerInfo);
 
-	for (int i = 0; i < 3; i++)
+	/*for (int i = 0; i < 3; i++)
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
@@ -347,7 +345,13 @@ void SceneRange::Init()
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}
+	}*/
+
+	wall1 = new CEntity();
+	wall1->Init();
+	wall1->setType(CEntity::E_WALL);
+	wall1->setPos(Vector3(0, 0, 740));
+	wall1->setScale(Vector3(25.f, 25.f, 25.f));
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -365,9 +369,11 @@ void SceneRange::Init()
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 	m_gravity.Set(0, -9.8f, 0);
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	///init sound
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();
@@ -375,7 +381,7 @@ void SceneRange::Init()
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 }
 
-void SceneRange::Update(double dt)
+void SceneBoss::Update(double dt)
 {
 	cout << playerInfo->getPos() << endl;
 	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
@@ -550,10 +556,6 @@ void SceneRange::Update(double dt)
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
-	if (Application::IsKeyPressed('B'))
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
-	}
 #endif // SP3_DEBUG
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('U'))
@@ -616,163 +618,6 @@ void SceneRange::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
-	bool shouldChange = true;
-	//check if shouldnt change (any targets still up)
-	switch (targetState)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if(!targetsMoving[i]->isDone()){ shouldChange = false; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets[i]->isDone()) { shouldChange = false; }
-		}
-		break;
-	default:
-		break;
-	}
-	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getPos().y + targets[1]->getScale().y + 10; }
-	//if should change switches state
-	if (shouldChange)
-	{
-		stateChangeTimer--;
-		if (stateChangeTimer <= 0)
-		{
-			stateChangeTimer = 0;
-			switch (targetState)
-			{
-			case T_MOVING:
-				targetState = T_STATIONARY;
-				for (int i = 0; i < 3; i++)
-				{
-					targets[i]->setIsDone(false);
-					targets[i]->setType(CEntity::E_TARGET);
-					targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targets[i]->setOriginPos(targets[i]->getPos());
-					targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
-			case T_STATIONARY:
-				targetState = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving[i]->setIsDone(false);
-					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-					targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets[i]->setIsDone(true);
-			if(!targetsMoving[i]->isDone()){ targetsMoving[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
-			targetsMoving[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
-
-	bool shouldChange1 = true;
-	//check if shouldnt change (any targets still up)
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { shouldChange1 = false; }
-		}
-		break;
-	default:
-		break;
-	}
-	if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
-	//if should change switches state
-	if (shouldChange1)
-	{
-		stateChangeTimer1--;
-		if (stateChangeTimer1 <= 0)
-		{
-			stateChangeTimer1 = 0;
-			switch (targetState1)
-			{
-			case T_MOVING:
-				targetState1 = T_STATIONARY;
-				for (int i = 0; i < 3; i++)
-				{
-					targets1[i]->setIsDone(false);
-					targets1[i]->setType(CEntity::E_TARGET);
-					targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-					targets1[i]->setOriginPos(targets1[i]->getPos());
-					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
-			case T_STATIONARY:
-				targetState1 = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets1[i]->setIsDone(true);
-			if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-			targetsMoving1[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -793,7 +638,7 @@ void SceneRange::Update(double dt)
 	//std::cout << camera.position << std::endl;
 }
 
-void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneBoss::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if (!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -820,7 +665,7 @@ void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRange::RenderTerrain() {
+void SceneBoss::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -829,7 +674,7 @@ void SceneRange::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneRange::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneBoss::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -868,7 +713,7 @@ void SceneRange::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, f
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRange::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneBoss::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -934,7 +779,7 @@ void SceneRange::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, floa
 
 }
 
-void SceneRange::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneBoss::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -1024,7 +869,7 @@ void SceneRange::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneRange::RenderGround()
+void SceneBoss::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -1048,7 +893,7 @@ void SceneRange::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneRange::Render()
+void SceneBoss::Render()
 {
 	//******************************* PRE RENDER PASS*************************************
 		RenderPassGPass();
@@ -1056,7 +901,7 @@ void SceneRange::Render()
 		RenderPassMain();
 }
 
-void SceneRange::Exit()
+void SceneBoss::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -1089,7 +934,7 @@ void SceneRange::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneRange::RenderTrees() 
+void SceneBoss::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -1104,7 +949,7 @@ void SceneRange::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneRange::GetParticle(void)
+ParticleObject* SceneBoss::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1128,7 +973,7 @@ ParticleObject* SceneRange::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneRange::UpdateParticles(double dt)
+void SceneBoss::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -1192,7 +1037,7 @@ void SceneRange::UpdateParticles(double dt)
 	}
 }
 
-void SceneRange::RenderParticles(ParticleObject *particle)
+void SceneBoss::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -1217,7 +1062,7 @@ void SceneRange::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneRange::RenderWorld()
+void SceneBoss::RenderWorld()
 {
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
@@ -1614,7 +1459,7 @@ void SceneRange::RenderWorld()
 	}
 }
 
-void SceneRange::RenderPassMain()
+void SceneBoss::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1745,7 +1590,7 @@ void SceneRange::RenderPassMain()
 	}
 	
 }
-void SceneRange::RenderPassGPass()
+void SceneBoss::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();
