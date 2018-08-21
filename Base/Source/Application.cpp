@@ -237,7 +237,7 @@ void Application::Run()
 		case CSceneManager::SCENE_TERRAIN:
 		case CSceneManager::SCENE_RANGE:
 		default:
-				wrapAroundEnabled = false;
+				wrapAroundEnabled = true;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 				break;
 		}

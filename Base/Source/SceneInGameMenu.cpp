@@ -283,7 +283,7 @@ void SceneInGameMenu::Init()
 
 	// Sound
 
-	SEngine = new CSoundEngine;
+	SEngine = CSoundEngine::GetInstance();
 	
 }
 

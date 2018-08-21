@@ -254,6 +254,7 @@ void SceneRange::Init()
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
 	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
+
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -353,9 +354,10 @@ void SceneRange::Init()
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 
 	///init sound
-	SEngine = new CSoundEngine;
-	CSoundEngine::GetInstance()->Init();
-	CSoundEngine::GetInstance()->AddSound("Fireball", "Sound//fireball.mp3");
+	SEngine = CSoundEngine::GetInstance();
+	//CSoundEngine::GetInstance()->Init();
+	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
+	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 }
 
 void SceneRange::Update(double dt)
@@ -404,16 +406,22 @@ void SceneRange::Update(double dt)
 	{
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
+		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+			CSoundEngine::GetInstance()->PlayASound("Fireball");
+		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
+		{
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
+			CSoundEngine::GetInstance()->PlayASound("Iceattack");
+		}
 		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
-		CSoundEngine::GetInstance()->PlayASound("Fireball");
+		
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
