@@ -108,6 +108,7 @@ public:
 
 	void SetAnimState(PLR_ANIM_STATE state);
 	void SetSpellType(SPELL_TYPE spelltype);
+	void SetCurrentNPC(CEntity* npc = NULL);
 
 	Vector3 GetScreenshake(void) const;
 	Vector3 GetCameraSway(void) const;
@@ -117,6 +118,7 @@ public:
 	Vector3 GetRightArmRotation() const;
 	PLR_ANIM_STATE GetAnimState() const;
 	SPELL_TYPE GetSpellType() const;
+	CEntity* GetCurrentNPC() const;
 
 	// Update Jump Upwards
 	void UpdateJumpUpwards(double dt = 0.0333f);
@@ -171,7 +173,8 @@ public:
 	bool rocketMode = false;
 
 	Vector3 rocketPosition, rocketUp, rocketRight, rocketTarget;
-	float rocketRotateUp = 0, rocketRotateRight = 0, rocketRotateTarget = 0;
+
+	float FirstHeight = 0;
 
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
@@ -205,7 +208,7 @@ private:
 	PLR_ANIM_STATE currentAnimState;
 	float animFrame;
 	SPELL_TYPE spelltype;
-
+	CEntity* currentNPC;//the npc that the player is currently talkin to
 public:
 	// Camera Sway
 	float m_fCameraSwayAngle;

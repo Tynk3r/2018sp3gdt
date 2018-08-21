@@ -223,9 +223,9 @@ bool EntityManager::CheckForCollision(float dt)
 				case CEntity::E_MOVING_TARGET:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
-						(*it)->setIsDone(true);
-						(*it2)->setIsDone(true);
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
+						(*it)->setIsDone(true);
+						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
@@ -252,6 +252,7 @@ bool EntityManager::CheckForCollision(float dt)
 				case CEntity::E_PROJECTILE:
 					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 				default:
+					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
 					break;
 				}

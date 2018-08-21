@@ -84,6 +84,7 @@ void CPlayerInfo::Init(void)
 	setCollider(true);
 	currentAnimState = PLR_ANIM_IDLE;
 	animFrame = 0;
+	currentNPC = NULL;
 
 	rocketPosition.Set(0, 0, 0);
 	rocketTarget.Set(0, 0, 1);
@@ -263,6 +264,12 @@ void CPlayerInfo::SetAnimState(PLR_ANIM_STATE state)
 void CPlayerInfo::SetSpellType(SPELL_TYPE spelltype)
 {
 	this->spelltype = spelltype;
+}
+
+void CPlayerInfo::SetCurrentNPC(CEntity * npc)
+{
+	if (npc == NULL || npc->getType() == E_NPC)
+		this->currentNPC = npc;
 }
 
 Vector3 CPlayerInfo::GetScreenshake() const
@@ -673,7 +680,7 @@ bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const 
 	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
 
 	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
-	rocketRotateUp += yaw;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(yaw, rocketUp.x, rocketUp.y, rocketUp.z);
 	tempView = rotation * tempView;
@@ -688,7 +695,7 @@ bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, cons
 	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
 
 	float pitch = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
-	rocketRotateRight += pitch;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(pitch, rocketRight.x, rocketRight.y, rocketRight.z);
 	tempView = rotation * tempView;
@@ -704,7 +711,7 @@ bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const
 
 	float roll = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 	if (direction == false) roll = -roll;
-	rocketRotateTarget += roll;
+
 	Mtx44 rotation;
 	rotation.SetToRotation(roll, tempView.x, tempView.y, tempView.z);
 	rocketUp = rotation * rocketUp;
@@ -821,4 +828,9 @@ CPlayerInfo::PLR_ANIM_STATE CPlayerInfo::GetAnimState() const
 CPlayerInfo::SPELL_TYPE CPlayerInfo::GetSpellType() const
 {
 	return this->spelltype;
+}
+
+CEntity * CPlayerInfo::GetCurrentNPC() const
+{
+	return this->currentNPC;
 }
