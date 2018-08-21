@@ -4,7 +4,7 @@ using namespace std;
 
 #include "MouseController.h"
 #include "../PlayerInfo/PlayerInfo.h"
-
+#include "../Entities/NPC.h"
 const bool _CONTROLLER_MOUSE_DEBUG = false;
 
 CMouse::CMouse()
@@ -42,6 +42,26 @@ int CMouse::Read(const float deltaTime)
 		Look_LeftRight(deltaTime, true, mouse_diff_x);
 	if (mouse_diff_y != 0.0)
 		Look_UpDown(deltaTime, true, mouse_diff_y);
+	if (thePlayerInfo->GetCurrentNPC() != NULL)
+	{
+		CNPC* npc = static_cast<CNPC*>(thePlayerInfo->GetCurrentNPC());
+		npc->UpdateDialogue(deltaTime);
+		if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB) && npc->isDoneWithLine())
+		{
+			if (npc->finishedDialogue())
+			{
+				npc->ResetDialogue();
+				thePlayerInfo->SetCurrentNPC();
+			}
+			else
+				npc->goToNextDialogue();
+		}
+		/*if (this->isDoneWithLine())
+		{
+		this->goToNextDialogue();
+		this->charIndex = 0;
+		}*/
+	}
 	if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB))//if pressed lmb
 	{
 		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
