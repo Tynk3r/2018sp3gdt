@@ -247,6 +247,9 @@ void SceneTerrain::Init()
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
 	testvar = 0;
 
+	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
+	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
+
 	//meshList[GEO_TESTPAINTQUAD] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD", Color(1, 1, 1), 1.f);
 	//meshList[GEO_TESTPAINTQUAD]->textureArray[0] = LoadTGA("Image//moss1.tga");
 	//meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint = 1;
@@ -523,6 +526,7 @@ void SceneTerrain::Update(double dt)
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
 			playerInfo->rocketTarget = playerInfo->rocketPosition + Vector3(0, 0, -1);
+			playerInfo->rocketUp = Vector3(0, 1, 0);
 		}
 	}
 
@@ -1317,9 +1321,9 @@ void SceneTerrain::RenderWorld()
 		rArmRot = playerInfo->GetRightArmRotation();
 	}
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	if (!playerInfo->rocketMode)
 	{
+		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 		modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
 		modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
@@ -1327,20 +1331,30 @@ void SceneTerrain::RenderWorld()
 		modelStack.Rotate(lArmRot.y, 0, 1, 0);
 		modelStack.Rotate(lArmRot.z, 0, 0, 1);
 		modelStack.Scale(-1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	}
-	else if (playerInfo->rocketMode)
+	else
 	{
-		modelStack.Translate(tempDir.x * 10, tempDir.y * 10, tempDir.z * 10);
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			0, 0, 0,
+			0, 0, -1,
+			0, 1, 0
+			);
 
-		//modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-		//modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
-		//modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	//	modelStack.Rotate(-playerInfo->rocketRotateUp, 0, 1, 0); //rotate about up
-		modelStack.Rotate(playerInfo->rocketRotateRight,1,0,0); //rotate about right
-		modelStack.Rotate(-playerInfo->rocketRotateTarget, 0, 0, 1); //rotate about target
+		modelStack.PushMatrix();
+		modelStack.Translate(0, -4.5, -5);
+		modelStack.Scale(6, 4, -5);
+		RenderMesh(meshList[GEO_DRAGON], godlights);
+		modelStack.PopMatrix();
+
+		modelStack.Translate(-3 + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
+		modelStack.Rotate(lArmRot.x, 1, 0, 0);
+		modelStack.Rotate(lArmRot.y, 0, 1, 0);
+		modelStack.Rotate(lArmRot.z, 0, 0, 1);
 		modelStack.Scale(-1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	}
-	RenderMesh(meshList[GEO_RIGHTARM], godlights);
 	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTED)
 	{
 		modelStack.PushMatrix();
@@ -1357,16 +1371,45 @@ void SceneTerrain::RenderWorld()
 	}
 	modelStack.PopMatrix();
 
+	if (playerInfo->rocketMode)
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			camera.position.x, camera.position.y, camera.position.z,
+			camera.target.x, camera.target.y, camera.target.z,
+			camera.up.x, camera.up.y, camera.up.z
+			);
+	}
+
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Rotate(rArmRot.x, 1, 0, 0);
-	modelStack.Rotate(rArmRot.y, 0, 1, 0);
-	modelStack.Rotate(rArmRot.z, 0, 0, 1);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	if (!playerInfo->rocketMode)
+	{
+		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+		modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
+		modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+		modelStack.Rotate(rArmRot.x, 1, 0, 0);
+		modelStack.Rotate(rArmRot.y, 0, 1, 0);
+		modelStack.Rotate(rArmRot.z, 0, 0, 1);
+		modelStack.Scale(1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
+	else
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			0, 0, 0,
+			0, 0, -1,
+			0, 1, 0
+			);
+
+		modelStack.Translate(3 + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
+		modelStack.Rotate(rArmRot.x, 1, 0, 0);
+		modelStack.Rotate(rArmRot.y, 0, 1, 0);
+		modelStack.Rotate(rArmRot.z, 0, 0, 1);
+		modelStack.Scale(1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
 	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTED)
 	{
 		modelStack.PushMatrix();
@@ -1382,6 +1425,16 @@ void SceneTerrain::RenderWorld()
 		modelStack.PopMatrix();
 	}
 	modelStack.PopMatrix();
+
+	if (playerInfo->rocketMode)
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			camera.position.x, camera.position.y, camera.position.z,
+			camera.target.x, camera.target.y, camera.target.z,
+			camera.up.x, camera.up.y, camera.up.z
+			);
+	}
 }
 
 void SceneTerrain::RenderPassMain()
