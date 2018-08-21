@@ -47,12 +47,12 @@ int CKeyboard::Read(const float deltaTime)
 		Move_FrontBack(deltaTime, true);
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
 	{
-		CSoundEngine* sEngine = CSoundEngine::GetInstance();
-		CSoundEngine::GetInstance()->PlayASound("walking");
+	//	CSoundEngine* sEngine = CSoundEngine::GetInstance();
+	//	CSoundEngine::GetInstance()->PlayASound("walking");
 
-		std::cout << "is it playimngfsafs" <<  sEngine->GetSoundEngine()->isCurrentlyPlaying("walking") << std::endl;
+	//	std::cout << "is it playimngfsafs" <<  sEngine->GetSoundEngine()->isCurrentlyPlaying("walking") << std::endl;
 		Move_FrontBack(deltaTime, false);
-		CSoundEngine::GetInstance()->stopWalking();
+	//	CSoundEngine::GetInstance()->stopWalking();
 	}
 	else
 	{
