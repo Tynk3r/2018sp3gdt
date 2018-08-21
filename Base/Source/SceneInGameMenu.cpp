@@ -299,9 +299,9 @@ void SceneInGameMenu::Update(double dt)
 			if (Application::mouse_current_y >= 239 && Application::mouse_current_y <= 312)
 			{
 				CSoundEngine::GetInstance()->PlayASound("Click");
-				SEngine->stopMenu();
-				SEngine->playGame();
-				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_TERRAIN);
+				//SEngine->stopMenu();
+				SEngine->playGameMenu();
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
 			}
 		}
 		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)

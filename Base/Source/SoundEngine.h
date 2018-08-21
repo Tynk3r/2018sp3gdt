@@ -36,11 +36,15 @@ public:
 	// Play a sound from this map
 	void PlayASound(const std::string& _soundIndex);
 
+
+
+
 	void playMenu();
 	void stopMenu();
 	void playGame();
 	void stopGame();
 	void playGameMenu();
 	void stopGameMenu();
+	void stopWalking();
 };
 
