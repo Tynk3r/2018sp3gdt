@@ -127,6 +127,9 @@ void SceneRange::Init()
 	m_parameters[U_PAINT_TGASTRETCH_Y] = glGetUniformLocation(m_programID, "paintTgaStrY");
 	//transparency/alpha uniform value parameters
 	m_parameters[U_COLOR_ALPHA] = glGetUniformLocation(m_programID, "colorAlpha");
+	//uv offset uniform value paprameters
+	m_parameters[U_UV_OFFSET_ENABLED] = glGetUniformLocation(m_programID, "uvOffsetEnabled");
+	m_parameters[U_UV_OFFSET] = glGetUniformLocation(m_programID, "uvOffset");
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -190,6 +193,10 @@ void SceneRange::Init()
 
 	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	glUniform2f(m_parameters[U_UV_OFFSET], 0, 0);
+
+
 	m_lightDepthFBO.Init(1024, 1024);
 
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -211,13 +218,18 @@ void SceneRange::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5));
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM]->textureArray[0] = LoadTGA("Image//rightArm.tga");
+	meshList[GEO_RIGHTARM_AURA_FIRE] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM_AURA_FIRE", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM_AURA_FIRE]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
+	meshList[GEO_RIGHTARM_AURA_ICE] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM_AURA_ICE", "OBJ//rightArm.obj");
+	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
@@ -227,6 +239,8 @@ void SceneRange::Init()
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
+	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
+	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRange.raw", m_heightMap);
@@ -283,6 +297,13 @@ void SceneRange::Init()
 	playerInfo->Init();
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
+
+	CNPC* npc = new CNPC(
+		Vector3(0, 0, 80),
+		Vector3(4, 12, 4),
+		Vector3(0, 0, 80.f)
+	);
+	npc->setPlayerRef(playerInfo);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -352,7 +373,7 @@ void SceneRange::Init()
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	///init sound
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();
@@ -369,6 +390,9 @@ void SceneRange::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
+
+	TimeTrackerManager::GetInstance()->Update(dt);
+	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
 	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
@@ -404,7 +428,7 @@ void SceneRange::Update(double dt)
 	}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
-		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		CProjectile* aa;
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
@@ -415,8 +439,9 @@ void SceneRange::Update(double dt)
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 		}
-		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
-		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+		std::cout << "first heigtht = " <<playerInfo->FirstHeight << std::endl;
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -1200,23 +1225,46 @@ void SceneRange::RenderWorld()
 				else
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, proj->getOriginPos().x / 4000.f, proj->getOriginPos().z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
-					modelStack.Rotate(proj->getElapsedTime() * 360, 1, 1, 1);
+					modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
 					if (proj->getProjType() == CProjectile::PTYPE_FIRE)
 						RenderMesh(meshList[GEO_FIREBALL], false);
 					else if (proj->getProjType() == CProjectile::PTYPE_ICE)
 						RenderMesh(meshList[GEO_ICEBALL], false);
 					modelStack.PopMatrix();
-					if (entPos.y < 0) //need to change eventually for proper collision
+					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight)
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
-						CSoundEngine::GetInstance()->PlayASound("floorImpact");
-						if (proj->getProjType() == CProjectile::PTYPE_FIRE) meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0, 0, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_UNIQUE_FIRE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-						else if (proj->getProjType() == CProjectile::PTYPE_ICE) meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0.6, 0.6, 1.0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_BURST);
+						CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
+
+						if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+						{
+							CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(
+								meshList[GEO_TERRAIN]->texturePaintID,
+								((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)),
+								((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)),
+								Vector3(0, 0, 0),
+								1,
+								meshList[GEO_TERRAIN]->tgaLengthPaint,
+								PAINT_PATTERNS::PAINT_UNIQUE_FIRE);
+						}
+						else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+						{
+							CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(
+								meshList[GEO_TERRAIN]->texturePaintID,
+								((entPos.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)),
+								((entPos.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)),
+								Vector3(0.6, 0.6, 1.0),
+								1,
+								meshList[GEO_TERRAIN]->tgaLengthPaint,
+								PAINT_PATTERNS::PAINT_BURST);
+						}
 					}
 				}
 			}
@@ -1276,6 +1324,19 @@ void SceneRange::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			}
+			case CEntity::E_NPC:
+				modelStack.PushMatrix();
+				modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+				modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+				modelStack.PushMatrix();
+				modelStack.Translate(0, entSca.y*5.f, 0);
+				modelStack.Scale(entSca.x, 5, entSca.z);
+				RenderMesh(meshList[GEO_CONE], false);
+				modelStack.PopMatrix();
+				modelStack.Scale(entSca.x, entSca.y, entSca.z);
+				RenderMesh(meshList[GEO_CUBE], false);
+				modelStack.PopMatrix();
+				break;
 			default:
 				break;
 			}
@@ -1322,7 +1383,7 @@ void SceneRange::RenderWorld()
 			{
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1333,7 +1394,7 @@ void SceneRange::RenderWorld()
 				break;
 			case CParticle_2::PTYPE_ICE:
 				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);
 				modelStack.Rotate(par->getRot(), 0, 0, 1);
 				modelStack.Scale(parSca.x, parSca.y, 0.1f);
@@ -1353,7 +1414,22 @@ void SceneRange::RenderWorld()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 				modelStack.PopMatrix();
 				break;
-
+			case CParticle_2::PTYPE_TEXT:
+			{
+				int textLength = par->text.length() + 1;
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parOrigPos.x / 4000.f, parOrigPos.z / 4000.f), parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Translate(-parSca.x*textLength*0.4f, 0, 0);
+				//RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(parSca.x, parSca.y, 0.1f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderText(meshList[GEO_TEXT], par->text, par->getColor());
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			}
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1385,25 +1461,120 @@ void SceneRange::RenderWorld()
 		rArmRot = playerInfo->GetRightArmRotation();
 	}
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_LEFTARM], godlights);
+	if (!playerInfo->rocketMode)
+	{
+		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+		modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
+		modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+		modelStack.Rotate(lArmRot.x, 1, 0, 0);
+		modelStack.Rotate(lArmRot.y, 0, 1, 0);
+		modelStack.Rotate(lArmRot.z, 0, 0, 1);
+		modelStack.Scale(-1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
+	else
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			0, 0, 0,
+			0, 0, -1,
+			0, 1, 0
+		);
+
+		modelStack.PushMatrix();
+		modelStack.Translate(0, -4.5, -5);
+		modelStack.Scale(6, 4, -5);
+		RenderMesh(meshList[GEO_DRAGON], godlights);
+		modelStack.PopMatrix();
+
+		modelStack.Translate(-3 + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
+		modelStack.Rotate(lArmRot.x, 1, 0, 0);
+		modelStack.Rotate(lArmRot.y, 0, 1, 0);
+		modelStack.Rotate(lArmRot.z, 0, 0, 1);
+		modelStack.Scale(-1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
+	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTED)
+	{
+		modelStack.PushMatrix();
+		float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+		float cosVar = cosf(timeElapsed*8.f);
+		modelStack.Scale(1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - (0.2f + 0.2f * cosVar));
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+		glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.3f, timeElapsed * 0.3f);
+		RenderMesh(meshList[GEO_RIGHTARM_AURA_ICE], godlights);
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
 
+	if (playerInfo->rocketMode)
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			camera.position.x, camera.position.y, camera.position.z,
+			camera.target.x, camera.target.y, camera.target.z,
+			camera.up.x, camera.up.y, camera.up.z
+		);
+	}
+
 	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
-	modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
-	modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
-	modelStack.Rotate(rArmRot.x, 1, 0, 0);
-	modelStack.Rotate(rArmRot.y, 0, 1, 0);
-	modelStack.Rotate(rArmRot.z, 0, 0, 1);
-	modelStack.Scale(1, 1, 1.5);
-	RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	if (!playerInfo->rocketMode)
+	{
+		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
+		modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
+		modelStack.Rotate(Math::RadianToDegree(atan2(tempDir.y, 1)), 1, 0, 0);
+		modelStack.Rotate(rArmRot.x, 1, 0, 0);
+		modelStack.Rotate(rArmRot.y, 0, 1, 0);
+		modelStack.Rotate(rArmRot.z, 0, 0, 1);
+		modelStack.Scale(1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
+	else
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			0, 0, 0,
+			0, 0, -1,
+			0, 1, 0
+		);
+
+		modelStack.Translate(3 + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
+		modelStack.Rotate(rArmRot.x, 1, 0, 0);
+		modelStack.Rotate(rArmRot.y, 0, 1, 0);
+		modelStack.Rotate(rArmRot.z, 0, 0, 1);
+		modelStack.Scale(1, 1, 1.5);
+		RenderMesh(meshList[GEO_RIGHTARM], godlights);
+	}
+	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTED)
+	{
+		modelStack.PushMatrix();
+		float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+		float cosVar = cosf(timeElapsed*8.f);
+		modelStack.Scale(1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar, 1.15f + 0.1f*cosVar);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - (0.2f + 0.2f * cosVar));
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+		glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.3f, timeElapsed * 0.3f);
+		RenderMesh(meshList[GEO_RIGHTARM_AURA_FIRE], godlights);
+		glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+		modelStack.PopMatrix();
+	}
 	modelStack.PopMatrix();
+
+	if (playerInfo->rocketMode)
+	{
+		viewStack.LoadIdentity();
+		viewStack.LookAt(
+			camera.position.x, camera.position.y, camera.position.z,
+			camera.target.x, camera.target.y, camera.target.z,
+			camera.up.x, camera.up.y, camera.up.z
+		);
+	}
 }
 
 void SceneRange::RenderPassMain()
@@ -1510,16 +1681,32 @@ void SceneRange::RenderPassMain()
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
-	ss << "Score: " << playerInfo->GetScore();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
-	std::ostringstream ss1;
-	ss1.precision(5);
-	ss1 << "Health: " << playerInfo->GetHealth();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
-	std::ostringstream ss2;
-	ss2.precision(5);
-	ss2 << "Mana: " << playerInfo->getMana();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+	if (playerInfo->GetCurrentNPC() != NULL)
+	{
+		CNPC* npc = static_cast<CNPC*>(playerInfo->GetCurrentNPC());
+		ss << npc->getCurrentLine();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
+	}
+	else
+	{
+		ss << "Score: " << playerInfo->GetScore();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
+		std::ostringstream ss1;
+		ss1.precision(5);
+		ss1 << "Health: " << playerInfo->GetHealth();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+		std::ostringstream ss2;
+		ss2.precision(5);
+		ss2 << "Mana: " << playerInfo->getMana();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+
+#ifdef SP3_DEBUG
+		ss1.str("");
+		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
+#endif
+	}
+	
 }
 void SceneRange::RenderPassGPass()
 {
