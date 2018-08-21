@@ -1634,8 +1634,13 @@ void SceneTerrain::RenderPassMain()
 #ifdef SP3_DEBUG
 		ss1.str("");
 		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 8);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
+
+		std::ostringstream ss2;
+		ss2.precision(2);
+		ss2 << "Mana: " << playerInfo->getMana();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 	}
 }
 void SceneTerrain::RenderPassGPass()

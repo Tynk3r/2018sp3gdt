@@ -195,7 +195,7 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it2)->setIsDone(true);
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
+						//CSoundEngine::GetInstance()->AddSound("Death", "Sound//deathsound.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
 						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 
@@ -227,7 +227,7 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it)->setIsDone(true);
 						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
+						CSoundEngine::GetInstance()->AddSound("Death", "Sound//deathsound.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
 						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 

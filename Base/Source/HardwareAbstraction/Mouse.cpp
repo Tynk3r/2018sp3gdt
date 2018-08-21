@@ -64,28 +64,28 @@ int CMouse::Read(const float deltaTime)
 	}
 	if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB))//if pressed lmb
 	{
-		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE && thePlayerInfo->getMana() >= 10)
 		{
 			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING);
 		}
 	}
 	else if (MouseController::GetInstance()->IsButtonUp(MouseController::LMB))
 	{
-		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING)
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING && thePlayerInfo->getMana() >= 10)
 		{
 			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_RIGHTARM_CASTING);
 		}
 	}
 	if (MouseController::GetInstance()->IsButtonDown(MouseController::RMB))//if pressed lmb
 	{
-		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE)
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_IDLE && thePlayerInfo->getMana() >= 10)
 		{
 			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING);
 		}
 	}
 	else if (MouseController::GetInstance()->IsButtonUp(MouseController::RMB))
 	{
-		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING)
+		if (thePlayerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING && thePlayerInfo->getMana() >= 10)
 		{
 			thePlayerInfo->SetAnimState(CPlayerInfo::PLR_ANIM_LEFTARM_CASTING);
 		}

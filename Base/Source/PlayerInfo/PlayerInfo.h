@@ -160,8 +160,8 @@ public:
 
 	int GetHealth(void) const;
 	void setHealth(int h) { m_dHealth = h; }
-	int getMana(void) const { return m_dMana; }
-	void setMana(int m) { m_dMana = m; }
+	float getMana(void) const { return m_dMana; }
+	void setMana(float m) { m_dMana = m; }
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
 
@@ -187,7 +187,7 @@ private:
 	bool hasMoved, hasRan;
 
 	int m_dHealth;
-	int m_dMana;
+	float m_dMana;
 	int m_dScore;
 	double m_dSpeed;
 	double m_dAcceleration;
