@@ -10,5 +10,7 @@ private:
 	std::string jointName;
 
 	Vector3 posOffset;
+	Vector3 axisOffset;
+	Vector3 rotation;
 };
 
