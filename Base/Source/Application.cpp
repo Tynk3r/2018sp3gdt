@@ -20,6 +20,7 @@
 #include "SceneControls1.h"
 #include "SceneTerrain.h"
 #include "SceneRange.h"
+#include "SceneBoss.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -209,6 +210,7 @@ void Application::Run()
 	Scene *scene5 = new SceneControls1();
 	Scene *scene6 = new SceneTerrain();
 	Scene *scene7 = new SceneRange();
+	Scene *scene8 = new SceneBoss();
 	
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -218,6 +220,7 @@ void Application::Run()
 	sceneManager->AddScene(scene5);
 	sceneManager->AddScene(scene6);
 	sceneManager->AddScene(scene7);
+	sceneManager->AddScene(scene8);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
