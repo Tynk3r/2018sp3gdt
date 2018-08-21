@@ -14,6 +14,7 @@ public:
 		E_PLAYER,
 		E_DRONE,
 		E_PARTICLE,
+		E_WALL,
 		E_TOTAL
 	};
 

@@ -1,10 +1,11 @@
 #include "Keyboard.h"
+#include "../SoundEngine.h"
+
 #include <iostream>
 using namespace std;
 
 #include "KeyboardController.h"
 #include "../PlayerInfo/PlayerInfo.h"
-#include "../TimeTrackerManager.h"
 
 const bool _CONTROLLER_KEYBOARD_DEBUG = false;
 
@@ -21,6 +22,9 @@ CKeyboard::~CKeyboard()
 bool CKeyboard::Create(CPlayerInfo* thePlayerInfo)
 {
 	CController::Create(thePlayerInfo);
+	//CSoundEngine::GetInstance()->AddSound("walking", "Sound//walking.mp3");
+	CSoundEngine* sEngine = CSoundEngine::GetInstance();
+	sEngine->AddSound("walking", "Sound//walking.mp3");
 	if (_CONTROLLER_KEYBOARD_DEBUG)
 		cout << "CKeyboard::Create()" << endl;
 	return false;
@@ -30,7 +34,7 @@ bool CKeyboard::Create(CPlayerInfo* thePlayerInfo)
 // Read from the controller
 int CKeyboard::Read(const float deltaTime)
 {
-	TimeTrackerManager* tTracker = TimeTrackerManager::GetInstance();
+
 	CController::Read(deltaTime);
 	if (_CONTROLLER_KEYBOARD_DEBUG)
 		cout << "CKeyboard::Read()" << endl;
@@ -42,8 +46,17 @@ int CKeyboard::Read(const float deltaTime)
 	else if (KeyboardController::GetInstance()->IsKeyDown('W'))
 		Move_FrontBack(deltaTime, true);
 	if (KeyboardController::GetInstance()->IsKeyDown('S'))
-		Move_FrontBack(deltaTime, false);
+	{
+	//	CSoundEngine* sEngine = CSoundEngine::GetInstance();
+	//	CSoundEngine::GetInstance()->PlayASound("walking");
 
+	//	std::cout << "is it playimngfsafs" <<  sEngine->GetSoundEngine()->isCurrentlyPlaying("walking") << std::endl;
+		Move_FrontBack(deltaTime, false);
+	}
+	else
+	{
+	//	CSoundEngine::GetInstance()->stopGame();
+	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A'))
 		Move_LeftRight(deltaTime, true);
 	if (KeyboardController::GetInstance()->IsKeyDown('D'))
@@ -70,12 +83,6 @@ int CKeyboard::Read(const float deltaTime)
 	// If the user presses R key, then reset the view to default values
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 		Reset();
-
-	// If the user presses - or = key, then adjust timetracker speed
-	if (KeyboardController::GetInstance()->IsKeyDown('N'))
-		tTracker->setSpeed(tTracker->getSpeed() - deltaTime);
-	if (KeyboardController::GetInstance()->IsKeyDown('M'))
-		tTracker->setSpeed(tTracker->getSpeed() + deltaTime);
 
 	return 0;
 }

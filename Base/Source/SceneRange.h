@@ -219,8 +219,8 @@ private:
 	CKeyboard* theKeyboard;
 	CMouse* theMouse;
 	CPlayerInfo* playerInfo;
-	//CEnemy* enemy1;
-	//CDrone* drone1;
+
+	CEntity* wall1;
 
 	CEntity* targets[3];
 	CEntity* targetsMoving[3];

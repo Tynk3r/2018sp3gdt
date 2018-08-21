@@ -281,7 +281,7 @@ void SceneGameMenu::Init()
 
 	// Sound
 
-	SEngine = CSoundEngine::GetInstance();
+	SEngine = CSoundEngine::GetInstance(); 
 	
 }
 

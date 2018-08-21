@@ -49,9 +49,9 @@ void CPlayerInfo::Init(void)
 	setType(E_PLAYER);
 
 	// Set the current values
-	setPos(Vector3(100, 0, 0));
+	setPos(Vector3(0, 0, 0));
 	setTarget(Vector3(0, 0, 50));
-	setScale(Vector3(20, 20, 20));
+	setScale(Vector3(20, 75, 20));
 	up.Set(0, 1, 0);
 
 	// Set Boundary
@@ -312,7 +312,7 @@ void CPlayerInfo::Update(double dt)
 		}
 
 		// Constrain the position
-		Constrain();
+		Constrain(dt);
 		UpdateJumpUpwards(dt);
 		UpdateFreeFall(dt);
 
@@ -500,20 +500,23 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 	if (direction)
 	{
 		setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			if ((*it)->getType() == (*it)->E_PROJECTILE || (*it)->getType() == (*it)->E_ENEMY)
+				continue;
+
+			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				if ((*it)->getType() == E_PROJECTILE)
-					continue;
-				setPos(getPos() - (viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime) - (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				setPos(tempPos - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
 				break;
 			}
 		}
+
 		//	 Constrain the position
-		Constrain();
+		Constrain(deltaTime);
 		// Update the target
 		setTarget(getPos() + viewVector);
 		return true;
@@ -521,20 +524,27 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 	else
 	{
 		setPos(getPos() - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			if ((*it)->getType() == (*it)->E_PROJECTILE || (*it)->getType() == (*it)->E_ENEMY)
+				continue;
+
+			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				if ((*it)->getType() == E_PROJECTILE)
-					continue;
-				setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime + (viewVector * (float)deltaTime * (*it)->getScale().LengthSquared()));
+
+				//if ((*it)->getType() == E_PROJECTILE)
+				//	continue;
+
+				setPos(tempPos + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
 				break;
 			}
 		}
+
 		//	 Constrain the position
-		Constrain();
+		Constrain(deltaTime);
 		// Update the target
 		setTarget(getPos() + viewVector);
 		return true;
@@ -545,30 +555,37 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 // Detect and process left / right movement on the controller
 bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, const float speedMultiplier)
 {
-	if (rocketMode) return Rocket_Roll(deltaTime, direction, speedMultiplier);
+	if (rocketMode) { return Rocket_Roll(deltaTime, direction, speedMultiplier); }
 	
 	hasMoved = true;
 
 	Vector3 viewVector = getTarget() - getPos();
 	Vector3 rightUV;
+	Vector3 tempPos = getPos();
 	if (direction)
 	{
 		rightUV = (viewVector.Normalized()).Cross(up);
 		rightUV.y = 0;
 		rightUV.Normalize();
 		setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime);
+
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			if ((*it)->getType() == (*it)->E_PROJECTILE || (*it)->getType() == (*it)->E_ENEMY)
+				continue;
+
+			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				if ((*it)->getType() == E_PROJECTILE)
-					continue;
-				setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime + (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
+				//if ((*it)->getType() == E_PROJECTILE)
+				//	continue;
+
+				setPos(tempPos + rightUV * (float)m_dSpeed * deltaTime);
 				break;
 			}
 		}
+
 		// Update the target
 		setTarget(getPos() + viewVector);
 		return true;
@@ -579,18 +596,25 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		rightUV.y = 0;
 		rightUV.Normalize();
 		setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime);
+
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+			if ((*it)->getType() == (*it)->E_PROJECTILE || (*it)->getType() == (*it)->E_ENEMY)
+				continue;
+
+			if (EntityManager::GetInstance()->CheckAABBCollision(this, *it) && EntityManager::GetInstance()->CheckSphereCollision(this, *it))
 			{
-				if ((*it)->getType() == E_PROJECTILE)
-					continue;
-				setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime - (rightUV * (float)deltaTime * (*it)->getScale().LengthSquared()));
+
+	/*			if ((*it)->getType() == E_PROJECTILE)
+					continue;*/
+
+				setPos(tempPos - rightUV * (float)m_dSpeed * deltaTime);
 				break;
 			}
 		}
+
 		// Update the target
 		setTarget(getPos() + viewVector);
 		return true;
@@ -706,8 +730,26 @@ bool CPlayerInfo::StopSway(const float deltaTime)
 }
 
 // Constrain the position within the borders
-void CPlayerInfo::Constrain(void)
+void CPlayerInfo::Constrain(double dt)
 {
+
+	//Vector3 viewVector = (getTarget() - getPos())/*.Normalized()*/;
+	//std::list<CEntity*>::iterator it, end;
+	//end = EntityManager::GetInstance()->entityList.end();
+	//for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+	//{
+	//	if ((*it)->getType() == (*it)->E_PROJECTILE || (*it)->getType() == (*it)->E_ENEMY)
+	//		continue;
+
+	//	if (EntityManager::GetInstance()->CheckAABBCollision(*it, this))
+	//	{
+	//		Vector3 pushVector = ((*it)->getPos() - getPos())/*.Normalized()*/;
+	//		setPos((*it)->getPos() + pushVector * (0.5 * ((*it)->getScale().x + (*it)->getScale().z)) * (float)dt);
+	//		setTarget(getPos() + viewVector);
+	//		break;
+	//	}
+	//}
+
 	//this messes with camera when crouch, 
 	// if the player is not jumping nor falling, then adjust his y position
 	if ((m_bJumpUpwards == false) && (m_bFallDownwards == false))

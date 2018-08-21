@@ -118,13 +118,12 @@ bool CSoundEngine::RemoveSound(const std::string& _soundIndex)
 void CSoundEngine::PlayASound(const std::string& _soundIndex)
 {
 	string aSound = GetSound(_soundIndex);
-	if (!theSoundEngine->isCurrentlyPlaying(aSound.c_str()))
+if (!theSoundEngine->isCurrentlyPlaying(aSound.c_str()))
 	{
 		//Play a sound
+
 		theSoundEngine->play2D(aSound.c_str(), false, false);
 	}
-
-	
 }
 
 void CSoundEngine::stopMenu()
@@ -144,7 +143,7 @@ void CSoundEngine::stopGameMenu()
 
 void CSoundEngine::playGameMenu()
 {
-	engine->play2D("Sound//gamemusic.mp3", true);
+	engine->play2D("Sound//mainGame.mp3", true);
 }
 
 void CSoundEngine::stopGame()
@@ -154,5 +153,13 @@ void CSoundEngine::stopGame()
 
 void CSoundEngine::playGame()
 {
-	engine->play2D("Sound//gamemusic.mp3", true);
+	engine->play2D("Sound//mainGame.mp3", true);
 }
+
+//
+//void CSoundEngine::stopWalking()
+//{
+//	theSoundEngine->stopAllSounds();
+//}
+//
+//
