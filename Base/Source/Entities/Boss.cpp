@@ -1,12 +1,14 @@
 #include "Boss.h"
-
+#include "../TimeTrackerManager.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_IDLE),
 	playerRef(NULL)
 {
+	target.y = pos.y;
 	this->setPos(pos);
 	this->setScale(scale);
+	this->originalScale = scale;
 	this->setTarget(target);
 }
 
@@ -26,10 +28,13 @@ void CBoss::Init()
 void CBoss::Update(double dt)
 {
 	CEntity::Update(dt);
+	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
+	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 3), 60 + 3 * cosf(tElapsedTime * 6), 20 + 2 * cosf(tElapsedTime * 3)));
+	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 2) * 50, 0, sinf(tElapsedTime * 2) * 50));
 	if (this->playerRef != NULL)
 	{
-		/*CPlayerInfo* plr = this->playerRef;
-		Vector3 enemytoplayer = (plr->getPos() - this->getPos());
+		CPlayerInfo* plr = this->playerRef;
+		/*Vector3 enemytoplayer = (plr->getPos() - this->getPos());
 		try 
 		{ 
 			float lengthSQ = enemytoplayer.LengthSquared();
@@ -53,6 +58,7 @@ void CBoss::Update(double dt)
 			}
 		}
 		catch (exception) {}*/
+		
 	}
 }
 
@@ -65,4 +71,9 @@ void CBoss::tempMoveBack(float dt)
 void CBoss::setPlayerRef(CPlayerInfo * playerRef)
 {
 	this->playerRef = playerRef;
+}
+
+Vector3 CBoss::getOrigScale() const
+{
+	return this->originalScale;
 }

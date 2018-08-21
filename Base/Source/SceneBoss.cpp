@@ -586,6 +586,13 @@ void SceneBoss::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
+	if (boss)
+	{
+		Vector3 bossPos = boss->getPos();
+		Vector3 bossSca = boss->getScale();
+		boss->setPos(Vector3(bossPos.x, ReadHeightMap(m_heightMap, bossPos.x, bossPos.z) + bossSca.y, bossPos.z));
+	}
+
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -1188,15 +1195,25 @@ void SceneBoss::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			case CEntity::E_BOSS:
-				boss->setScale(Vector3(20 + 10 * cosf(TimeTrackerManager::GetInstance()->getElapsedTime() * 3), 60 + 30 * cosf(TimeTrackerManager::GetInstance()->getElapsedTime() * 3), 20 + 10 * cosf(TimeTrackerManager::GetInstance()->getElapsedTime() * 3)));
+			{
+				Vector3 bossOrigSca = boss->getOrigScale();
 				modelStack.PushMatrix();
 					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
 					modelStack.PushMatrix();
-						modelStack.Translate(0, entSca.y*-0.5f, 0);
-						modelStack.Scale(entSca.x*0.275f, entSca.y*0.115f, entSca.z*0.275f);
+						modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+						modelStack.Translate(0, entSca.y*-0.35f, 0);
+						modelStack.PushMatrix();
+							modelStack.Scale(bossOrigSca.x, bossOrigSca.y, bossOrigSca.z);
+							modelStack.Translate(3, 1, 0);
+							modelStack.Rotate(180, 1, 0, 0);
+							modelStack.Scale(0.15f, 0.15f, 0.15f);
+							RenderMesh(meshList[GEO_OCTO_TRIDENT], false);
+						modelStack.PopMatrix();
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						modelStack.Scale(0.275f, 0.125f, 0.275f);
 						RenderMesh(meshList[GEO_OCTO_BODY], false);
-						modelStack.Translate(0, 12.5f, 0);
-						modelStack.Scale(1.35f, 1.35f, 1.35f);
+						modelStack.Translate(0, 10.5f, 0);
+						modelStack.Scale(1.55f, 0.9f, 1.55f);
 						RenderMesh(meshList[GEO_OCTO_HEAD], false);
 					modelStack.PopMatrix();
 					modelStack.PushMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1207,6 +1224,7 @@ void SceneBoss::RenderWorld()
 					modelStack.PopMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 				modelStack.PopMatrix();
 				break;
+			}
 			default:
 				break;
 			}
