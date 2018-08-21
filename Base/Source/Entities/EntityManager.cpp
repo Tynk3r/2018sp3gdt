@@ -106,6 +106,16 @@ bool EntityManager::CheckOverlap(Vector3 thisMinAABB, Vector3 thisMaxAABB, Vecto
 // Check if this entity's bounding sphere collided with that entity's bounding sphere 
 bool EntityManager::CheckSphereCollision(CEntity *ThisEntity, CEntity *ThatEntity)
 {
+	Vector3 thisMinAABB = ThisEntity->getMinAABB();
+	Vector3 thisMaxAABB = ThisEntity->getMaxAABB();
+	Vector3 thatMinAABB = ThatEntity->getMinAABB();
+	Vector3 thatMaxAABB = ThatEntity->getMaxAABB();
+
+	if (DistanceSquaredBetween(thisMinAABB, thisMaxAABB) + DistanceSquaredBetween(thatMinAABB, thatMaxAABB) > DistanceSquaredBetween(ThisEntity->getPos(), ThatEntity->getPos()) * 2.0)
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -113,7 +123,25 @@ bool EntityManager::CheckSphereCollision(CEntity *ThisEntity, CEntity *ThatEntit
 bool EntityManager::CheckAABBCollision(CEntity *ThisEntity, CEntity *ThatEntity)
 {
 	if (!ThisEntity->hasCollider() || !ThatEntity->hasCollider() || ThisEntity == ThatEntity || ThisEntity->isDone() || ThatEntity->isDone()) { return false; }
-	return CheckOverlap(ThisEntity->getMinAABB(), ThisEntity->getMaxAABB(), ThatEntity->getMinAABB(), ThatEntity->getMaxAABB());
+
+	Vector3 thisMinAABB = /*ThisEntity->getPos() +*/ ThisEntity->getMinAABB();
+	Vector3 thisMaxAABB = /*ThisEntity->getPos() +*/ ThisEntity->getMaxAABB();
+	Vector3 thatMinAABB = /*ThatEntity->getPos() +*/ ThatEntity->getMinAABB();
+	Vector3 thatMaxAABB = /*ThatEntity->getPos() +*/ ThatEntity->getMaxAABB();
+
+	if (CheckOverlap(thisMinAABB, thisMaxAABB, thatMinAABB, thatMaxAABB))
+		return true;
+
+	Vector3 altThisMinAABB = Vector3(thisMinAABB.x, thisMinAABB.y, thisMaxAABB.z);
+	Vector3 altThisMaxAABB = Vector3(thisMaxAABB.x, thisMaxAABB.y, thisMinAABB.z);
+	Vector3 altThatMinAABB = Vector3(thatMinAABB.x, thatMinAABB.y, thatMaxAABB.z);
+	Vector3 altThatMaxAABB = Vector3(thatMaxAABB.x, thatMaxAABB.y, thatMinAABB.z);
+
+	// Check for overlap
+	if (CheckOverlap(altThisMinAABB, altThisMaxAABB, thatMinAABB, thatMaxAABB) || CheckOverlap(altThatMinAABB, altThatMaxAABB, thisMinAABB, thisMaxAABB))
+		return true;
+
+	return false;
 }
 
 // Check if any Collider is colliding with another Collider
@@ -124,11 +152,13 @@ bool EntityManager::CheckForCollision(float dt)
 	end = entityList.end();
 	for (it = entityList.begin(); it != end; ++it)
 	{
-		if ((*it)->getType() == CEntity::E_PLAYER)
+		if ((*it)->getType() == CEntity::E_PLAYER || !(*it)->hasCollider() || (*it)->isDone())
 			continue;
 		Vector3 viewVector = ((*it)->getTarget() - (*it)->getPos()).Normalized();
 		for (it2 = entityList.begin(); it2 != end; ++it2)
 		{
+			if ((*it) == (*it2) || !(*it2)->hasCollider() || (*it2)->isDone())
+				continue;
 			switch ((*it)->getType()) //pre-collision check updates
 			{
 			case CEntity::E_ENEMY:
@@ -158,8 +188,38 @@ bool EntityManager::CheckForCollision(float dt)
 			{ 
 				switch ((*it)->getType())
 				{
-				case CEntity::E_ENEMY:
 				case CEntity::E_TARGET:
+					if ((*it2)->getType() == CEntity::E_PROJECTILE)
+					{
+						(*it)->setIsDone(true);
+						(*it2)->setIsDone(true);
+						CProjectile* proj = static_cast<CProjectile*>((*it2));
+						proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						CSoundEngine::GetInstance()->AddSound("Death", "Sound//roblox.mp3");
+						CSoundEngine::GetInstance()->PlayASound("Death");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+
+						switch ((*it)->getType())
+						{
+						case CEntity::E_ENEMY:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+							ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f,1,0.1f));
+							break;
+						case CEntity::E_MOVING_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
+							break;
+						case CEntity::E_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
+							break;
+						}
+						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
+						break;
+					}
+				case CEntity::E_WALL:
+					break;
+				case CEntity::E_ENEMY:
 				case CEntity::E_MOVING_TARGET:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
@@ -189,6 +249,8 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
+				case CEntity::E_PROJECTILE:
+					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 				default:
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
 					break;

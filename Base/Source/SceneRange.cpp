@@ -325,6 +325,12 @@ void SceneRange::Init()
 		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
+	wall1 = new CEntity();
+	wall1->Init();
+	wall1->setType(CEntity::E_WALL);
+	wall1->setPos(Vector3(0, 0, 740));
+	wall1->setScale(Vector3(25.f, 25.f, 25.f));
+
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
 	theKeyboard->Create(playerInfo);
@@ -354,7 +360,9 @@ void SceneRange::Init()
 
 void SceneRange::Update(double dt)
 {
-
+	cout << playerInfo->getPos() << endl;
+	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
+	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
@@ -1245,6 +1253,16 @@ void SceneRange::RenderWorld()
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
+			case CEntity::E_WALL:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
 				modelStack.PopMatrix();

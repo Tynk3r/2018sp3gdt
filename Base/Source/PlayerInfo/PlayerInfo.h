@@ -142,15 +142,15 @@ public:
 	bool Look_LeftRight(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f);
 
 	//Rocket movement
-	bool Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //left and right
-	bool Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //up and down
-	bool Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier = 1.0f); //roll
+	bool Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier); //left and right
+	bool Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier); //up and down
+	bool Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier); //roll
 
 	// Stop sway
 	bool StopSway(const float deltaTime);
 
 	// Constrain the position within the borders
-	void Constrain(void);
+	void Constrain(double dt);
 
 	// Handling Camera
 	void AttachCamera(Camera3* _cameraPtr);
