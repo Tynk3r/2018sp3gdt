@@ -80,7 +80,7 @@ string CNPC::getCurrentLine()
 	string toreturn(this->dialogues[this->dialogueIndex]);
 	int lengtho = this->dialogues[this->dialogueIndex].size();
 	toreturn.substr(0, lengtho - this->charIndex);
-	return this->dialogues[this->dialogueIndex];
+	return toreturn;
 }
 
 void CNPC::setPlayerRef(CPlayerInfo * playerRef)

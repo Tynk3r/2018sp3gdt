@@ -21,11 +21,13 @@
 #include "Entities/Entity.h"
 #include "Entities/Enemy.h"
 #include "Entities/Drone.h"
+#include "Entities/NPC.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
+#include "TimeTrackerManager.h"
 
 using namespace std;
 
@@ -96,6 +98,11 @@ class SceneRange : public Scene
 		
 		//TRANSPARENCY/ALPHA UNIFORM VALUES
 		U_COLOR_ALPHA,
+
+		//UV OFFSET UNIFORM VALUES
+		U_UV_OFFSET_ENABLED,
+		U_UV_OFFSET,
+
 		U_TOTAL,
 	};
 	enum GEOMETRY_TYPE
@@ -135,6 +142,9 @@ class SceneRange : public Scene
 		//GEO_TESTPAINTQUAD2,
 		GEO_LEFTARM,
 		GEO_RIGHTARM,
+		GEO_RIGHTARM_AURA_FIRE,
+		GEO_RIGHTARM_AURA_ICE,
+		GEO_DRAGON,
 		GEO_DRONE_HEAD,
 		GEO_DRONE_LWING,
 		GEO_DRONE_RWING,
