@@ -33,12 +33,14 @@ void CEnemy::Update(double dt)
 			if (lengthSQ < 80 * 80)//curernt hardcoded sphere "area" detection
 			{
 				this->state = F_IDLE; //close enough to attack so no need to move i guess
+				this->setTarget(this->getPos() + enemytoplayer.Normalized()*0.05f);
 				//std::cout << "enemy IDSLE" << std::endl;
 			}
 			else if (lengthSQ < 300 * 300)
 			{
 				this->state = F_ATTACK; //chase player until it gets close enuf
-				this->setTarget(plr->getPos());
+				Vector3 targ = Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z);
+				this->setTarget(targ);
 				//std::cout << "enemy ATACK" << std::endl;
 			}
 			else
