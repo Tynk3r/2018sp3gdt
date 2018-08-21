@@ -795,7 +795,7 @@ void SceneRange::Update(double dt)
 
 void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
 {
-	if(!mesh || mesh->textureID <= 0)
+	if (!mesh || mesh->textureArray[0] <= 0)
 		return;
 	
 	glDisable(GL_DEPTH_TEST);
@@ -804,7 +804,7 @@ void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+	glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
 	for(unsigned i = 0; i < text.length(); ++i)
 	{
