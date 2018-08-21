@@ -52,7 +52,6 @@ int CKeyboard::Read(const float deltaTime)
 
 		std::cout << "is it playimngfsafs" <<  sEngine->GetSoundEngine()->isCurrentlyPlaying("walking") << std::endl;
 		Move_FrontBack(deltaTime, false);
-		CSoundEngine::GetInstance()->stopWalking();
 	}
 	else
 	{
