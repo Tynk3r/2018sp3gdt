@@ -354,6 +354,7 @@ void SceneTerrain::Init()
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
+	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 	TimeTrackerManager::GetInstance()->Reset();
 }
 
@@ -407,10 +408,12 @@ void SceneTerrain::Update(double dt)
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+			CSoundEngine::GetInstance()->PlayASound("Fireball");
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
+			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 		}
 		Vector3 campos = camera.position - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
 		Vector3 camtar = camera.target - Vector3(0, 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f), 0);
@@ -418,7 +421,7 @@ void SceneTerrain::Update(double dt)
 		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
-		CSoundEngine::GetInstance()->PlayASound("Fireball");
+		
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
