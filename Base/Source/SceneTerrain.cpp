@@ -217,7 +217,8 @@ void SceneTerrain::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5));
+	//meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5));
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
@@ -310,6 +311,13 @@ void SceneTerrain::Init()
 	drone1->setScale(Vector3(10.f, 10.f, 10.f));
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 	//drone1->setAABB(Vector3(250, 250, 250), Vector3(-250, 0, -250));
+
+	CNPC* npc = new CNPC(
+		Vector3(0, 0, 80),
+		Vector3(4, 12, 4),
+		Vector3(0, 0, 80.f)
+	);
+	npc->setPlayerRef(playerInfo);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -1260,6 +1268,20 @@ void SceneTerrain::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			}
+			case CEntity::E_NPC:
+				modelStack.PushMatrix();
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+					modelStack.PushMatrix();
+						modelStack.Translate(0, entSca.y*5.f, 0);
+						modelStack.Scale(entSca.x, 5, entSca.z);
+						RenderMesh(meshList[GEO_CONE], false);
+					modelStack.PopMatrix();
+					modelStack.Scale(entSca.x, entSca.y, entSca.z);
+					RenderMesh(meshList[GEO_CUBE], false);
+					
+				modelStack.PopMatrix();
+				break;
 			default:
 				break;
 			}
@@ -1592,19 +1614,27 @@ void SceneTerrain::RenderPassMain()
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
-	ss << "Score: " << playerInfo->GetScore();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
-	std::ostringstream ss1;
-	ss1.precision(5);
-	ss1 << "Health: " << playerInfo->GetHealth();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+	if (playerInfo->GetCurrentNPC() != NULL)
+	{
+		CNPC* npc = static_cast<CNPC*>(playerInfo->GetCurrentNPC());
+		ss << npc->getCurrentLine();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
+	}
+	else
+	{
+		ss << "Score: " << playerInfo->GetScore();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
+		std::ostringstream ss1;
+		ss1.precision(5);
+		ss1 << "Health: " << playerInfo->GetHealth();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 
 #ifdef SP3_DEBUG
-	ss1.str("");
-	ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 8);
+		ss1.str("");
+		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 8);
 #endif
-
+	}
 }
 void SceneTerrain::RenderPassGPass()
 {

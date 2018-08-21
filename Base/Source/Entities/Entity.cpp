@@ -64,6 +64,9 @@ void CEntity::Update(double dt)
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
+	case E_NPC:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		break;
 	default:
 		break;
 	}

@@ -39,6 +39,7 @@
     <ClCompile Include="Source\SceneInGameMenu.cpp" />
     <ClCompile Include="Source\SceneControls1.cpp" />
     <ClCompile Include="Source\SceneControls.cpp" />
+    <ClCompile Include="Source\Entities\NPC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -83,9 +84,7 @@
     <ClInclude Include="Source\SceneInGameMenu.h" />
     <ClInclude Include="Source\SceneControls1.h" />
     <ClInclude Include="Source\SceneControls.h" />
-    <ClInclude Include="Source\Controls.h" />
-    <ClInclude Include="Source\InGameMenu.h" />
-    <ClInclude Include="Source\Controls1.h" />
     <ClInclude Include="Source\TimeTrackerManager.h" />
+    <ClInclude Include="Source\Entities\NPC.h" />
   </ItemGroup>
 </Project>

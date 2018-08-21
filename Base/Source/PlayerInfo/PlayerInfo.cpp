@@ -82,6 +82,7 @@ void CPlayerInfo::Init(void)
 	setCollider(true);
 	currentAnimState = PLR_ANIM_IDLE;
 	animFrame = 0;
+	currentNPC = NULL;
 
 	rocketPosition.Set(0, 0, 0);
 	rocketTarget.Set(0, 0, 1);
@@ -261,6 +262,12 @@ void CPlayerInfo::SetAnimState(PLR_ANIM_STATE state)
 void CPlayerInfo::SetSpellType(SPELL_TYPE spelltype)
 {
 	this->spelltype = spelltype;
+}
+
+void CPlayerInfo::SetCurrentNPC(CEntity * npc)
+{
+	if (npc == NULL || npc->getType() == E_NPC)
+		this->currentNPC = npc;
 }
 
 Vector3 CPlayerInfo::GetScreenshake() const
@@ -827,4 +834,9 @@ CPlayerInfo::PLR_ANIM_STATE CPlayerInfo::GetAnimState() const
 CPlayerInfo::SPELL_TYPE CPlayerInfo::GetSpellType() const
 {
 	return this->spelltype;
+}
+
+CEntity * CPlayerInfo::GetCurrentNPC() const
+{
+	return this->currentNPC;
 }
