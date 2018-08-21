@@ -143,7 +143,7 @@ void CSoundEngine::stopGameMenu()
 
 void CSoundEngine::playGameMenu()
 {
-	engine->play2D("Sound//gamemusic.mp3", true);
+	engine->play2D("Sound//mainGame.mp3", true);
 }
 
 void CSoundEngine::stopGame()
@@ -153,7 +153,7 @@ void CSoundEngine::stopGame()
 
 void CSoundEngine::playGame()
 {
-	engine->play2D("Sound//gamemusic.mp3", true);
+	engine->play2D("Sound//mainGame.mp3", true);
 }
 
 
