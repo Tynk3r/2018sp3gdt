@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "../Camera3.h"
 #include "MouseController.h"
+#include "../LoadHmap.h"
 
 #include <fstream>
 #include <string>
@@ -215,4 +216,5 @@ public:
 	float m_fCameraSwayDeltaAngle;
 	float m_fCameraSwayAngle_LeftLimit, m_fCameraSwayAngle_RightLimit;	//	The limits for left and right sway
 	bool m_bCameraSwayDirection;	// false = left, true = right
+	int climbHeight;
 };

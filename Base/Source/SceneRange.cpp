@@ -297,6 +297,8 @@ void SceneRange::Init()
 	playerInfo->Init();
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
+	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 
 	CNPC* npc = new CNPC(
 		Vector3(0, 0, 80),
@@ -347,12 +349,6 @@ void SceneRange::Init()
 		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
-	wall1 = new CEntity();
-	wall1->Init();
-	wall1->setType(CEntity::E_WALL);
-	wall1->setPos(Vector3(0, 0, 740));
-	wall1->setScale(Vector3(25.f, 25.f, 25.f));
-
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
 	theKeyboard->Create(playerInfo);
@@ -369,11 +365,9 @@ void SceneRange::Init()
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 	m_gravity.Set(0, -9.8f, 0);
-	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	///init sound
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();

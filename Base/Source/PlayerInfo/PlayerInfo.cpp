@@ -30,6 +30,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_dHealth(5)
 	, m_dMana(50)
 	, m_dScore(0)
+	, climbHeight(10)
 {
 }
 
@@ -48,6 +49,7 @@ void CPlayerInfo::Init(void)
 	m_dHealth = 100;
 	m_dMana = 100;
 	m_dScore = 0;
+	climbHeight = 5;
 	setType(E_PLAYER);
 
 	// Set the current values
@@ -511,8 +513,11 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 	Vector3 tempPos = getPos();
 	if (direction)
 	{
-		setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
-
+		Vector3 tempPos2 = (getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		if (abs(terrainHeight - 350.f * ReadHeightMap(attachedCamera->m_heightMap, tempPos2.x / 4000, tempPos2.z / 4000)) < climbHeight)
+		{
+			setPos(getPos() + viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		}
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
@@ -535,8 +540,11 @@ bool CPlayerInfo::Move_FrontBack(const float deltaTime, const bool direction, co
 	}
 	else
 	{
-		setPos(getPos() - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
-
+		Vector3 tempPos2 = (getPos() - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		if (abs(terrainHeight - 350.f * ReadHeightMap(attachedCamera->m_heightMap, tempPos2.x / 4000, tempPos2.z / 4000)) < climbHeight)
+		{
+			setPos(getPos() - viewVector * (float)m_dSpeed * speedMultiplier * (float)deltaTime);
+		}
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
@@ -575,8 +583,11 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		rightUV = (viewVector.Normalized()).Cross(up);
 		rightUV.y = 0;
 		rightUV.Normalize();
-		setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime);
-
+		Vector3 tempPos2 = (getPos() - rightUV * (float)m_dSpeed * deltaTime);
+		if (abs(terrainHeight - 350.f * ReadHeightMap(attachedCamera->m_heightMap, tempPos2.x / 4000, tempPos2.z / 4000)) < climbHeight)
+		{
+			setPos(getPos() - rightUV * (float)m_dSpeed * deltaTime);
+		}
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
@@ -600,8 +611,11 @@ bool CPlayerInfo::Move_LeftRight(const float deltaTime, const bool direction, co
 		rightUV = (viewVector.Normalized()).Cross(up);
 		rightUV.y = 0;
 		rightUV.Normalize();
-		setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime);
-
+		Vector3 tempPos2 = (getPos() + rightUV * (float)m_dSpeed * deltaTime);
+		if (abs(terrainHeight - 350.f * ReadHeightMap(attachedCamera->m_heightMap, tempPos2.x / 4000, tempPos2.z / 4000)) < climbHeight)
+		{
+			setPos(getPos() + rightUV * (float)m_dSpeed * deltaTime);
+		}
 		std::list<CEntity*>::iterator it, end;
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
