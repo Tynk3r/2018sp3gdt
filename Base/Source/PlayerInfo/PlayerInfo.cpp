@@ -287,7 +287,7 @@ Vector3 CPlayerInfo::GetCameraSway() const
  ********************************************************************************/
 void CPlayerInfo::Update(double dt)
 {
-	if (m_dMana < 100) { m_dMana += 1 * dt; }
+	if (m_dMana < 100) { m_dMana += 0.05; }
 	if (m_dMana >= 100) { m_dMana = 100; }
 
 	if (!rocketMode)

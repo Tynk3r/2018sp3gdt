@@ -433,11 +433,13 @@ void SceneRange::Update(double dt)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
+			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_ICE);
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
+			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
