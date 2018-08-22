@@ -29,6 +29,7 @@
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
 #include "TimeTrackerManager.h"
+#include "EasingStyles\QuadEase.h"
 
 using namespace std;
 
@@ -161,6 +162,7 @@ class SceneBoss : public Scene
 		GEO_OCTO_HEAD,
 		GEO_OCTO_BODY,
 		GEO_OCTO_TRIDENT,
+		GEO_OCTO_TENTACLE_SPHERE,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
