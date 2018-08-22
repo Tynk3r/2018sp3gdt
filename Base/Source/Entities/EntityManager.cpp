@@ -222,12 +222,12 @@ bool EntityManager::CheckForCollision(float dt)
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
 						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE || proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
 						{
-							(*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 							break;
 						}
 						if ((*it)->getType() == CEntity::E_TARGET_ICE && proj->getProjType() != CProjectile::PTYPE_ICE)
 						{
-							if (proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
 						
 							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 							{
@@ -242,7 +242,7 @@ bool EntityManager::CheckForCollision(float dt)
 							break;
 						}
 						(*it)->setIsDone(true);
-						if (proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+						if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
 
 						if (proj->getProjType() == CProjectile::PTYPE_FIRE && proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 						{
