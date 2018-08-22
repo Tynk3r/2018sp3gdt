@@ -220,18 +220,40 @@ bool EntityManager::CheckForCollision(float dt)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						if ((*it)->getType() == CEntity::E_TARGET_FIRE && proj->getProjType() != CProjectile::PTYPE_FIRE)
+						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE || proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
 						{
 							(*it2)->setIsDone(true);
 							break;
 						}
 						if ((*it)->getType() == CEntity::E_TARGET_ICE && proj->getProjType() != CProjectile::PTYPE_ICE)
 						{
-							(*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+						
+							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
+							{
+								CProjectile* aa = new CProjectile(CProjectile::PTYPE_SPECIAL_KILLERNADO);
+								Vector3 viewvec = (proj->getTarget() - proj->getPos()).Normalized();
+								viewvec.y = 0;
+								viewvec.Normalize();
+								aa->Init(proj->getPos() + viewvec, proj->getPos() + viewvec * 1.5);
+								aa->setPos(aa->getPos() + Vector3(0, aa->getScale().y, 0));
+								aa->setTarget(aa->getTarget() + Vector3(0, aa->getScale().y, 0));
+							}
 							break;
 						}
 						(*it)->setIsDone(true);
-						(*it2)->setIsDone(true);
+						if (proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+
+						if (proj->getProjType() == CProjectile::PTYPE_FIRE && proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
+						{
+							CProjectile* aa = new CProjectile(CProjectile::PTYPE_SPECIAL_KILLERNADO);
+							Vector3 viewvec = (proj->getTarget() - proj->getPos()).Normalized();
+							viewvec.y = 0;
+							viewvec.Normalize();
+							aa->Init(proj->getPos() + viewvec, proj->getPos() + viewvec * 1.5);
+							aa->setPos(aa->getPos() + Vector3(0, aa->getScale().y, 0));
+							aa->setTarget(aa->getTarget() + Vector3(0, aa->getScale().y, 0));
+						}
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->PlayASound("Death");
 						CSoundEngine::GetInstance()->PlayASound("floorImpact");

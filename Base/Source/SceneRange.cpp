@@ -267,7 +267,10 @@ void SceneRange::Init()
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
 	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
-
+	meshList[GEO_KILLERNADO] = MeshBuilder::GenerateOBJ("tornado", "OBJ//tornado.obj");
+	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
+	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
+	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -447,6 +450,14 @@ void SceneRange::Update(double dt)
 				aa3->Init(campos + viewvec, camtar + viewvec*1.5f);
 				aa3->SetBurstPivRotOff(240);
 			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_SPECIAL);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
 
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
 			playerInfo->setMana(playerInfo->getMana() - 10);
@@ -477,6 +488,14 @@ void SceneRange::Update(double dt)
 				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
 				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
 				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_SPECIAL);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 			}
 
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
@@ -1321,14 +1340,27 @@ void SceneRange::RenderWorld()
 					modelStack.PushMatrix();
 					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					//modelStack.Rotate(Math::RadianToDegree(atan2f(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
-					modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
-					modelStack.Scale(entSca.x, entSca.y, entSca.z);
 					if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+					{
+						modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
 						RenderMesh(meshList[GEO_FIREBALL], false);
+					}
 					else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+					{
+						modelStack.Rotate(proj->getProjRot() * 360, 1, 1, 1);
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
 						RenderMesh(meshList[GEO_ICEBALL], false);
+					}
+					else if (proj->getProjType() == CProjectile::PTYPE_SPECIAL_KILLERNADO)
+					{
+						modelStack.Rotate(proj->getProjRot() * 360, 0, 1, 0);
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						RenderMesh(meshList[GEO_KILLERNADO], false);
+					}
 					modelStack.PopMatrix();
-					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight)
+
+					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
@@ -1346,6 +1378,17 @@ void SceneRange::RenderWorld()
 								1,
 								meshList[GEO_TERRAIN]->tgaLengthPaint,
 								PAINT_PATTERNS::PAINT_UNIQUE_FIRE);
+
+							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
+							{
+								CProjectile* aa = new CProjectile(CProjectile::PTYPE_SPECIAL_KILLERNADO);
+								Vector3 viewvec = (proj->getTarget() - proj->getPos()).Normalized();
+								viewvec.y = 0;
+								viewvec.Normalize();
+								aa->Init(proj->getPos() + viewvec, proj->getPos() + viewvec * 1.5);
+								aa->setPos(aa->getPos() + Vector3(0, aa->getScale().y, 0));
+								aa->setTarget(aa->getTarget() + Vector3(0, aa->getScale().y, 0));
+							}
 						}
 						else if (proj->getProjType() == CProjectile::PTYPE_ICE)
 						{
@@ -1358,6 +1401,11 @@ void SceneRange::RenderWorld()
 								1,
 								meshList[GEO_TERRAIN]->tgaLengthPaint,
 								PAINT_PATTERNS::PAINT_BURST);
+
+							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
+							{
+								//spawn ice wall
+							}
 						}
 					}
 				}
@@ -1509,6 +1557,17 @@ void SceneRange::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			case CParticle_2::PTYPE_BEAM:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
+				modelStack.Rotate(bBoardRot, 0, 1, 0);
+				modelStack.Rotate(par->getRot(), 0, 0, 1);
+				modelStack.Scale(0.2f, parSca.y, 0.2f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
+			case CParticle_2::PTYPE_SPECIAL_KILLERNADO:
 				modelStack.PushMatrix();
 				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
 				modelStack.Rotate(bBoardRot, 0, 1, 0);

@@ -87,13 +87,13 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 		lifespanTime = 0.3;
 		break;
 	}
-	case PTYPE_SPECIAL_FIRETORNADO:
+	case PTYPE_SPECIAL_KILLERNADO:
 	{
-		this->setSpeed(0);
+		this->setSpeed(200);
 		this->particleRate = 1.f / 60.f;
-		this->setScale(Vector3(10, 10, 10));
+		this->setScale(Vector3(60, 60, 60));
 		setGrav(Vector3(0, 0, 0));
-		lifespanTime = 15;
+		lifespanTime = 10;
 		break;
 	}
 
@@ -104,7 +104,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 	this->setTarget(targ);
 	this->originPosition = pos;
 	this->source = source;
-	lifespanTime = 10;
+	
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
