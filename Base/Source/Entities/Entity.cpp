@@ -49,12 +49,6 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + scale.x * 1.1f, position.y + scale.y* 1.1f, position.z + scale.z* 1.1f), Vector3(position.x - scale.x* 1.1f, position.y - scale.y* 1.1f, position.z - scale.z* 1.1f));
 		break;
 	}
-		
-	case E_PLAYER:
-	case E_TARGET:
-	case E_WALL:
-		setAABB(Vector3(position.x + scale.x * 1.1f, position.y + scale.y* 1.1f, position.z + scale.z* 1.1f), Vector3(position.x - scale.x* 1.1f, position.y - scale.y* 1.1f, position.z - scale.z* 1.1f));
-		break;
 	case E_MOVING_TARGET:
 		if ((getTarget() - getPos()).LengthSquared() < 1.f) { 
 			setTarget(getOriginPos());
@@ -64,10 +58,14 @@ void CEntity::Update(double dt)
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
+	case E_PLAYER:
+	case E_TARGET:
+	case E_TARGET_FIRE:
+	case E_TARGET_ICE:
+	case E_WALL:
 	case E_NPC:
-		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
-		break;
 	default:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	}
 	//setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
