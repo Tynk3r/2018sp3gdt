@@ -377,7 +377,7 @@ void SceneRange::Init()
 
 void SceneRange::Update(double dt)
 {
-	cout << playerInfo->getPos() << endl;
+	//cout << playerInfo->getPos() << endl;
 	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
 	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
@@ -560,19 +560,33 @@ void SceneRange::Update(double dt)
 	{
 		if (playerInfo->rocketMode)
 		{
+			playerInfo->SetUp(Vector3(0, 1, 0));
+			playerInfo->setTarget(playerInfo->getPos() + (playerInfo->rocketTarget - playerInfo->rocketPosition).Normalized());
+			playerInfo->SetOnFreeFall(true);
 			playerInfo->rocketMode = false;
 		}
 		else if (!playerInfo->rocketMode)
 		{
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
-			playerInfo->rocketTarget = playerInfo->rocketPosition + Vector3(0, 0, -1);
+			playerInfo->rocketTarget = playerInfo->rocketPosition + (playerInfo->getTarget() - playerInfo->getPos()).Normalized();
 			playerInfo->rocketUp = Vector3(0, 1, 0);
+			playerInfo->rocketPitchAccel = 0;
+			playerInfo->rocketRollAccel = 0;
+			playerInfo->rocketYawAccel = 0;
 		}
 	}
 
-	if (playerInfo->rocketMode && playerInfo->rocketPosition.y + 400 <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000))
+	if (playerInfo->rocketMode)
 	{
+		playerInfo->setPos(playerInfo->rocketPosition);
+	}
+	if (playerInfo->rocketMode && playerInfo->rocketPosition.y + 350 <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000))
+	{
+		playerInfo->SetUp(Vector3(0, 1, 0));
+		playerInfo->setPos(playerInfo->getPos() + Vector3(0, - playerInfo->getPos().y, 0));
+		playerInfo->setTarget(playerInfo->getPos() + (playerInfo->rocketTarget - playerInfo->rocketPosition).Normalized());
+		playerInfo->terrainHeight = 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000);
 		playerInfo->rocketMode = false;
 	}
 
