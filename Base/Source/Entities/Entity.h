@@ -16,6 +16,7 @@ public:
 		E_PARTICLE,
 		E_WALL,
 		E_NPC,
+		E_BOSS,
 		E_TOTAL
 	};
 

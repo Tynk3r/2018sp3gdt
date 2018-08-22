@@ -218,7 +218,7 @@ void SceneBoss::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 2.5f);
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
@@ -311,53 +311,15 @@ void SceneBoss::Init()
 	);
 	npc->setPlayerRef(playerInfo);
 
-	/*for (int i = 0; i < 3; i++)
-	{
-		targets[i] = new CEntity();
-		targets[i]->Init();
-		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targets[i]->setOriginPos(targets[i]->getPos());
-		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	}
-	for (int i = 0; i < 3; i++) 
-	{
-		targetsMoving[i] = new CEntity();
-		targetsMoving[i]->Init();
-		targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		targets1[i] = new CEntity();
-		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET);
-		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targets1[i]->setOriginPos(targets1[i]->getPos());
-		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	}
-	for (int i = 0; i < 3; i++) 
-	{
-		targetsMoving1[i] = new CEntity();
-		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}*/
-
 	wall1 = new CEntity();
 	wall1->Init();
 	wall1->setType(CEntity::E_WALL);
 	wall1->setPos(Vector3(0, 0, 740));
 	wall1->setScale(Vector3(25.f, 25.f, 25.f));
+
+	boss = new CBoss();
+	boss->Init();
+	boss->setPlayerRef(playerInfo);
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -389,7 +351,7 @@ void SceneBoss::Init()
 
 void SceneBoss::Update(double dt)
 {
-	cout << playerInfo->getPos() << endl;
+	//cout << playerInfo->getPos() << endl;
 	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
 	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
@@ -623,6 +585,13 @@ void SceneBoss::Update(double dt)
 	//camera.Update(dt);
 
 	playerInfo->SetNotMoving();
+
+	if (boss)
+	{
+		Vector3 bossPos = boss->getPos();
+		Vector3 bossSca = boss->getScale();
+		boss->setPos(Vector3(bossPos.x, ReadHeightMap(m_heightMap, bossPos.x, bossPos.z) + bossSca.y, bossPos.z));
+	}
 
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -1070,11 +1039,6 @@ void SceneBoss::RenderParticles(ParticleObject *particle)
 
 void SceneBoss::RenderWorld()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 400, 0);
-	modelStack.Scale(20, 20, 20);
-	RenderMesh(meshList[GEO_OCTO_HEAD], false);
-	modelStack.PopMatrix();
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
 		std::list<CEntity*>::iterator it, end;
@@ -1230,6 +1194,37 @@ void SceneBoss::RenderWorld()
 				RenderMesh(meshList[GEO_CUBE], false);
 				modelStack.PopMatrix();
 				break;
+			case CEntity::E_BOSS:
+			{
+				Vector3 bossOrigSca = boss->getOrigScale();
+				modelStack.PushMatrix();
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.PushMatrix();
+						modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+						modelStack.Translate(0, entSca.y*-0.35f, 0);
+						modelStack.PushMatrix();
+							modelStack.Scale(bossOrigSca.x, bossOrigSca.y, bossOrigSca.z);
+							modelStack.Translate(3, 1, 0);
+							modelStack.Rotate(180, 1, 0, 0);
+							modelStack.Scale(0.15f, 0.15f, 0.15f);
+							RenderMesh(meshList[GEO_OCTO_TRIDENT], false);
+						modelStack.PopMatrix();
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						modelStack.Scale(0.275f, 0.125f, 0.275f);
+						RenderMesh(meshList[GEO_OCTO_BODY], false);
+						modelStack.Translate(0, 10.5f, 0);
+						modelStack.Scale(1.55f, 0.9f, 1.55f);
+						RenderMesh(meshList[GEO_OCTO_HEAD], false);
+					modelStack.PopMatrix();
+					modelStack.PushMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						glUniform1f(m_parameters[U_COLOR_ALPHA], 0.25f);
+						RenderMesh(meshList[GEO_CUBE], false);
+						glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+					modelStack.PopMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}

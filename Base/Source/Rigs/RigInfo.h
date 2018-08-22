@@ -12,6 +12,9 @@ public:
 		RIG_NONE,
 		RIG_BOSS,
 	};
+	CRigInfo(RIG_TYPE rigType = RIG_NONE);
+	~CRigInfo();
+	CJointInfo* GetJoint(std::string index);
 private:
 	std::map<std::string, CJointInfo*> jointinfos;
 };

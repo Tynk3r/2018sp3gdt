@@ -43,6 +43,7 @@
     <ClCompile Include="Source\Rigs\RigInfo.cpp" />
     <ClCompile Include="Source\Rigs\JointInfo.cpp" />
     <ClCompile Include="Source\SceneBoss.cpp" />
+    <ClCompile Include="Source\Entities\Boss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -92,5 +93,6 @@
     <ClInclude Include="Source\Rigs\RigInfo.h" />
     <ClInclude Include="Source\Rigs\JointInfo.h" />
     <ClInclude Include="Source\SceneBoss.h" />
+    <ClInclude Include="Source\Entities\Boss.h" />
   </ItemGroup>
 </Project>
