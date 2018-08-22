@@ -1,10 +1,13 @@
 #include "Boss.h"
 #include "../TimeTrackerManager.h"
+#include "EasingStyles\QuadEase.h"
+#include "EasingStyles\BackEase.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
 	playerRef(NULL),
 	elapsedTime(0),
+	animFrame(0),
 	rig(CRigInfo::RIG_BOSS)
 {
 	target.y = pos.y;
@@ -32,36 +35,47 @@ void CBoss::Update(double dt)
 	CEntity::Update(dt);
 	elapsedTime += (float)dt;
 	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
-	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 3), 60 + 3 * cosf(tElapsedTime * 6), 20 + 2 * cosf(tElapsedTime * 3)));
+	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 2), 60 + 3 * cosf(tElapsedTime * 4), 20 + 2 * cosf(tElapsedTime * 2)));
 	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
 	if (this->playerRef != NULL)
 	{
 		CPlayerInfo* plr = this->playerRef;
-		/*Vector3 enemytoplayer = (plr->getPos() - this->getPos());
-		try 
-		{ 
-			float lengthSQ = enemytoplayer.LengthSquared();
-			if (lengthSQ < 800 * 800)//curernt hardcoded sphere "area" detection
+		float alpha;
+		switch (this->state)
+		{
+		case F_ATTACK_FIREBALL:
+			//std::cout << this->elapsedTime << std::endl;
+			if (this->elapsedTime < 0.7f)
 			{
-				this->state = F_IDLE; //close enough to attack so no need to move i guess
-				this->setTarget(this->getPos() + enemytoplayer.Normalized()*0.05f);
-				//std::cout << "enemy IDSLE" << std::endl;
+				alpha = this->elapsedTime / 0.7f;
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_FIREBALL_1);
+				this->animFrame = Quad::easeOut(alpha, 0, 1, 1);
+				this->rig.Animate(animFrame);
 			}
-			else if (lengthSQ < 3000 * 3000)
+			else if (this->elapsedTime > 3.f && this->elapsedTime < 3.5f)
 			{
-				this->state = F_ATTACK; //chase player until it gets close enuf
-				Vector3 targ = Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z);
-				this->setTarget(targ);
-				//std::cout << "enemy ATACK" << std::endl;
+				alpha = (this->elapsedTime - 3.f) * 2.f;
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_FIREBALL_2);
+				this->animFrame = Back::easeOut(alpha, 0, 1, 1);
+				this->rig.Animate(animFrame);
 			}
-			else
+			else if (this->elapsedTime > 4.5f)
 			{
-				this->state = F_ROAM; //since its too far to see te player it just roams around
-				//std::cout << "enemy rOAM" << std::endl;
+				this->state = F_NORMAL;
+				this->elapsedTime = 0;
+				this->rig.SetStartKeyframe(CJointInfo::KEYFRAME_NONE);
+				this->rig.SetGoalKeyframe(CJointInfo::KEYFRAME_NONE);
+				this->rig.Animate(1);
 			}
+			break;
+		case F_NORMAL:
+			if (this->elapsedTime > 8.f)
+			{
+				this->state = F_ATTACK_FIREBALL;
+				this->elapsedTime = this->animFrame = 0;
+			}
+			break;
 		}
-		catch (exception) {}*/
-		
 	}
 }
 

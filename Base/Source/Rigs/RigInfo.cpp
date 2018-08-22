@@ -32,3 +32,49 @@ CJointInfo * CRigInfo::GetJoint(std::string index)
 {
 	return this->jointinfos[index];
 }
+
+void CRigInfo::MoveToKeyframe(CJointInfo::JOINT_KEYFRAME keyframe)
+{
+	std::map<std::string, CJointInfo*>::iterator it, end;
+	it = this->jointinfos.begin();
+	end = this->jointinfos.end();
+	if (it->second->getKFGoal() == keyframe)//if the goal is gonan be the same as the start then for now just nah wont update keyframes
+		return;
+	for (it; it != end; ++it)
+	{
+		it->second->moveToKF(keyframe);
+	}
+}
+
+void CRigInfo::SetStartKeyframe(CJointInfo::JOINT_KEYFRAME keyframe)
+{
+	std::map<std::string, CJointInfo*>::iterator it, end;
+	it = this->jointinfos.begin();
+	end = this->jointinfos.end();
+	for (it; it != end; ++it)
+	{
+		it->second->setStartKF(keyframe);
+	}
+}
+
+void CRigInfo::SetGoalKeyframe(CJointInfo::JOINT_KEYFRAME keyframe)
+{
+	std::map<std::string, CJointInfo*>::iterator it, end;
+	it = this->jointinfos.begin();
+	end = this->jointinfos.end();
+	for (it; it != end; ++it)
+	{
+		it->second->setGoalKF(keyframe);
+	}
+}
+
+void CRigInfo::Animate(float alpha)
+{
+	std::map<std::string, CJointInfo*>::iterator it, end;
+	it = this->jointinfos.begin();
+	end = this->jointinfos.end();
+	for (it; it != end; ++it)
+	{
+		it->second->Animate(alpha);
+	}
+}

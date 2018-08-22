@@ -9,7 +9,7 @@ class CBoss : public CEntity
 public:
 	enum FSM {
 		F_NORMAL,
-		F_ATTACK_TRIDENT,
+		F_ATTACK_FIREBALL,
 	};
 
 	CBoss(Vector3 pos = Vector3(0, 150, 500), Vector3 scale = Vector3(20, 60, 20), Vector3 target = Vector3(30, 0, 79));
@@ -30,5 +30,6 @@ private:
 	CPlayerInfo* playerRef;
 	Vector3 originalScale;
 	float elapsedTime;
+	float animFrame;
 };
 

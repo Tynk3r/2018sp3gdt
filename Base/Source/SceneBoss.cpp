@@ -1259,7 +1259,7 @@ void SceneBoss::RenderWorld()
 							modelStack.Translate(3, 1, 0);
 							modelStack.Rotate(180, 1, 0, 0);
 							modelStack.Scale(0.15f, 0.15f, 0.15f);
-							RenderMesh(meshList[GEO_OCTO_TRIDENT], godlights);
+							//RenderMesh(meshList[GEO_OCTO_TRIDENT], godlights);
 							//render trident <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 						modelStack.PopMatrix();
 						modelStack.Scale(entSca.x, entSca.y, entSca.z);
