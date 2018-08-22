@@ -45,6 +45,12 @@ public:
 		SPELL_FIREBALL,
 		SPELL_ICEBALL,
 	};
+	enum SPELLMOD_TYPE {
+		SMTYPE_NORMAL,
+		SMTYPE_BURST,
+		SMTYPE_SPECIAL,
+		SMTYPE_TOTAL
+	};
 	static CPlayerInfo *GetInstance()
 	{
 		if (!s_instance)
@@ -167,6 +173,9 @@ public:
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
 
+	SPELLMOD_TYPE GetSpellMod() { return spellMod; }
+	void SetSpellMod(SPELLMOD_TYPE spellMod) { this->spellMod = spellMod; }
+
 	float terrainHeight = 0.f;
 
 	float camBobRotate, camBobHeight;
@@ -187,6 +196,8 @@ private:
 	Vector3 cameraSway;
 
 	bool hasMoved, hasRan;
+
+	SPELLMOD_TYPE spellMod;
 
 	int m_dHealth;
 	float m_dMana;

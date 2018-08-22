@@ -426,19 +426,43 @@ void SceneRange::Update(double dt)
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+			Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+			Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+			Vector3 viewvec = (camtar - campos).Normalized();
+			aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
 			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
-			aa = new CProjectile(CProjectile::PTYPE_ICE);
+			if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_NORMAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa2 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa3 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				Mtx44 rotation;
+				rotation.SetToRotation(30, 0, 1, 0);
+				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				rotation.SetToRotation(-30, 0, 1, 0);
+				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+			}
+
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
-		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
 		
@@ -472,8 +496,6 @@ void SceneRange::Update(double dt)
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec * 5, camtar + viewvec* 6);
-		
-		aa->SetLifespanTime(0.3);
 
 		//raycast check
 		Vector3 tempProj(9999, 9999, 9999);
