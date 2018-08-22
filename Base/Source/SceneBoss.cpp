@@ -62,7 +62,7 @@ void SceneBoss::Init()
 	m_parameters[U_MATERIAL_AMBIENT] = glGetUniformLocation(m_programID, "material.kAmbient");
 	m_parameters[U_MATERIAL_DIFFUSE] = glGetUniformLocation(m_programID, "material.kDiffuse");
 	m_parameters[U_MATERIAL_SPECULAR] = glGetUniformLocation(m_programID, "material.kSpecular");
-	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess");
+	m_parameters[U_MATERIAL_SHININESS] = glGetUniformLocation(m_programID, "material.kShininess"); 
 	m_parameters[U_LIGHTENABLED] = glGetUniformLocation(m_programID, "lightEnabled");
 	m_parameters[U_NUMLIGHTS] = glGetUniformLocation(m_programID, "numLights");
 	m_parameters[U_LIGHT0_TYPE] = glGetUniformLocation(m_programID, "lights[0].type");
@@ -218,7 +218,7 @@ void SceneBoss::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
-	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 2.5f);
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
@@ -268,6 +268,13 @@ void SceneBoss::Init()
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
 	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
+	meshList[GEO_OCTO_HEAD] = MeshBuilder::GenerateOBJ("octoHead", "OBJ//octoHead.obj");
+	meshList[GEO_OCTO_HEAD]->textureArray[0]= LoadTGA("Image//octoHead.tga");
+	meshList[GEO_OCTO_BODY] = MeshBuilder::GenerateOBJ("octoBody", "OBJ//octoBody.obj");
+	meshList[GEO_OCTO_BODY]->textureArray[0] = LoadTGA("Image//octoBody.tga");
+	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
+	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
+	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -305,53 +312,15 @@ void SceneBoss::Init()
 	);
 	npc->setPlayerRef(playerInfo);
 
-	/*for (int i = 0; i < 3; i++)
-	{
-		targets[i] = new CEntity();
-		targets[i]->Init();
-		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targets[i]->setOriginPos(targets[i]->getPos());
-		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	}
-	for (int i = 0; i < 3; i++) 
-	{
-		targetsMoving[i] = new CEntity();
-		targetsMoving[i]->Init();
-		targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		targets1[i] = new CEntity();
-		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET);
-		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targets1[i]->setOriginPos(targets1[i]->getPos());
-		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	}
-	for (int i = 0; i < 3; i++) 
-	{
-		targetsMoving1[i] = new CEntity();
-		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}*/
-
 	wall1 = new CEntity();
 	wall1->Init();
 	wall1->setType(CEntity::E_WALL);
 	wall1->setPos(Vector3(0, 0, 740));
 	wall1->setScale(Vector3(25.f, 25.f, 25.f));
+
+	boss = new CBoss();
+	boss->Init();
+	boss->setPlayerRef(playerInfo);
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -383,7 +352,7 @@ void SceneBoss::Init()
 
 void SceneBoss::Update(double dt)
 {
-	cout << playerInfo->getPos() << endl;
+	//cout << playerInfo->getPos() << endl;
 	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
 	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
@@ -617,6 +586,13 @@ void SceneBoss::Update(double dt)
 	//camera.Update(dt);
 
 	playerInfo->SetNotMoving();
+
+	if (boss)
+	{
+		Vector3 bossPos = boss->getPos();
+		Vector3 bossSca = boss->getScale();
+		boss->setPos(Vector3(bossPos.x, ReadHeightMap(m_heightMap, bossPos.x, bossPos.z) + bossSca.y, bossPos.z));
+	}
 
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -1213,12 +1189,95 @@ void SceneBoss::RenderWorld()
 				modelStack.PushMatrix();
 				modelStack.Translate(0, entSca.y*5.f, 0);
 				modelStack.Scale(entSca.x, 5, entSca.z);
-				RenderMesh(meshList[GEO_CONE], false);
+				RenderMesh(meshList[GEO_CONE], godlights);
 				modelStack.PopMatrix();
 				modelStack.Scale(entSca.x, entSca.y, entSca.z);
-				RenderMesh(meshList[GEO_CUBE], false);
+				RenderMesh(meshList[GEO_CUBE], godlights);
 				modelStack.PopMatrix();
 				break;
+			case CEntity::E_BOSS:
+			{
+				Vector3 bossOrigSca = boss->getOrigScale();
+				float bossElapsedTime = boss->getElapsedTime();
+				modelStack.PushMatrix();
+					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.PushMatrix();
+						modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
+						modelStack.Translate(0, entSca.y*-0.35f, 0);
+						modelStack.PushMatrix();
+							float balancedScale = (bossOrigSca.x + bossOrigSca.z)*0.5f;
+							modelStack.Scale(balancedScale, balancedScale, balancedScale);
+							modelStack.PushMatrix();//render LOWER RIGHT TENTACLE STUFF <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+								CJointInfo* rightTentStart = boss->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT");
+								CJointInfo* rightTentEnd = boss->rig.GetJoint("OCTO_FIREBALL");
+								Vector3 RTSPosOffset = rightTentStart->getPosOffset();
+								modelStack.Translate(RTSPosOffset.x, RTSPosOffset.y, RTSPosOffset.z);
+								for (int i = 0, end = i + 32; i < end; ++i)
+								{
+									modelStack.PushMatrix();
+									float lAlpha = (float)i / (float)end;//Quad::easeOut((float)i, (float)0, (float)1, (float)24);
+									Vector3 startV = Vector3();
+									Vector3 endV = rightTentEnd->getPosOffset();
+									Vector3 tangent1 = rightTentStart->getAxisOffset();
+									Vector3 tangent2 = endV + rightTentEnd->getAxisOffset();
+									Vector3 points[4] = { startV, tangent1, tangent2, endV };
+									Vector3 RTEPosOffset = Vector3::bezier(lAlpha, points);//Vector3().lerped(leftTentEnd->getPosOffset(), lAlpha);
+									modelStack.Translate(RTEPosOffset.x, RTEPosOffset.y, RTEPosOffset.z);
+									float pulseScale = 0.3f * cosf(-bossElapsedTime * 5 + lAlpha * 6) * (1 - lAlpha);
+									lAlpha *= 0.7f;
+									modelStack.Scale(1 - lAlpha + pulseScale, 1 - lAlpha + pulseScale, 1 - lAlpha + pulseScale);
+									modelStack.Scale(0.35f, 0.35f, 0.35f);
+									RenderMesh(meshList[GEO_OCTO_TENTACLE_SPHERE], godlights);
+									modelStack.PopMatrix();
+								}
+							modelStack.PopMatrix();//render LOWER RIGHT TENTACLE STUFF <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+							modelStack.PushMatrix();//render LOWER LEFT TENTACLE STUFF <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+								CJointInfo* leftTentStart = boss->rig.GetJoint("OCTO_TENTACLE_LOWER_LEFT");
+								CJointInfo* leftTentEnd = boss->rig.GetJoint("OCTO_ICEBALL");
+								Vector3 LTSPosOffset = leftTentStart->getPosOffset();
+								modelStack.Translate(LTSPosOffset.x, LTSPosOffset.y, LTSPosOffset.z);
+								for (int i = 0, end = i + 32; i < end; ++i)
+								{
+									modelStack.PushMatrix();
+									float lAlpha = (float)i / (float)end;//Quad::easeOut((float)i, (float)0, (float)1, (float)24);
+									Vector3 startV = Vector3();
+									Vector3 endV = leftTentEnd->getPosOffset();
+									Vector3 tangent1 = leftTentStart->getAxisOffset();
+									Vector3 tangent2 = endV + leftTentEnd->getAxisOffset();
+									Vector3 points[4] = { startV, tangent1, tangent2, endV };
+									Vector3 LTEPosOffset = Vector3::bezier(lAlpha, points);//Vector3().lerped(leftTentEnd->getPosOffset(), lAlpha);
+									modelStack.Translate(LTEPosOffset.x, LTEPosOffset.y, LTEPosOffset.z);
+									float pulseScale = 0.3f * cosf(-bossElapsedTime*5 + lAlpha * 6) * (1 - lAlpha);
+									lAlpha *= 0.7f;
+									modelStack.Scale(1 - lAlpha + pulseScale, 1 - lAlpha + pulseScale, 1 - lAlpha + pulseScale);
+									modelStack.Scale(0.35f, 0.35f, 0.35f);
+									RenderMesh(meshList[GEO_OCTO_TENTACLE_SPHERE], godlights);
+									modelStack.PopMatrix();
+								}
+							modelStack.PopMatrix();//render LOWER LEFT TENTACLE STUFF <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+							//render trident <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+							modelStack.Translate(3, 1, 0);
+							modelStack.Rotate(180, 1, 0, 0);
+							modelStack.Scale(0.15f, 0.15f, 0.15f);
+							//RenderMesh(meshList[GEO_OCTO_TRIDENT], godlights);
+							//render trident <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+						modelStack.PopMatrix();
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						modelStack.Scale(0.275f, 0.125f, 0.275f);
+						RenderMesh(meshList[GEO_OCTO_BODY], godlights);
+						modelStack.Translate(0, 10.5f, 0);
+						modelStack.Scale(1.55f, 0.9f, 1.55f);
+						RenderMesh(meshList[GEO_OCTO_HEAD], godlights);
+					modelStack.PopMatrix();
+					modelStack.PushMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+						modelStack.Scale(entSca.x, entSca.y, entSca.z);
+						glUniform1f(m_parameters[U_COLOR_ALPHA], 0.25f);
+						RenderMesh(meshList[GEO_CUBE], false);
+						glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+					modelStack.PopMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}

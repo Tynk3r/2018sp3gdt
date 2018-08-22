@@ -31,6 +31,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_dMana(50)
 	, m_dScore(0)
 	, climbHeight(10)
+	, spellMod(SMTYPE_BURST)
 {
 }
 
@@ -382,6 +383,87 @@ void CPlayerInfo::Update(double dt)
 			//Constrain();
 			// Update the target
 			rocketTarget = rocketPosition + viewVector;
+
+			//if(Math::FAbs(rocketYawAccel) > Math::EPSILON)
+			{
+				Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+				Mtx44 rotation;
+				rotation.SetToRotation(rocketYawAccel, rocketUp.x, rocketUp.y, rocketUp.z);
+				tempView = rotation * tempView;
+				rocketTarget = rocketPosition + tempView;
+				rocketRight = tempView.Cross(rocketUp);
+				rocketRight.Normalize();
+				//rocketYawAccel = 0;
+				if (rocketYawAccel > 0)
+				{
+					rocketYawAccel -= dt;
+					if (rocketYawAccel <= 0) rocketYawAccel = 0;
+				}
+				else if (rocketYawAccel < 0)
+				{
+					rocketYawAccel += dt;
+					if (rocketYawAccel >= 0) rocketYawAccel = 0;
+				}
+			}
+			//else
+			//{
+			//	rocketYawAccel = 0;
+			//}
+
+			////if (Math::FAbs(rocketPitchAccel) > Math::EPSILON)
+			{
+				Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+				Mtx44 rotation;
+				rotation.SetToRotation(rocketPitchAccel, rocketRight.x, rocketRight.y, rocketRight.z);
+				tempView = rotation * tempView;
+				rocketTarget = rocketPosition + tempView;
+				rocketUp = rocketRight.Cross(tempView);
+				rocketUp.Normalize();
+				//rocketPitchAccel = 0;
+				if (rocketPitchAccel > 0)
+				{
+					rocketPitchAccel -= dt;
+					if (rocketPitchAccel <= 0) rocketPitchAccel = 0;
+				}
+				else if (rocketPitchAccel < 0)
+				{
+					rocketPitchAccel += dt;
+					if (rocketPitchAccel >= 0) rocketPitchAccel = 0;
+				}
+			}
+			////else
+			////{
+			////	rocketPitchAccel = 0;
+			////}
+
+			////if (Math::FAbs(rocketRollAccel) > Math::EPSILON)
+			{
+				Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+				Mtx44 rotation;
+				rotation.SetToRotation(rocketRollAccel, tempView.x, tempView.y, tempView.z);
+				rocketUp = rotation * rocketUp;
+				rocketRight = tempView.Cross(rocketUp);
+				rocketRight.Normalize();
+				//rocketRollAccel = 0;
+				if (rocketRollAccel > 0)
+				{
+					rocketRollAccel -= dt;
+					if (rocketRollAccel <= 0) rocketRollAccel = 0;
+				}
+				else if (rocketRollAccel < 0)
+				{
+					rocketRollAccel += dt;
+					if (rocketRollAccel >= 0) rocketRollAccel = 0;
+				}
+			}
+			//else
+			//{
+			//	rocketRollAccel = 0;
+			//}
+
+			//rocketPitchAccel = 0;
+			//rocketRollAccel = 0;
+			//rocketYawAccel = 0;
 	}
 
 	if (screenShakeOn) { screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5)); }
@@ -409,8 +491,8 @@ void CPlayerInfo::Update(double dt)
 		{
 			Vector3 camDir = (rocketTarget - rocketPosition).Normalized();
 
-			attachedCamera->position = rocketPosition + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
-			attachedCamera->target = rocketPosition + camDir + Vector3(0.f, terrainHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->position = rocketPosition + Vector3(0.f, FirstHeight + 75, 0.f) + screenshakeOffset;
+			attachedCamera->target = rocketPosition + camDir + Vector3(0.f, FirstHeight + 75, 0.f) + screenshakeOffset;
 			attachedCamera->up = rocketUp.Normalized();
 		}
 	}
@@ -691,46 +773,59 @@ bool CPlayerInfo::Look_LeftRight(const float deltaTime, const bool direction, co
 //rotate about the up vector
 bool CPlayerInfo::Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier)
 {
-	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+	//Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+	rocketYawAccel += (float)-1 * speedMultiplier * (float)deltaTime * 0.4f;
+	//std::cout << speedMultiplier << std::endl;
+	if (rocketYawAccel > 1.5) rocketYawAccel = 1.5;
+	if (rocketYawAccel < -1.5) rocketYawAccel = -1.5;
 
-	float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
+	//if (Math::FAbs(rocketYawAccel) > 150) rocketYawAccel = 150 * (rocketYawAccel / Math::FAbs(rocketYawAccel));
+	//float yaw = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 
-	Mtx44 rotation;
-	rotation.SetToRotation(yaw, rocketUp.x, rocketUp.y, rocketUp.z);
-	tempView = rotation * tempView;
-	rocketTarget = rocketPosition + tempView;
-	rocketRight = tempView.Cross(rocketUp);
-	rocketRight.Normalize();
+	//Mtx44 rotation;
+	//rotation.SetToRotation(yaw, rocketUp.x, rocketUp.y, rocketUp.z);
+	//tempView = rotation * tempView;
+	//rocketTarget = rocketPosition + tempView;
+	//rocketRight = tempView.Cross(rocketUp);
+	//rocketRight.Normalize();
 
 	return true;
 }
 bool CPlayerInfo::Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier)
 {
-	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+	//Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+	//std::cout << (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f << std::endl;
+	rocketPitchAccel += (float)-1 * speedMultiplier * (float)deltaTime * 0.4f;
+	if (rocketPitchAccel > 1.5) rocketPitchAccel = 1.5;
+	if (rocketPitchAccel < -1.5) rocketPitchAccel = -1.5;
+	//if (Math::FAbs(rocketPitchAccel) > 150) rocketPitchAccel = 150 * (rocketPitchAccel / Math::FAbs(rocketPitchAccel));
+	//float pitch = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 
-	float pitch = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
-
-	Mtx44 rotation;
-	rotation.SetToRotation(pitch, rocketRight.x, rocketRight.y, rocketRight.z);
-	tempView = rotation * tempView;
-	rocketTarget = rocketPosition + tempView;
-	rocketUp = rocketRight.Cross(tempView);
-	rocketUp.Normalize();
+	//Mtx44 rotation;
+	//rotation.SetToRotation(pitch, rocketRight.x, rocketRight.y, rocketRight.z);
+	//tempView = rotation * tempView;
+	//rocketTarget = rocketPosition + tempView;
+	//rocketUp = rocketRight.Cross(tempView);
+	//rocketUp.Normalize();
 
 	return true;
 }
 bool CPlayerInfo::Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier)
 {
-	Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
+	//Vector3 tempView = (rocketTarget - rocketPosition).Normalized();
 
 	float roll = (float)-m_dSpeed * speedMultiplier * (float)deltaTime * 0.4f;
 	if (direction == false) roll = -roll;
 
-	Mtx44 rotation;
-	rotation.SetToRotation(roll, tempView.x, tempView.y, tempView.z);
-	rocketUp = rotation * rocketUp;
-	rocketRight = tempView.Cross(rocketUp);
-	rocketRight.Normalize();
+	rocketRollAccel += roll;
+	if (rocketRollAccel > 1.) rocketRollAccel = 1.;
+	if (rocketRollAccel < -1.) rocketRollAccel = -1.;
+	//if (Math::FAbs(rocketRollAccel) > 150) rocketRollAccel = 150 * (rocketRollAccel / Math::FAbs(rocketRollAccel));
+	//Mtx44 rotation;
+	//rotation.SetToRotation(roll, tempView.x, tempView.y, tempView.z);
+	//rocketUp = rotation * rocketUp;
+	//rocketRight = tempView.Cross(rocketUp);
+	//rocketRight.Normalize();
 
 	return true;
 }

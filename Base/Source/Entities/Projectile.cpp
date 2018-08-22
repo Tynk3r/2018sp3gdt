@@ -1,13 +1,17 @@
 #include "Projectile.h"
+#include "Mtx44.h"
 
 
 
-
-CProjectile::CProjectile(PROJECTILE_TYPE projectileType) :
+CProjectile::CProjectile(PROJECTILE_TYPE projectileType, SPELLMOD_TYPE spellModType) :
 	projectileType(projectileType),
+	spellModType(spellModType),
 	elapsedTime(0),
 	particleRate(1.f / 60.f),
-	projRot(0)
+	projRot(0),
+	burstPivotRotOffset(0),
+	burstPivotRot(Vector3(0, 0, 0)),
+	originDir(Vector3(0, 0, 0))
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -21,29 +25,86 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	switch (this->projectileType) //set properties depending on projectile's type (fire or ice or whatever)
 	{
 	case PTYPE_FIRE:
-		this->setSpeed(1000);
-		this->setScale(Vector3(10, 10, 10));
-		this->particleRate = 1.f / 60.f;
+	{
+		if (spellModType == SMTYPE_NORMAL)
+		{
+			this->setSpeed(1000);
+			this->setScale(Vector3(10, 10, 10));
+			this->particleRate = 1.f / 60.f;
+			lifespanTime = 10;
+		}
+		else if (spellModType == SMTYPE_BURST)
+		{
+			this->setSpeed(1000);
+			this->setScale(Vector3(8, 8, 8));
+			this->particleRate = 1.f / 30.f;
+			lifespanTime = 10;
+			setGrav(Vector3(0, 0, 0));
+		}
+		else if (spellModType == SMTYPE_SPECIAL)
+		{
+			this->setSpeed(600);
+			this->setScale(Vector3(15, 15, 15));
+			this->particleRate = 1.f / 60.f;
+			lifespanTime = 10;
+		}
 		break;
+	}
 	case PTYPE_ICE:
-		this->setSpeed(750);
-		this->setScale(Vector3(2, 2, 2));
-		this->particleRate = 1.f / 60.f;
+	{
+		if (spellModType == SMTYPE_NORMAL)
+		{
+			this->setSpeed(750);
+			this->setScale(Vector3(2, 2, 2));
+			this->particleRate = 1.f / 60.f;
+			lifespanTime = 10;
+		}
+		else if (spellModType == SMTYPE_BURST)
+		{
+			this->setSpeed(600);
+			this->setScale(Vector3(2, 2, 2));
+			this->particleRate = 1.f / 30.f;
+			lifespanTime = 5;
+			setGrav(Vector3(0, 0, 0));
+			originDir = (targ - pos).Normalized();
+		}
+		else if (spellModType == SMTYPE_SPECIAL)
+		{
+			this->setSpeed(600);
+			this->setScale(Vector3(4, 4, 4));
+			this->particleRate = 1.f / 60.f;
+			lifespanTime = 10;
+		}
 		break;
+	}
 	case PTYPE_BEAM:
+	{
 		this->setSpeed(0);
 		this->particleRate = 1.f / 60.f;
+		setGrav(Vector3(0, 0, 0));
+		lifespanTime = 0.3;
+		break;
+	}
+	case PTYPE_SPECIAL_FIRETORNADO:
+	{
+		this->setSpeed(0);
+		this->particleRate = 1.f / 60.f;
+		this->setScale(Vector3(10, 10, 10));
+		setGrav(Vector3(0, 0, 0));
+		lifespanTime = 15;
+		break;
+	}
+
+	default:
 		break;
 	}
 	this->setPos(pos);
 	this->setTarget(targ);
 	this->originPosition = pos;
-	lifespanTime = 10;
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
 	setCollider(true);
 
-	if (projectileType == PTYPE_BEAM) setGrav(Vector3(0, 0, 0));
 }
 
 void CProjectile::Update(double dt)
@@ -72,6 +133,24 @@ void CProjectile::Update(double dt)
 		}
 		break;
 	}
+	
+	if (projectileType == PTYPE_ICE && spellModType == SMTYPE_BURST)
+	{
+		Vector3 tempView = (getTarget() - getPos()).Normalized();
+		setTarget(getTarget() - burstPivotRot);
+
+			burstPivotRotOffset += 2 * 360 * dt;
+			Vector3 tempRight;
+			if (!(tempView - Vector3(0, 1, 0)).IsZero()) tempRight = originDir.Cross(Vector3(0, 1, 0));
+			else tempRight = Vector3(1, 0, 0);
+			Mtx44 rotation;
+			rotation.SetToRotation(burstPivotRotOffset, originDir.x, originDir.y, originDir.z);
+			burstPivotRot = rotation * (tempRight);
+			burstPivotRot *= 0.5;
+
+			setTarget(getTarget() + burstPivotRot);
+	}
+
 	lifespanTime -= dt;
 	if (lifespanTime <= 0) setIsDone(true);
 }

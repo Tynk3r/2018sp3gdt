@@ -22,12 +22,14 @@
 #include "Entities/Enemy.h"
 #include "Entities/Drone.h"
 #include "Entities/NPC.h"
+#include "Entities/Boss.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
 #include "TimeTrackerManager.h"
+#include "EasingStyles\QuadEase.h"
 
 using namespace std;
 
@@ -157,6 +159,10 @@ class SceneBoss : public Scene
 		GEO_GOBLIN,
 		GEO_BARREL,
 		GEO_LIBRARIAN,
+		GEO_OCTO_HEAD,
+		GEO_OCTO_BODY,
+		GEO_OCTO_TRIDENT,
+		GEO_OCTO_TENTACLE_SPHERE,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -231,6 +237,7 @@ private:
 	CPlayerInfo* playerInfo;
 
 	CEntity* wall1;
+	CBoss* boss;
 
 	CEntity* targets[3];
 	CEntity* targetsMoving[3];

@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 
+#include "../Application.h"
 #include "MouseController.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "../Entities/NPC.h"
@@ -35,7 +36,9 @@ int CMouse::Read(const float deltaTime)
 		cout << "CMouse::Read()" << endl;
 
 	double mouse_diff_x, mouse_diff_y;
-	MouseController::GetInstance()->GetMouseDelta(mouse_diff_x, mouse_diff_y);
+	//MouseController::GetInstance()->GetMouseDelta(mouse_diff_x, mouse_diff_y);
+	mouse_diff_x = Application::mouse_diff_x;
+	mouse_diff_y = Application::mouse_diff_y;
 
 	// Process the keys for customisation
 	if (mouse_diff_x != 0.0)

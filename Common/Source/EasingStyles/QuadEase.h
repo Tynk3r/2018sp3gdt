@@ -1,6 +1,6 @@
-#ifndef _PENNER_QUAD
-#define _PENNER_QUAD
-
+//#ifndef _PENNER_QUAD
+//#define _PENNER_QUAD
+#pragma once
 class Quad {
 
 public:
@@ -10,4 +10,4 @@ public:
 	static float easeInOut(float t, float b, float c, float d);
 };
 
-#endif
+//#endif

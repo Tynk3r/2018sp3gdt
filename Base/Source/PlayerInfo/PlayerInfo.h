@@ -45,6 +45,12 @@ public:
 		SPELL_FIREBALL,
 		SPELL_ICEBALL,
 	};
+	enum SPELLMOD_TYPE {
+		SMTYPE_NORMAL,
+		SMTYPE_BURST,
+		SMTYPE_SPECIAL,
+		SMTYPE_TOTAL
+	};
 	static CPlayerInfo *GetInstance()
 	{
 		if (!s_instance)
@@ -148,6 +154,7 @@ public:
 	bool Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier); //left and right
 	bool Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier); //up and down
 	bool Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier); //roll
+	float rocketYawAccel = 0, rocketPitchAccel = 0, rocketRollAccel = 0;
 
 	// Stop sway
 	bool StopSway(const float deltaTime);
@@ -165,6 +172,9 @@ public:
 	void setMana(float m) { m_dMana = m; }
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
+
+	SPELLMOD_TYPE GetSpellMod() { return spellMod; }
+	void SetSpellMod(SPELLMOD_TYPE spellMod) { this->spellMod = spellMod; }
 
 	float terrainHeight = 0.f;
 
@@ -186,6 +196,8 @@ private:
 	Vector3 cameraSway;
 
 	bool hasMoved, hasRan;
+
+	SPELLMOD_TYPE spellMod;
 
 	int m_dHealth;
 	float m_dMana;

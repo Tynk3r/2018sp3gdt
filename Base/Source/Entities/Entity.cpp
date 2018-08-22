@@ -64,6 +64,7 @@ void CEntity::Update(double dt)
 	case E_TARGET_ICE:
 	case E_WALL:
 	case E_NPC:
+	case E_BOSS:
 	default:
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
