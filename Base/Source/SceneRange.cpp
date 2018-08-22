@@ -425,11 +425,28 @@ void SceneRange::Update(double dt)
 		CProjectile* aa;
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
-			aa = new CProjectile(CProjectile::PTYPE_FIRE);
-			Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
-			Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
-			Vector3 viewvec = (camtar - campos).Normalized();
-			aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_NORMAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa2 = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa3 = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa2->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa2->SetBurstPivRotOff(120);
+				aa3->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa3->SetBurstPivRotOff(240);
+			}
 
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
 			playerInfo->setMana(playerInfo->getMana() - 10);
@@ -454,9 +471,11 @@ void SceneRange::Update(double dt)
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 				Mtx44 rotation;
-				rotation.SetToRotation(30, 0, 1, 0);
+				Vector3 tempUp(0, 1, 0);
+				if (playerInfo->rocketMode) tempUp = playerInfo->rocketUp;
+				rotation.SetToRotation(30, tempUp.x, tempUp.y, tempUp.z);
 				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
-				rotation.SetToRotation(-30, 0, 1, 0);
+				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
 				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
 			}
 

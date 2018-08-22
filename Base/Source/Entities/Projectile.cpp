@@ -35,11 +35,12 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 		}
 		else if (spellModType == SMTYPE_BURST)
 		{
-			this->setSpeed(1000);
+			this->setSpeed(500);
 			this->setScale(Vector3(8, 8, 8));
 			this->particleRate = 1.f / 30.f;
-			lifespanTime = 10;
+			lifespanTime = 4;
 			setGrav(Vector3(0, 0, 0));
+			originDir = (targ - pos).Normalized();
 		}
 		else if (spellModType == SMTYPE_SPECIAL)
 		{
@@ -134,18 +135,32 @@ void CProjectile::Update(double dt)
 		break;
 	}
 	
-	if (projectileType == PTYPE_ICE && spellModType == SMTYPE_BURST)
+	if (projectileType == PTYPE_FIRE && spellModType == SMTYPE_BURST)
 	{
-		Vector3 tempView = (getTarget() - getPos()).Normalized();
+		setTarget(getPos() - burstPivotRot);
+
+		burstPivotRotOffset += 90 * dt;
+		if (burstPivotRotOffset >= 360) burstPivotRotOffset = fmodf(burstPivotRotOffset, 360);
+		Vector3 tempRight = Vector3(1, 0, 0);
+		Mtx44 rotation;
+		rotation.SetToRotation(burstPivotRotOffset, 0, 1, 0);
+		burstPivotRot = rotation * tempRight;
+		burstPivotRot *= 4;
+
+		setTarget(getTarget() + originDir + burstPivotRot);
+	}
+	else if (projectileType == PTYPE_ICE && spellModType == SMTYPE_BURST)
+	{
 		setTarget(getTarget() - burstPivotRot);
 
 			burstPivotRotOffset += 2 * 360 * dt;
+			if (burstPivotRotOffset >= 360) burstPivotRotOffset = fmodf(burstPivotRotOffset, 360);
 			Vector3 tempRight;
-			if (!(tempView - Vector3(0, 1, 0)).IsZero()) tempRight = originDir.Cross(Vector3(0, 1, 0));
+			if (!(originDir - Vector3(0, 1, 0)).IsZero()) tempRight = originDir.Cross(Vector3(0, 1, 0));
 			else tempRight = Vector3(1, 0, 0);
 			Mtx44 rotation;
 			rotation.SetToRotation(burstPivotRotOffset, originDir.x, originDir.y, originDir.z);
-			burstPivotRot = rotation * (tempRight);
+			burstPivotRot = rotation * tempRight;
 			burstPivotRot *= 0.5;
 
 			setTarget(getTarget() + burstPivotRot);
