@@ -332,7 +332,7 @@ void SceneRange::Init()
 	{
 		targets1[i] = new CEntity();
 		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET);
+		targets1[i]->setType(CEntity::E_TARGET_FIRE);
 		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targets1[i]->setOriginPos(targets1[i]->getPos());
 		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -342,7 +342,7 @@ void SceneRange::Init()
 	{
 		targetsMoving1[i] = new CEntity();
 		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -763,7 +763,9 @@ void SceneRange::Update(double dt)
 	case T_STATIONARY:
 		for (int i = 0; i < 3; ++i)
 		{
-			if (!targets1[i]->isDone()) { shouldChange1 = false; }
+			if (!targets1[i]->isDone()) { 
+				shouldChange1 = false; 
+			}
 		}
 		break;
 	default:
@@ -784,7 +786,7 @@ void SceneRange::Update(double dt)
 				for (int i = 0; i < 3; i++)
 				{
 					targets1[i]->setIsDone(false);
-					targets1[i]->setType(CEntity::E_TARGET);
+					targets1[i]->setType(CEntity::E_TARGET_FIRE);
 					targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targets1[i]->setOriginPos(targets1[i]->getPos());
 					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -796,7 +798,7 @@ void SceneRange::Update(double dt)
 				for (int i = 0; i < 3; i++)
 				{
 					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -1401,6 +1403,17 @@ void SceneRange::RenderWorld()
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
+			case CEntity::E_TARGET_FIRE:
+			case CEntity::E_TARGET_ICE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
 				modelStack.PopMatrix();
