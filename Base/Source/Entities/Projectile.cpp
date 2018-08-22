@@ -7,7 +7,8 @@ CProjectile::CProjectile(PROJECTILE_TYPE projectileType) :
 	projectileType(projectileType),
 	elapsedTime(0),
 	particleRate(1.f / 60.f),
-	projRot(0)
+	projRot(0),
+	source(NULL)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -16,7 +17,7 @@ CProjectile::~CProjectile()
 {
 }
 
-void CProjectile::Init(Vector3 pos, Vector3 targ)
+void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 {
 	switch (this->projectileType) //set properties depending on projectile's type (fire or ice or whatever)
 	{
@@ -38,6 +39,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ)
 	this->setPos(pos);
 	this->setTarget(targ);
 	this->originPosition = pos;
+	this->source = source;
 	lifespanTime = 10;
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
@@ -105,4 +107,9 @@ void CProjectile::EmitParticles(int amt)
 {
 	for (int i = 0; i < amt; ++i)
 		ParticleManager::GetInstance()->AddParticle(this);
+}
+
+CEntity * CProjectile::getSource()
+{
+	return this->source;
 }

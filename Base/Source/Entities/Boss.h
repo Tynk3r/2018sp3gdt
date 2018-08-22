@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "../Rigs/RigInfo.h"
+#include "../Entities/Projectile.h"
 
 class CBoss : public CEntity
 {
@@ -31,5 +32,6 @@ private:
 	Vector3 originalScale;
 	float elapsedTime;
 	float animFrame;
+	CProjectile* fireball;
 };
 

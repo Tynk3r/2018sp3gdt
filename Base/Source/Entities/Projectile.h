@@ -16,13 +16,14 @@ public:
 	CProjectile(PROJECTILE_TYPE projectileType = PTYPE_FIRE);
 	~CProjectile();
 
-	void Init(Vector3 pos, Vector3 targ);
+	void Init(Vector3 pos, Vector3 targ, CEntity* source = NULL);
 	void Update(double dt);
 	PROJECTILE_TYPE getProjType();
 	float getElapsedTime();
 	float getProjRot();
 	void SetLifespanTime(double time) { lifespanTime = time; }
 	void EmitParticles(int amt = 1);
+	CEntity* getSource();
 private:
 	PROJECTILE_TYPE projectileType;
 	Vector3 viewVector;
@@ -30,5 +31,6 @@ private:
 	float elapsedTime;
 	float particleRate;
 	float projRot;//just a float for all-axis rotatin i guess???
+	CEntity* source;
 };
 

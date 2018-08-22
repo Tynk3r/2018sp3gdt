@@ -2,13 +2,15 @@
 #include "../TimeTrackerManager.h"
 #include "EasingStyles\QuadEase.h"
 #include "EasingStyles\BackEase.h"
+#include "../SoundEngine.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
 	playerRef(NULL),
 	elapsedTime(0),
 	animFrame(0),
-	rig(CRigInfo::RIG_BOSS)
+	rig(CRigInfo::RIG_BOSS),
+	fireball(NULL)
 {
 	target.y = pos.y;
 	this->setPos(pos);
@@ -51,13 +53,44 @@ void CBoss::Update(double dt)
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_FIREBALL_1);
 				this->animFrame = Quad::easeOut(alpha, 0, 1, 1);
 				this->rig.Animate(animFrame);
+				if (this->fireball == NULL)
+				{
+					CProjectile* fBall = new CProjectile(CProjectile::PTYPE_FIRE);
+					this->fireball = fBall;
+					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
+					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
+					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					fBall->Init(toSetfBallPos, plr->getPos(), this);
+				}
+				else
+				{
+					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
+					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
+					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					this->fireball->setPos(toSetfBallPos);
+				}
 			}
-			else if (this->elapsedTime > 3.f && this->elapsedTime < 3.5f)
+			else if (this->elapsedTime < 3.f)
+			{
+				if (this->fireball != NULL)
+				{
+					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
+					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
+					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					this->fireball->setPos(toSetfBallPos);
+				}
+			}
+			else if (this->elapsedTime < 3.5f)
 			{
 				alpha = (this->elapsedTime - 3.f) * 2.f;
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_FIREBALL_2);
 				this->animFrame = Back::easeOut(alpha, 0, 1, 1);
 				this->rig.Animate(animFrame);
+				if (this->fireball != NULL)
+				{
+					this->fireball = NULL;
+					CSoundEngine::GetInstance()->PlayASound("Fireball");
+				}
 			}
 			else if (this->elapsedTime > 4.5f)
 			{
