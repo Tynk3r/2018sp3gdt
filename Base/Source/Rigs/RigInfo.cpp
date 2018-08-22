@@ -5,7 +5,12 @@ CRigInfo::CRigInfo(RIG_TYPE rigType)
 	switch (rigType)
 	{
 	case RIG_BOSS:
-		this->jointinfos["OCTO_NECK"] = new CJointInfo(CJointInfo::TYPE_OCTO_NECK);
+		//this->jointinfos.insert(std::pair<std::string, CJointInfo*>("OCTO_NECK", new CJointInfo(CJointInfo::TYPE_OCTO_NECK)));
+		//this->jointinfos.insert(std::pair<std::string, CJointInfo*>("OCTO_TRIDENT", new CJointInfo(CJointInfo::TYPE_OCTO_TRIDENT)));
+		this->jointinfos["OCTO_TENTACLE_LOWER_RIGHT"] = new CJointInfo(CJointInfo::TYPE_OCTO_TENTACLE_LOWER_RIGHT);
+		this->jointinfos["OCTO_FIREBALL"] = new CJointInfo(CJointInfo::TYPE_OCTO_FIREBALL);
+		this->jointinfos["OCTO_TENTACLE_LOWER_LEFT"] = new CJointInfo(CJointInfo::TYPE_OCTO_TENTACLE_LOWER_LEFT);
+		this->jointinfos["OCTO_ICEBALL"] = new CJointInfo(CJointInfo::TYPE_OCTO_ICEBALL);
 		break;
 	}
 }

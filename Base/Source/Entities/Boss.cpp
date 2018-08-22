@@ -2,8 +2,9 @@
 #include "../TimeTrackerManager.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
-	state(F_IDLE),
+	state(F_NORMAL),
 	playerRef(NULL),
+	elapsedTime(0),
 	rig(CRigInfo::RIG_BOSS)
 {
 	target.y = pos.y;
@@ -29,9 +30,10 @@ void CBoss::Init()
 void CBoss::Update(double dt)
 {
 	CEntity::Update(dt);
+	elapsedTime += (float)dt;
 	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
 	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 3), 60 + 3 * cosf(tElapsedTime * 6), 20 + 2 * cosf(tElapsedTime * 3)));
-	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 2) * 50, 0, sinf(tElapsedTime * 2) * 50));
+	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
 	if (this->playerRef != NULL)
 	{
 		CPlayerInfo* plr = this->playerRef;
@@ -77,4 +79,9 @@ void CBoss::setPlayerRef(CPlayerInfo * playerRef)
 Vector3 CBoss::getOrigScale() const
 {
 	return this->originalScale;
+}
+
+float CBoss::getElapsedTime() const
+{
+	return this->elapsedTime;
 }

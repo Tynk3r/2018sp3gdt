@@ -463,6 +463,34 @@ Vector3 Vector3::lerped(Vector3 goal, float alpha)
 	return Vector3(Math::lerp(this->x, goal.x, alpha), Math::lerp(this->y, goal.y, alpha), Math::lerp(this->z, goal.z, alpha));
 }
 
+/******************************************************************************/
+/*!
+\brief
+Returns a vector3 after calculating the point on a bezier curve with the parameters
+
+\param t
+Point to calculate vector3 (from 0 to 1)
+\param points
+Points to be used for calculating the bezier curve
+0 = the starting position of the curve (in world coordinate)
+1 = the tangent of the starting position (in world coordinate)
+2 = the tangent of the end position (in world coordinate)
+3 = the end position of the curve (in world coordinate)
+\return
+The vector3 at point t of the bezier curve
+*/
+/******************************************************************************/
+Vector3 Vector3::bezier(float t, Vector3 points[])
+{
+	float u = 1.f - t;
+	float tt = t*t;
+	float uu = u*u;
+	float uuu = uu * u;
+	float ttt = tt * t;
+	Vector3 result = (uuu) * points[0] + (3.f * uu * t) * points[1] + (3.f * u * tt) * points[2] + (ttt) * points[3];
+	return result;
+}
+
 std::ostream& operator<< (std::ostream& os, Vector3& rhs)
 {
 	os << "[" << rhs.x << "," << rhs.y << "," << rhs.z << "]";

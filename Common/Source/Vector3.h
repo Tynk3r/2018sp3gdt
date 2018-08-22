@@ -80,6 +80,8 @@ struct Vector3
 	friend double DistanceSquaredBetween(Vector3 thisVector, Vector3 thatVector);
 
 	Vector3 lerped(Vector3 goal, float alpha);
+
+	static Vector3 bezier(float t, Vector3 points[]);
 };
 
 #endif //VECTOR3_H

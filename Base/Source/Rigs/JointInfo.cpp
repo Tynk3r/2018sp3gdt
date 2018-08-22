@@ -74,6 +74,86 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 			}
 			break;
 		}
+		case TYPE_OCTO_TRIDENT:
+		{
+			switch (kFrame)
+			{
+			case KEYFRAME_NONE:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			case KEYFRAME_OCTO_TRIDENT_1:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			}
+			break;
+		}
+		case TYPE_OCTO_TENTACLE_LOWER_RIGHT:
+		{
+			switch (kFrame)
+			{
+			case KEYFRAME_NONE:
+				jKeyframes.push_back(Vector3(1.f, -0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(1, 2, 0));
+				break;
+			case KEYFRAME_OCTO_TRIDENT_1:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			}
+			break;
+		}
+		case TYPE_OCTO_FIREBALL:
+		{
+			switch (kFrame)
+			{
+			case KEYFRAME_NONE:
+				jKeyframes.push_back(Vector3(5, -0.25f, 2));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, -1, -2));
+				break;
+			case KEYFRAME_OCTO_TRIDENT_1:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			}
+			break;
+		}
+		case TYPE_OCTO_TENTACLE_LOWER_LEFT:
+		{
+			switch (kFrame)
+			{
+			case KEYFRAME_NONE:
+				jKeyframes.push_back(Vector3(-1.f, -0.15f));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-1, 2, 0));
+				break;
+			case KEYFRAME_OCTO_TRIDENT_1:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			}
+			break;
+		}
+		case TYPE_OCTO_ICEBALL:
+		{
+			switch (kFrame)
+			{
+			case KEYFRAME_NONE:
+				jKeyframes.push_back(Vector3(-5, -0.25f, 2));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, -1, -2));
+				break;
+			case KEYFRAME_OCTO_TRIDENT_1:
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3());
+				break;
+			}
+			break;
+		}
 	}
 	return jKeyframes;
 }

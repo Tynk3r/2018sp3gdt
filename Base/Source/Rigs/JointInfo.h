@@ -9,7 +9,17 @@ public:
 	enum JOINT_TYPE
 	{
 		TYPE_VANILLA,//a "clean" blank joint
+
 		TYPE_OCTO_NECK,//between the head and the body
+
+		TYPE_OCTO_TRIDENT,
+
+		TYPE_OCTO_TENTACLE_LOWER_RIGHT,
+		TYPE_OCTO_FIREBALL,
+
+		TYPE_OCTO_TENTACLE_LOWER_LEFT,
+		TYPE_OCTO_ICEBALL,
+
 		TYPE_TOTAL
 	};
 	enum JOINT_KEYFRAME
