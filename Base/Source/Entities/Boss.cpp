@@ -3,6 +3,7 @@
 #include "EasingStyles\QuadEase.h"
 #include "EasingStyles\BackEase.h"
 #include "../SoundEngine.h"
+#include "Mtx44.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
@@ -59,14 +60,22 @@ void CBoss::Update(double dt)
 					this->fireball = fBall;
 					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
 					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
-					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					Mtx44 mat;
+					mat.SetToIdentity();
+					mat.SetToRotation(Math::RadianToDegree(atan2(this->getTarget().x - this->getPos().x, this->getTarget().z - this->getPos().z)), 0, 1, 0);
+					Vector3 offset = mat * ((rTentaclePos + rTentactleFBALLPos)*this->originalScale.x);
+					Vector3 toSetfBallPos = this->getPos() + offset;
 					fBall->Init(toSetfBallPos, plr->getPos(), this);
 				}
 				else
 				{
 					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
 					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
-					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					Mtx44 mat;
+					mat.SetToIdentity();
+					mat.SetToRotation(Math::RadianToDegree(atan2(this->getTarget().x - this->getPos().x, this->getTarget().z - this->getPos().z)), 0, 1, 0);
+					Vector3 offset = mat * ((rTentaclePos + rTentactleFBALLPos)*this->originalScale.x);
+					Vector3 toSetfBallPos = this->getPos() + offset;
 					this->fireball->setPos(toSetfBallPos);
 				}
 			}
@@ -76,7 +85,11 @@ void CBoss::Update(double dt)
 				{
 					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
 					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
-					Vector3 toSetfBallPos = this->getPos() + (rTentaclePos + rTentactleFBALLPos)*this->getScale().x;
+					Mtx44 mat;
+					mat.SetToIdentity();
+					mat.SetToRotation(Math::RadianToDegree(atan2(this->getTarget().x - this->getPos().x, this->getTarget().z - this->getPos().z)), 0, 1, 0);
+					Vector3 offset = mat * ((rTentaclePos + rTentactleFBALLPos)*this->originalScale.x);
+					Vector3 toSetfBallPos = this->getPos() + offset;
 					this->fireball->setPos(toSetfBallPos);
 				}
 			}
