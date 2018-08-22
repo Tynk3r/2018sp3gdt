@@ -332,7 +332,7 @@ void SceneRange::Init()
 	{
 		targets1[i] = new CEntity();
 		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET);
+		targets1[i]->setType(CEntity::E_TARGET_FIRE);
 		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targets1[i]->setOriginPos(targets1[i]->getPos());
 		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -342,7 +342,7 @@ void SceneRange::Init()
 	{
 		targetsMoving1[i] = new CEntity();
 		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -426,19 +426,43 @@ void SceneRange::Update(double dt)
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
 			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+			Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+			Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+			Vector3 viewvec = (camtar - campos).Normalized();
+			aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
 			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
-			aa = new CProjectile(CProjectile::PTYPE_ICE);
+			if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_NORMAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa2 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa3 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				Mtx44 rotation;
+				rotation.SetToRotation(30, 0, 1, 0);
+				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				rotation.SetToRotation(-30, 0, 1, 0);
+				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+			}
+
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			playerInfo->setMana(playerInfo->getMana() - 10);
 		}
-		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
 		
@@ -472,8 +496,6 @@ void SceneRange::Update(double dt)
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 viewvec = (camtar - campos).Normalized();
 		aa->Init(campos + viewvec * 5, camtar + viewvec* 6);
-		
-		aa->SetLifespanTime(0.3);
 
 		//raycast check
 		Vector3 tempProj(9999, 9999, 9999);
@@ -722,7 +744,9 @@ void SceneRange::Update(double dt)
 	case T_STATIONARY:
 		for (int i = 0; i < 3; ++i)
 		{
-			if (!targets1[i]->isDone()) { shouldChange1 = false; }
+			if (!targets1[i]->isDone()) { 
+				shouldChange1 = false; 
+			}
 		}
 		break;
 	default:
@@ -743,7 +767,7 @@ void SceneRange::Update(double dt)
 				for (int i = 0; i < 3; i++)
 				{
 					targets1[i]->setIsDone(false);
-					targets1[i]->setType(CEntity::E_TARGET);
+					targets1[i]->setType(CEntity::E_TARGET_FIRE);
 					targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targets1[i]->setOriginPos(targets1[i]->getPos());
 					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -755,7 +779,7 @@ void SceneRange::Update(double dt)
 				for (int i = 0; i < 3; i++)
 				{
 					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_MOVING_TARGET);
+					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
@@ -1360,6 +1384,17 @@ void SceneRange::RenderWorld()
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
+			case CEntity::E_TARGET_FIRE:
+			case CEntity::E_TARGET_ICE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
 				modelStack.PopMatrix();

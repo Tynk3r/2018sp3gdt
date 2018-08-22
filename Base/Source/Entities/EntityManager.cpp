@@ -22,7 +22,7 @@ void EntityManager::Update(double _dt)
 	it = entityList.begin();
 	while (it != end)
 	{
-		if ((*it)->isDone() && (*it)->getType() != CEntity::E_TARGET && (*it)->getType() != CEntity::E_MOVING_TARGET)
+		if ((*it)->isDone() && (*it)->getType() != CEntity::E_TARGET && (*it)->getType() != CEntity::E_MOVING_TARGET && (*it)->getType() != CEntity::E_TARGET_FIRE && (*it)->getType() != CEntity::E_TARGET_ICE)
 		{
 			// Delete if done
 			delete *it;
@@ -99,6 +99,31 @@ bool EntityManager::CheckOverlap(Vector3 thisMinAABB, Vector3 thisMaxAABB, Vecto
 		&&
 		((thatMaxAABB >= thisMinAABB) && (thatMaxAABB <= thisMaxAABB)))
 		return true;
+
+	/*if (   (thisMinAABB.x >= thatMinAABB.x && thisMinAABB.x <= thatMaxAABB.x) || (thisMaxAABB.x >= thatMinAABB.x && thisMaxAABB.x <= thatMaxAABB.x)
+		&& (thisMinAABB.y >= thatMinAABB.y && thisMinAABB.y <= thatMaxAABB.y) || (thisMaxAABB.y >= thatMinAABB.y && thisMaxAABB.y <= thatMaxAABB.y)
+		&& (thisMinAABB.z >= thatMinAABB.z && thisMinAABB.z <= thatMaxAABB.z) || (thisMaxAABB.z >= thatMinAABB.z && thisMaxAABB.z <= thatMaxAABB.z))
+	{
+		return true;
+	}
+	if (   (thatMinAABB.x >= thisMinAABB.x && thatMinAABB.x <= thisMaxAABB.x) || (thatMaxAABB.x >= thisMinAABB.x && thatMaxAABB.x <= thisMaxAABB.x)
+		&& (thatMinAABB.y >= thisMinAABB.y && thatMinAABB.y <= thisMaxAABB.y) || (thatMaxAABB.y >= thisMinAABB.y && thatMaxAABB.y <= thisMaxAABB.y)
+		&& (thatMinAABB.z >= thisMinAABB.z && thatMinAABB.z <= thisMaxAABB.z) || (thatMaxAABB.z >= thisMinAABB.z && thatMaxAABB.z <= thisMaxAABB.z))
+	{
+		return true;
+	}
+	if (   (thisMinAABB.x >= thatMinAABB.x && thisMinAABB.x <= thatMaxAABB.x) && (thisMaxAABB.x >= thatMinAABB.x && thisMaxAABB.x <= thatMaxAABB.x)
+		&& (thisMinAABB.y >= thatMinAABB.y && thisMinAABB.y <= thatMaxAABB.y) && (thisMaxAABB.y >= thatMinAABB.y && thisMaxAABB.y <= thatMaxAABB.y)
+		&& (thisMinAABB.z >= thatMinAABB.z && thisMinAABB.z <= thatMaxAABB.z) && (thisMaxAABB.z >= thatMinAABB.z && thisMaxAABB.z <= thatMaxAABB.z))
+	{
+		return true;
+	}
+	if (   (thatMinAABB.x >= thisMinAABB.x && thatMinAABB.x <= thisMaxAABB.x) && (thatMaxAABB.x >= thisMinAABB.x && thatMaxAABB.x <= thisMaxAABB.x)
+		&& (thatMinAABB.y >= thisMinAABB.y && thatMinAABB.y <= thisMaxAABB.y) && (thatMaxAABB.y >= thisMinAABB.y && thatMaxAABB.y <= thisMaxAABB.y)
+		&& (thatMinAABB.z >= thisMinAABB.z && thatMinAABB.z <= thisMaxAABB.z) && (thatMaxAABB.z >= thisMinAABB.z && thatMaxAABB.z <= thisMaxAABB.z))
+	{
+		return true;
+	}*/
 
 	return false;
 }
@@ -189,13 +214,25 @@ bool EntityManager::CheckForCollision(float dt)
 				switch ((*it)->getType())
 				{
 				case CEntity::E_TARGET:
+				case CEntity::E_MOVING_TARGET:
+				case CEntity::E_TARGET_FIRE:
+				case CEntity::E_TARGET_ICE:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
+						CProjectile* proj = static_cast<CProjectile*>((*it2));
+						if ((*it)->getType() == CEntity::E_TARGET_FIRE && proj->getProjType() != CProjectile::PTYPE_FIRE)
+						{
+							(*it2)->setIsDone(true);
+							break;
+						}
+						if ((*it)->getType() == CEntity::E_TARGET_ICE && proj->getProjType() != CProjectile::PTYPE_ICE)
+						{
+							(*it2)->setIsDone(true);
+							break;
+						}
 						(*it)->setIsDone(true);
 						(*it2)->setIsDone(true);
-						CProjectile* proj = static_cast<CProjectile*>((*it2));
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						//CSoundEngine::GetInstance()->AddSound("Death", "Sound//deathsound.mp3");
 						CSoundEngine::GetInstance()->PlayASound("Death");
 						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 
@@ -220,7 +257,6 @@ bool EntityManager::CheckForCollision(float dt)
 				case CEntity::E_WALL:
 					break;
 				case CEntity::E_ENEMY:
-				case CEntity::E_MOVING_TARGET:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
@@ -298,7 +334,6 @@ bool EntityManager::CheckForCollision(float dt)
 	}
 	return false;
 }
-
 Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, int times)
 {
 	if (times == 2) return CheckForLineIntersectionZFace(pivot, ent, mousePoint);

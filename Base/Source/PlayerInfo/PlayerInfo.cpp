@@ -31,6 +31,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_dMana(50)
 	, m_dScore(0)
 	, climbHeight(10)
+	, spellMod(SMTYPE_BURST)
 {
 }
 
