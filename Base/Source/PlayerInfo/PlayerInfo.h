@@ -148,6 +148,7 @@ public:
 	bool Rocket_Yaw(const float deltaTime, const bool direction, const float speedMultiplier); //left and right
 	bool Rocket_Pitch(const float deltaTime, const bool direction, const float speedMultiplier); //up and down
 	bool Rocket_Roll(const float deltaTime, const bool direction, const float speedMultiplier); //roll
+	float rocketYawAccel = 0, rocketPitchAccel = 0, rocketRollAccel = 0;
 
 	// Stop sway
 	bool StopSway(const float deltaTime);
