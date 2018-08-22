@@ -2,6 +2,7 @@
 #include "Vector3.h"
 #include "Entity.h"
 #include "../PlayerInfo/PlayerInfo.h"
+#include "../Rigs/RigInfo.h"
 
 class CBoss : public CEntity
 {
@@ -24,6 +25,7 @@ public:
 	void tempMoveBack(float dt);
 	void setPlayerRef(CPlayerInfo* playerRef);
 	Vector3 getOrigScale() const;
+	CRigInfo rig;
 private:
 	FSM state;
 	CPlayerInfo* playerRef;

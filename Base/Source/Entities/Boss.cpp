@@ -3,7 +3,8 @@
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_IDLE),
-	playerRef(NULL)
+	playerRef(NULL),
+	rig(CRigInfo::RIG_BOSS)
 {
 	target.y = pos.y;
 	this->setPos(pos);
