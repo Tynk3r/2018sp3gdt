@@ -26,6 +26,8 @@ public:
 	void setPlayerRef(CPlayerInfo* playerRef);
 	Vector3 getOrigScale() const;
 	float getElapsedTime() const;
+	float getCurrHealth() const;
+	float getMaxHealth() const;
 	CRigInfo rig;
 private:
 	FSM state;
@@ -34,5 +36,7 @@ private:
 	float elapsedTime;
 	float animFrame;
 	CProjectile* holdingProjectile;
+	float health;
+	float maxHealth;
 };
 

@@ -276,6 +276,9 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
 
+	meshList[GEO_QUAD_GREEN] = MeshBuilder::GenerateQuad("greenquad", Color(0, 1, 0));
+	meshList[GEO_QUAD_RED] = MeshBuilder::GenerateQuad("redquad", Color(1, 0, 0));
+
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -1601,6 +1604,17 @@ void SceneBoss::RenderPassMain()
 
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
+	if (boss)
+	{
+		std::ostringstream ss;
+		ss << "Boss Health";
+		float aH = Application::GetWindowHeight();
+		float aW = Application::GetWindowWidth();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 3, aW*0.1f*0.375f, aH*0.1f*0.95f);
+		float healthpercentage = boss->getCurrHealth() / boss->getMaxHealth();
+		RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.6f*healthpercentage, aH*0.1f*0.1f, aW*0.01f*(1-healthpercentage), aH*0.1f*0.11f);
+		RenderMeshIn2D(meshList[GEO_QUAD_RED], false, aW*0.1f*0.6f, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
+	}
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
 	{
 		std::list < CameraEffect *> ::iterator it, end;
