@@ -232,6 +232,11 @@ void SceneLevel2::Init()
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
 	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
 
+	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
+	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
+
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
@@ -341,7 +346,7 @@ void SceneLevel2::Init()
 		targets1[i]->setType(CEntity::E_TARGET_FIRE);
 		if (i == 0)
 		{
-			targets1[i]->setPos(Vector3(-200, 100, 600));
+			targets1[i]->setPos(Vector3(-200, 100, 850));
 			//targets1[i]->setTarget(Vector3(650, 50, 300));
 		}
 		else if (i == 1)
@@ -351,7 +356,7 @@ void SceneLevel2::Init()
 		}
 		else if (i == 2)
 		{
-			targets1[i]->setPos(Vector3(-200, 100, 1300));
+			targets1[i]->setPos(Vector3(-200, 100, 1150));
 			//targets1[i]->setTarget(Vector3(800, 400, 500));
 		}
 		targets1[i]->setOriginPos(targets1[i]->getPos());
@@ -365,7 +370,7 @@ void SceneLevel2::Init()
 		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 		if (i == 0)
 		{
-			targetsMoving1[i]->setPos(Vector3(-200, 100, 600));
+			targetsMoving1[i]->setPos(Vector3(-200, 100, 850));
 			//targetsMoving1[i]->setTarget(Vector3(850, 50, 500));
 		}
 		else if (i == 1)
@@ -375,7 +380,7 @@ void SceneLevel2::Init()
 		}
 		else if (i == 2)
 		{
-			targetsMoving1[i]->setPos(Vector3(-200, 100, 1300));
+			targetsMoving1[i]->setPos(Vector3(-200, 100, 1150));
 			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
 		}
 		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
@@ -409,6 +414,10 @@ void SceneLevel2::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+
+	totalTime = 60;
+	totalBarrelsDown = 0;
+	secondSetBarrel = false;
 }
 
 void SceneLevel2::Update(double dt)
@@ -590,19 +599,20 @@ void SceneLevel2::Update(double dt)
 
 	//bool shouldChange = true;
 	bool shouldChange = false;
+	totalBarrelsDown = 0;
 	//check if shouldnt change (any targets still up)
 	switch (targetState)
 	{
 	case T_MOVING:
 		for (int i = 0; i < 4; ++i)
 		{
-			if (!targetsMoving[i]->isDone()) { shouldChange = false; }
+			if (!targetsMoving[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
 		for (int i = 0; i < 4; ++i)
 		{
-			if (!targets[i]->isDone()) { shouldChange = false; }
+			if (!targets[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	default:
@@ -676,12 +686,12 @@ void SceneLevel2::Update(double dt)
 	case T_MOVING:
 		for (int i = 0; i < 3; ++i)
 		{
-			if (targets1[i]->getType() == CEntity::E_TARGET_ICE)
+			if (targetsMoving1[i]->getType() == CEntity::E_TARGET_ICE)
 			{
 				shouldChange1 = false;
 			}
 
-			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; }
+			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
@@ -693,7 +703,7 @@ void SceneLevel2::Update(double dt)
 			}
 
 			if (!targets1[i]->isDone()) {
-				shouldChange1 = false;
+				shouldChange1 = false; ++totalBarrelsDown;
 			}
 		}
 		break;
@@ -705,34 +715,43 @@ void SceneLevel2::Update(double dt)
 	//if should change switches state
 	if (shouldChange1)
 	{
+		if (stateChangeTimer1 == targets1[1]->getPos().y + targets1[1]->getScale().y + 10)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
+			}
+		}
+
 		stateChangeTimer1--;
 		if (stateChangeTimer1 <= 0)
 		{
 			stateChangeTimer1 = 0;
 			switch (targetState1)
 			{
-			case T_MOVING:
-				targetState1 = T_STATIONARY;
-				for (int i = 0; i < 3; i++)
-				{
-					targets1[i]->setIsDone(false);
-					targets1[i]->setType(CEntity::E_TARGET_FIRE);
-					targets1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-					targets1[i]->setOriginPos(targets1[i]->getPos());
-					targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-					targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
+			//case T_MOVING:
+			//	targetState1 = T_STATIONARY;
+			//	for (int i = 0; i < 3; i++)
+			//	{
+			//		targets1[i]->setIsDone(false);
+			//		targets1[i]->setType(CEntity::E_TARGET_FIRE);
+			//		//targets1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
+			//		//targets1[i]->setOriginPos(targets1[i]->getPos());
+			//		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
+			//		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+			//	}
+			//	break;
 			case T_STATIONARY:
-				targetState1 = T_STATIONARY;
+				targetState1 = T_MOVING;
 				for (int i = 0; i < 3; i++)
 				{
 					targetsMoving1[i]->setIsDone(false);
 					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-					targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
+	/*				targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
+					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
 					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
 					targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
+					secondSetBarrel = true;
 				}
 				break;
 			default:
@@ -760,6 +779,11 @@ void SceneLevel2::Update(double dt)
 	default:
 		break;
 	}
+
+	if (totalBarrelsDown <= 0 && secondSetBarrel)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -778,6 +802,13 @@ void SceneLevel2::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+
+	totalTime -= dt;
+	if (totalTime <= 0)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+	}
+
 }
 
 void SceneLevel2::RenderText(Mesh* mesh, std::string text, Color color)
@@ -1368,13 +1399,22 @@ void SceneLevel2::RenderWorld()
 				break;
 			}
 			case CEntity::E_TARGET_FIRE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			case CEntity::E_TARGET_ICE:
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
 				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_BARREL], godlights);
+				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1423,10 +1463,10 @@ void SceneLevel2::RenderWorld()
 		for (int i = 0; i < 3; i++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), -1500.f);
+			modelStack.Translate(targets1[i]->getPos().x, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), targets1[i]->getPos().z);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-			modelStack.Scale(40.f, 40.f, 40.f);
-			RenderMesh(meshList[GEO_BARREL], godlights);
+			modelStack.Scale(20.f, 20.f, 20.f);
+			RenderMesh(meshList[GEO_BARREL_ICE], godlights);
 			modelStack.PopMatrix();
 		}
 	}
@@ -1781,7 +1821,14 @@ void SceneLevel2::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
-
+	std::ostringstream ss3;
+	ss3.precision(2);
+	ss3 << "Targets Left: " << totalBarrelsDown;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 0, 16);
+	std::ostringstream ss4;
+	ss4.precision((int)floor(log10f(totalTime)) + 1);
+	ss4 << "Time: " << totalTime;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
 }
 void SceneLevel2::RenderPassGPass()
 {

@@ -159,6 +159,8 @@ class SceneLevel2 : public Scene
 		GEO_LIBRARIAN,
 		GEO_KILLERNADO,
 		GEO_ICEBLOCK,
+		GEO_BARREL_ICE,
+		GEO_BARREL_FIRE,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -248,6 +250,11 @@ private:
 	std::vector<unsigned char> m_heightMap;
 
 	float testvar;
+
+	double totalTime;
+	int totalBarrelsDown;
+
+	bool secondSetBarrel;
 };
 
 //LEVEL 1 : Greenhorn in a flash

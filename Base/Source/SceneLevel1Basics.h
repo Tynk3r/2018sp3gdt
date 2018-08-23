@@ -248,6 +248,9 @@ private:
 	std::vector<unsigned char> m_heightMap;
 
 	float testvar;
+
+	double totalTime;
+	int totalBarrelsDown;
 };
 
 //LEVEL 1 : Greenhorn in a flash
