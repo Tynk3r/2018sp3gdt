@@ -44,6 +44,9 @@
     <ClCompile Include="Source\Rigs\JointInfo.cpp" />
     <ClCompile Include="Source\SceneBoss.cpp" />
     <ClCompile Include="Source\Entities\Boss.cpp" />
+    <ClCompile Include="Source\SceneLevel1Basics.cpp" />
+    <ClCompile Include="Source\SceneLevel2Burst.cpp" />
+    <ClCompile Include="Source\SceneLevel4Flight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -94,5 +97,8 @@
     <ClInclude Include="Source\Rigs\JointInfo.h" />
     <ClInclude Include="Source\SceneBoss.h" />
     <ClInclude Include="Source\Entities\Boss.h" />
+    <ClInclude Include="Source\SceneLevel1Basics.h" />
+    <ClInclude Include="Source\SceneLevel2Burst.h" />
+    <ClInclude Include="Source\SceneLevel4Flight.h" />
   </ItemGroup>
 </Project>
