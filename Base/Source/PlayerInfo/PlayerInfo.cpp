@@ -50,7 +50,7 @@ void CPlayerInfo::Init(void)
 	m_dHealth = 100;
 	m_dMana = 100;
 	m_dScore = 0;
-	climbHeight = 5;
+	climbHeight = 10;
 	setType(E_PLAYER);
 
 	// Set the current values

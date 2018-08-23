@@ -310,6 +310,7 @@ void SceneRangeMoving::Init()
 	);
 	npc->setPlayerRef(playerInfo);
 
+	//slow ez one
 	for (int i = 0; i < 3; i++)
 	{
 		targets[i] = new CEntity();
@@ -322,6 +323,7 @@ void SceneRangeMoving::Init()
 		targets[i]->setOriginTarget(targets[i]->getTarget());
 	}
 
+	// left right
 	targets[3] = new CEntity();
 	targets[3]->Init();
 	targets[3]->setType(CEntity::E_MOVING_TARGET);
@@ -351,6 +353,37 @@ void SceneRangeMoving::Init()
 	targets[5]->setSpeed(200.f);
 	targets[5]->setOriginPos(targets[5]->getPos());
 	targets[5]->setOriginTarget(targets[5]->getTarget());
+
+	//front back
+	targets[6] = new CEntity();
+	targets[6]->Init();
+	targets[6]->setType(CEntity::E_MOVING_TARGET);
+	targets[6]->setPos(Vector3(1500.f, 200.f, -1200.f));
+	targets[6]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[6]->setTarget(Vector3(1500.f, 125.f, -1900.f));
+	targets[6]->setSpeed(200.f);
+	targets[6]->setOriginPos(targets[6]->getPos());
+	targets[6]->setOriginTarget(targets[6]->getTarget());
+
+	targets[7] = new CEntity();
+	targets[7]->Init();
+	targets[7]->setType(CEntity::E_MOVING_TARGET);
+	targets[7]->setPos(Vector3(875.f, 200.f, -1200.f));
+	targets[7]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[7]->setTarget(Vector3(875.f, 220.f, -1900.f));
+	targets[7]->setSpeed(200.f);
+	targets[7]->setOriginPos(targets[7]->getPos());
+	targets[7]->setOriginTarget(targets[7]->getTarget());
+
+	targets[8] = new CEntity();
+	targets[8]->Init();
+	targets[8]->setType(CEntity::E_MOVING_TARGET);
+	targets[8]->setPos(Vector3(250.f, 100.f, -1200.f));
+	targets[8]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[8]->setTarget(Vector3(250.f, 200.f, -1900.f));
+	targets[8]->setSpeed(200.f);
+	targets[8]->setOriginPos(targets[8]->getPos());
+	targets[8]->setOriginTarget(targets[8]->getTarget());
 
 	/*for (int i = 0; i < 3; i++) 
 	{
@@ -721,6 +754,7 @@ void SceneRangeMoving::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
+	//ezpz
 	bool shouldChange = true;
 	//check if shouldnt change (any targets still up)
 	for (int i = 0; i < 3; ++i)
@@ -747,6 +781,7 @@ void SceneRangeMoving::Update(double dt)
 		}
 	}
 
+	//left right
 	shouldChange = true;
 	//check if shouldnt change (any targets still up)
 	for (int i = 3; i < 6; ++i)
@@ -791,6 +826,54 @@ void SceneRangeMoving::Update(double dt)
 			targets[5]->setScale(Vector3(40.f, 40.f, 40.f));
 			targets[5]->setTarget(Vector3(-250.f, 200.f, -1300.f));
 			targets[5]->setSpeed(200.f);
+		}
+	}
+
+	//front back
+	shouldChange = true;
+	//check if shouldnt change (any targets still up)
+	for (int i = 6; i < 9; ++i)
+	{
+		if (!targets[i]->isDone()) { shouldChange = false; }
+	}
+	if (shouldChange && stateChangeTimer4 == 0.f && targets[6]->isDone()) { stateChangeTimer4 = targets[6]->getOriginPos().y + targets[6]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer5 == 0.f && targets[7]->isDone()) { stateChangeTimer5 = targets[7]->getOriginPos().y + targets[7]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer6 == 0.f && targets[8]->isDone()) { stateChangeTimer6 = targets[8]->getOriginPos().y + targets[8]->getScale().y + 10; }
+	//if should change switches state
+	if (shouldChange)
+	{
+		stateChangeTimer4--;
+		if (stateChangeTimer4 <= 0.f) { stateChangeTimer4 = -1.f; }
+		stateChangeTimer5--;
+		if (stateChangeTimer5 <= 0.f) { stateChangeTimer5 = -1.f; }
+		stateChangeTimer6--;
+		if (stateChangeTimer6 <= 0.f) { stateChangeTimer6 = -1.f; }
+		rotateAngle = 0;
+		if (stateChangeTimer4 == -1.f && stateChangeTimer5 == -1.f && stateChangeTimer6 == -1.f)
+		{
+			stateChangeTimer4 = 0.f;
+			targets[6]->setIsDone(false);
+			targets[6]->setType(CEntity::E_MOVING_TARGET);
+			targets[6]->setPos(Vector3(1500.f, 200.f, -1200.f));
+			targets[6]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[6]->setTarget(Vector3(1500.f, 125.f, -1900.f));
+			targets[6]->setSpeed(200.f);
+
+			stateChangeTimer5 = 0.f;
+			targets[7]->setIsDone(false);
+			targets[7]->setType(CEntity::E_MOVING_TARGET);
+			targets[7]->setPos(Vector3(875.f, 200.f, -1200.f));
+			targets[7]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[7]->setTarget(Vector3(875.f, 220.f, -1900.f));
+			targets[7]->setSpeed(200.f);
+
+			stateChangeTimer6 = 0.f;
+			targets[8]->setIsDone(false);
+			targets[8]->setType(CEntity::E_MOVING_TARGET);
+			targets[8]->setPos(Vector3(250.f, 100.f, -1200.f));
+			targets[8]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[8]->setTarget(Vector3(250.f, 200.f, -1900.f));
+			targets[8]->setSpeed(200.f);
 		}
 	}
 
@@ -1554,6 +1637,33 @@ void SceneRangeMoving::RenderWorld()
 	{
 		modelStack.PushMatrix();
 		modelStack.Translate(targets[5]->getOriginPos().x, targets[5]->getOriginPos().y - stateChangeTimer3 + 350.f * ReadHeightMap(m_heightMap, (targets[5]->getOriginPos().x) / 4000, (targets[5]->getOriginPos().z) / 4000), targets[5]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
+	}
+	if (stateChangeTimer4 != 0)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[6]->getOriginPos().x, targets[6]->getOriginPos().y - stateChangeTimer4 + 350.f * ReadHeightMap(m_heightMap, (targets[6]->getOriginPos().x) / 4000, (targets[6]->getOriginPos().z) / 4000), targets[6]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
+	}
+	if (stateChangeTimer5 != 0)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[7]->getOriginPos().x, targets[7]->getOriginPos().y - stateChangeTimer5 + 350.f * ReadHeightMap(m_heightMap, (targets[7]->getOriginPos().x) / 4000, (targets[7]->getOriginPos().z) / 4000), targets[7]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
+	}
+	if (stateChangeTimer6 != 0)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[8]->getOriginPos().x, targets[8]->getOriginPos().y - stateChangeTimer6 + 350.f * ReadHeightMap(m_heightMap, (targets[8]->getOriginPos().x) / 4000, (targets[8]->getOriginPos().z) / 4000), targets[8]->getOriginPos().z);
 		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 		modelStack.Scale(40.f, 40.f, 40.f);
 		RenderMesh(meshList[GEO_BARREL], godlights);

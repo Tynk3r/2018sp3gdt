@@ -217,8 +217,7 @@ void Application::Run()
 	Scene *scene7 = new SceneRange();
 	Scene *scene8 = new SceneBoss();
 	Scene *scene9 = new SceneRangeMoving();
-	
-	Scene *scene9 = new SceneLevel1();
+	Scene *scene10 = new SceneLevel1();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -230,6 +229,7 @@ void Application::Run()
 	sceneManager->AddScene(scene7);
 	sceneManager->AddScene(scene8);
 	sceneManager->AddScene(scene9);
+	sceneManager->AddScene(scene10);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
