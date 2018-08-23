@@ -1829,6 +1829,10 @@ void SceneLevel2::RenderPassMain()
 	ss4.precision((int)floor(log10f(totalTime)) + 1);
 	ss4 << "Time: " << totalTime;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
+	std::ostringstream ss9;
+	ss9.precision(1);
+	ss9 << "SpellMod: Burst";
+	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
 void SceneLevel2::RenderPassGPass()
 {
