@@ -311,6 +311,7 @@ void SceneBoss::Init()
 	playerInfo->Init();
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
+	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
 	//CNPC* npc = new CNPC(
 	//	Vector3(0, 0, 80),
