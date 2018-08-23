@@ -1287,7 +1287,7 @@ void SceneBoss::RenderWorld()
 						modelStack.Translate(0, 10.5f, 0);
 						modelStack.Scale(1.55f, 0.9f, 1.55f);
 						RenderMesh(meshList[GEO_OCTO_HEAD], godlights);
-						if (!(boss->getState() == CBoss::F_VULNERABLE || boss->getState() == CBoss::F_SURPRISED))
+						if (!(boss->getState() == CBoss::F_VULNERABLE || boss->getState() == CBoss::F_SURPRISED || boss->getState() == CBoss::F_DEAD))
 						{
 							modelStack.PushMatrix();
 							modelStack.Scale(1.1f, 1.1f, 1.1f);

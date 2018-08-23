@@ -160,6 +160,11 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(4, 1, 0));
 				break;
+			case KEYFRAME_OCTO_DEAD:
+				jKeyframes.push_back(Vector3(1.f, -0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, 0, -1));
+				break;
 			}
 			break;
 		}
@@ -195,6 +200,11 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3(1.25f, 4.5f, 0));
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(-4, -2, 0));
+				break;
+			case KEYFRAME_OCTO_DEAD:
+				jKeyframes.push_back(Vector3(5, 0, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(1, 0, 1));
 				break;
 			}
 			break;
@@ -232,6 +242,11 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(-4, 1, 0));
 				break;
+			case KEYFRAME_OCTO_DEAD:
+				jKeyframes.push_back(Vector3(-1.f, -0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, 0, -1));
+				break;
 			}
 			break;
 		}
@@ -267,6 +282,11 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3(-1.25f, 4.5f, 0));
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(4, -2, 0));
+				break;
+			case KEYFRAME_OCTO_DEAD:
+				jKeyframes.push_back(Vector3(-5, 0, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-1, 0, 1));
 				break;
 			}
 			break;

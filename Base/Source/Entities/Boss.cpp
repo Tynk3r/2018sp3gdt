@@ -129,7 +129,12 @@ void CBoss::Update(double dt)
 				this->rig.Animate(animFrame);
 				if (this->holdingProjectile != NULL)
 				{
-					this->holdingProjectile->setTarget(plr->getPos());
+					float dist = 1;
+					if (!(plr->getPos() - this->holdingProjectile->getPos()).IsZero())
+					{
+						dist = (plr->getPos() - this->holdingProjectile->getPos()).Length();
+					}
+					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
 					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
 					CSoundEngine::GetInstance()->PlayASound("Fireball");
@@ -220,7 +225,12 @@ void CBoss::Update(double dt)
 				this->rig.Animate(animFrame);
 				if (this->holdingProjectile != NULL)
 				{
-					this->holdingProjectile->setTarget(plr->getPos());
+					float dist = 1; 
+					if (!(plr->getPos() - this->holdingProjectile->getPos()).IsZero())
+					{
+						dist = (plr->getPos() - this->holdingProjectile->getPos()).Length();
+					}
+					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
 					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
 					CSoundEngine::GetInstance()->PlayASound("Iceball");
@@ -265,6 +275,11 @@ void CBoss::Update(double dt)
 		case F_DEAD:
 			alpha = Math::Min(1.f, this->elapsedTime*0.3f);
 			this->setScale(Vector3(20, 60, 20).lerped(Vector3(40, 5, 40), alpha));
+			if (alpha < 1)
+			{
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_DEAD);
+				this->rig.Animate(Quad::easeOut(alpha, 0, 1, 1));
+			}
 			break;
 		case F_NORMAL:
 			if (this->elapsedTime < 0.75f)
