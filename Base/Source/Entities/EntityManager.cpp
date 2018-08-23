@@ -220,7 +220,7 @@ bool EntityManager::CheckForCollision(float dt)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE || proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
+						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
 						{
 							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 							break;
