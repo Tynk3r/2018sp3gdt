@@ -20,6 +20,7 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	this->originalScale = scale;
 	this->setTarget(target);
 	this->health = this->maxHealth;
+	this->setSpeed(70);
 }
 
 
@@ -41,7 +42,7 @@ void CBoss::Update(double dt)
 	elapsedTime += (float)dt;
 	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
 	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 2), 60 + 3 * cosf(tElapsedTime * 4), 20 + 2 * cosf(tElapsedTime * 2)));
-	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
+	//this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
 	if (this->health == 0 && this->state!=F_DEAD)
 	{
 		this->state = F_DEAD;
@@ -54,9 +55,11 @@ void CBoss::Update(double dt)
 		switch (this->state)
 		{
 		case F_ATTACK_FIREBALL:
+			this->setSpeed(0);
 			//std::cout << this->elapsedTime << std::endl;
 			if (this->elapsedTime < 0.7f)
 			{
+				this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
 				alpha = this->elapsedTime / 0.7f;
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_FIREBALL_1);
 				this->animFrame = Quad::easeOut(alpha, 0, 1, 1);
@@ -98,6 +101,7 @@ void CBoss::Update(double dt)
 			}
 			else if (this->elapsedTime < 3.f)
 			{
+				this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
 				alpha = (this->elapsedTime - 0.7f) / 2.3f;
 				if (this->holdingProjectile->bossDone)
 				{
@@ -151,8 +155,10 @@ void CBoss::Update(double dt)
 			break;
 		case F_ATTACK_ICEBALL:
 			//std::cout << this->elapsedTime << std::endl;
+			this->setSpeed(70);
 			if (this->elapsedTime < 0.7f)
 			{
+				this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
 				alpha = this->elapsedTime / 0.7f;
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_ICEBALL_1);
 				this->animFrame = Quad::easeOut(alpha, 0, 1, 1);
@@ -194,6 +200,7 @@ void CBoss::Update(double dt)
 			}
 			else if (this->elapsedTime < 3.f)
 			{
+				this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
 				alpha = (this->elapsedTime - 0.7f) / 2.3f;
 				if (this->holdingProjectile->bossDone)
 				{
@@ -246,6 +253,7 @@ void CBoss::Update(double dt)
 			}
 			break;
 		case F_SURPRISED:
+			this->setSpeed(0);
 			if (this->elapsedTime < 0.4f)
 			{
 				alpha = this->elapsedTime / 0.4f;
@@ -273,6 +281,7 @@ void CBoss::Update(double dt)
 			}
 			break;
 		case F_DEAD:
+			this->setSpeed(0);
 			alpha = Math::Min(1.f, this->elapsedTime*0.3f);
 			this->setScale(Vector3(20, 60, 20).lerped(Vector3(40, 5, 40), alpha));
 			if (alpha < 1)
@@ -282,6 +291,8 @@ void CBoss::Update(double dt)
 			}
 			break;
 		case F_NORMAL:
+			this->setSpeed(70);
+			this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
 			if (this->elapsedTime < 0.75f)
 			{
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_NONE);
@@ -330,7 +341,7 @@ float CBoss::getMaxHealth() const
 
 void CBoss::TakeDamage(CEntity * ent)
 {
-	float damageMultiplier = 0.25f;
+	float damageMultiplier = 0.1f;
 	if (this->state == F_VULNERABLE || this->state == F_SURPRISED)
 		damageMultiplier = 1;
 	CProjectile* proj = dynamic_cast<CProjectile*>(ent);
