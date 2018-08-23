@@ -11,6 +11,7 @@ public:
 	enum FSM {
 		F_NORMAL,
 		F_ATTACK_FIREBALL,
+		F_ATTACK_ICEBALL,
 	};
 
 	CBoss(Vector3 pos = Vector3(0, 150, 500), Vector3 scale = Vector3(20, 60, 20), Vector3 target = Vector3(30, 0, 79));
@@ -32,6 +33,6 @@ private:
 	Vector3 originalScale;
 	float elapsedTime;
 	float animFrame;
-	CProjectile* fireball;
+	CProjectile* holdingProjectile;
 };
 
