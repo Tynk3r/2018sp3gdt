@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../SoundEngine.h"
 #include "../Particles/ParticleManager.h"
+#include "Boss.h"
 using namespace std;
 
 // Update all entities
@@ -25,7 +26,9 @@ void EntityManager::Update(double _dt)
 		if ((*it)->isDone() && (*it)->getType() != CEntity::E_TARGET && (*it)->getType() != CEntity::E_MOVING_TARGET && (*it)->getType() != CEntity::E_TARGET_FIRE && (*it)->getType() != CEntity::E_TARGET_ICE)
 		{
 			// Delete if done
+			CEntity* point = *it;
 			delete *it;
+			*it = NULL;
 			it = entityList.erase(it);
 		}
 		else
@@ -209,7 +212,18 @@ bool EntityManager::CheckForCollision(float dt)
 				break;
 			}
 			}						//pre-collision check updates <<<<<<<<<<<<END>>>>>>>>>>>>
-			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 
+
+			bool notBeam = true;
+			if ((*it2)->getType() == CEntity::E_PROJECTILE)
+			{
+				CProjectile* beamCheck = static_cast<CProjectile*>((*it2));
+				if (beamCheck->getProjType() == CProjectile::PTYPE_BEAM)
+				{
+					notBeam = false;
+				}
+			}
+
+			if ((CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) && notBeam) 
 			{ 
 				switch ((*it)->getType())
 				{
@@ -222,12 +236,14 @@ bool EntityManager::CheckForCollision(float dt)
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
 						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
 						{
-							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM) 
+								(*it2)->setIsDone(true);
 							break;
 						}
 						if ((*it)->getType() == CEntity::E_TARGET_ICE && proj->getProjType() != CProjectile::PTYPE_ICE)
 						{
-							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) 
+								(*it2)->setIsDone(true);
 						
 							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 							{
@@ -307,12 +323,46 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_PROJECTILE:
-					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 				case CEntity::E_BOSS:
-					if ((*it2)->getType() == CEntity::E_PROJECTILE && CheckAABBCollision(*it, *it2))
-						std::cout << "col betwen boss & proj" << std::endl;
+					if ((*it2)->getType() == CEntity::E_PROJECTILE) //&& CheckAABBCollision(*it, *it2))
+					{
+						CProjectile* proj = static_cast<CProjectile*>(*it2);
+						CBoss* bos = static_cast<CBoss*>(*it);
+						if (proj->getSource() != (*it))
+						{
+							bos->TakeDamage((*it2));
+							((*it2))->setIsDone(true);
+						}
+					}
 					break;
+				case CEntity::E_PROJECTILE:
+				{
+					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
+					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
+					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
+					{
+						if ((proj1->getSource() != NULL || proj1->getSource() != nullptr) && proj1->getSource()->getType() == CEntity::E_BOSS)//if proj1 beglons to boss
+						{
+							proj1->bossDone = true;
+							proj2->setIsDone(true);
+						}
+						else if ((proj2->getSource() || proj2->getSource() != nullptr) != NULL && proj2->getSource()->getType() == CEntity::E_BOSS)
+						{
+							proj2->bossDone = true;
+							proj1->setIsDone(true);
+						}
+						else
+						{
+							proj1->setIsDone(true);
+							proj2->setIsDone(true);
+						}
+						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						break;
+					}
+				}
+					
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
@@ -322,7 +372,7 @@ bool EntityManager::CheckForCollision(float dt)
 			}
 			else
 			{
-				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
+				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* tempProjectile = (CProjectile*)*it2;
@@ -340,6 +390,8 @@ bool EntityManager::CheckForCollision(float dt)
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
 									break;
 								case CEntity::E_MOVING_TARGET:
+								case CEntity::E_TARGET_ICE:
+								case CEntity::E_TARGET_FIRE:
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 									break;
 								case CEntity::E_TARGET:

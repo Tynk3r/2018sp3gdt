@@ -11,13 +11,15 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	elapsedTime(0),
 	animFrame(0),
 	rig(CRigInfo::RIG_BOSS),
-	holdingProjectile(NULL)
+	holdingProjectile(NULL),
+	maxHealth(300)
 {
 	target.y = pos.y;
 	this->setPos(pos);
 	this->setScale(scale);
 	this->originalScale = scale;
 	this->setTarget(target);
+	this->health = this->maxHealth;
 }
 
 
@@ -40,6 +42,11 @@ void CBoss::Update(double dt)
 	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
 	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 2), 60 + 3 * cosf(tElapsedTime * 4), 20 + 2 * cosf(tElapsedTime * 2)));
 	this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
+	if (this->health == 0 && this->state!=F_DEAD)
+	{
+		this->state = F_DEAD;
+		this->elapsedTime = 0;
+	}
 	if (this->playerRef != NULL)
 	{
 		CPlayerInfo* plr = this->playerRef;
@@ -70,6 +77,14 @@ void CBoss::Update(double dt)
 				}
 				else
 				{
+					if (this->holdingProjectile->bossDone)
+					{
+						this->state = F_SURPRISED;
+						this->holdingProjectile->setIsDone(true);
+						this->animFrame = this->elapsedTime = 0;
+						this->holdingProjectile = NULL;
+						//break;
+					}
 					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
 					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
 					Mtx44 mat;
@@ -84,6 +99,14 @@ void CBoss::Update(double dt)
 			else if (this->elapsedTime < 3.f)
 			{
 				alpha = (this->elapsedTime - 0.7f) / 2.3f;
+				if (this->holdingProjectile->bossDone)
+				{
+					this->state = F_SURPRISED;
+					this->holdingProjectile->setIsDone(true);
+					this->animFrame = this->elapsedTime = 0;
+					this->holdingProjectile = NULL;
+					//break;
+				}
 				if (this->holdingProjectile != NULL)
 				{
 
@@ -106,7 +129,13 @@ void CBoss::Update(double dt)
 				this->rig.Animate(animFrame);
 				if (this->holdingProjectile != NULL)
 				{
-					this->holdingProjectile->setTarget(plr->getPos());
+					float dist = 1;
+					if (!(plr->getPos() - this->holdingProjectile->getPos()).IsZero())
+					{
+						dist = (plr->getPos() - this->holdingProjectile->getPos()).Length();
+					}
+					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
+					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
 					CSoundEngine::GetInstance()->PlayASound("Fireball");
 				}
@@ -144,6 +173,14 @@ void CBoss::Update(double dt)
 				}
 				else
 				{
+					if (this->holdingProjectile->bossDone)
+					{
+						this->state = F_SURPRISED;
+						this->holdingProjectile->setIsDone(true);
+						this->animFrame = this->elapsedTime = 0;
+						this->holdingProjectile = NULL;
+						//break;
+					}
 					Vector3 lTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_LEFT")->getPosOffset();
 					Vector3 lTentactleIBALLPos = this->rig.GetJoint("OCTO_ICEBALL")->getPosOffset();
 					Mtx44 mat;
@@ -158,6 +195,14 @@ void CBoss::Update(double dt)
 			else if (this->elapsedTime < 3.f)
 			{
 				alpha = (this->elapsedTime - 0.7f) / 2.3f;
+				if (this->holdingProjectile->bossDone)
+				{
+					this->state = F_SURPRISED;
+					this->holdingProjectile->setIsDone(true);
+					this->animFrame = this->elapsedTime = 0;
+					this->holdingProjectile = NULL;
+					//break;
+				}
 				if (this->holdingProjectile != NULL)
 				{
 
@@ -180,7 +225,13 @@ void CBoss::Update(double dt)
 				this->rig.Animate(animFrame);
 				if (this->holdingProjectile != NULL)
 				{
-					this->holdingProjectile->setTarget(plr->getPos());
+					float dist = 1; 
+					if (!(plr->getPos() - this->holdingProjectile->getPos()).IsZero())
+					{
+						dist = (plr->getPos() - this->holdingProjectile->getPos()).Length();
+					}
+					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
+					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
 					CSoundEngine::GetInstance()->PlayASound("Iceball");
 				}
@@ -191,10 +242,51 @@ void CBoss::Update(double dt)
 				this->elapsedTime = 0;
 				this->rig.SetStartKeyframe(CJointInfo::KEYFRAME_NONE);
 				this->rig.SetGoalKeyframe(CJointInfo::KEYFRAME_NONE);
+				//this->rig.Animate(1);
+			}
+			break;
+		case F_SURPRISED:
+			if (this->elapsedTime < 0.4f)
+			{
+				alpha = this->elapsedTime / 0.4f;
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_SURPRISED);
+				this->rig.Animate(Back::easeOut(alpha, 0, 1, 1));
+			}
+			else if (this->elapsedTime > 1)
+			{
+				this->state = F_VULNERABLE;
+				this->elapsedTime = this->animFrame = 0;
+			}
+			break;
+		case F_VULNERABLE:
+			if (this->elapsedTime < 3.f)
+			{
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_VULNERABLE);
 				this->rig.Animate(1);
+				this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 20), 60 + 6 * cosf(tElapsedTime * 40), 20 + 2 * cosf(tElapsedTime * 20)));
+				this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 10.f) * 50, 0, sinf(tElapsedTime * 10.f) * 50));
+			}
+			else
+			{
+				this->state = F_NORMAL;
+				this->elapsedTime = this->animFrame = 0;
+			}
+			break;
+		case F_DEAD:
+			alpha = Math::Min(1.f, this->elapsedTime*0.3f);
+			this->setScale(Vector3(20, 60, 20).lerped(Vector3(40, 5, 40), alpha));
+			if (alpha < 1)
+			{
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_DEAD);
+				this->rig.Animate(Quad::easeOut(alpha, 0, 1, 1));
 			}
 			break;
 		case F_NORMAL:
+			if (this->elapsedTime < 0.75f)
+			{
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_NONE);
+				this->rig.Animate(Math::Min(1.f, Quad::easeOut(this->elapsedTime/0.75f, 0, 1, 1)));
+			}
 			if (this->elapsedTime > 3.f)
 			{
 				this->state = Math::RandFloatMinMax(0, 10000) > 5000 ? F_ATTACK_FIREBALL : F_ATTACK_ICEBALL;
@@ -224,4 +316,35 @@ Vector3 CBoss::getOrigScale() const
 float CBoss::getElapsedTime() const
 {
 	return this->elapsedTime;
+}
+
+float CBoss::getCurrHealth() const
+{
+	return this->health;
+}
+
+float CBoss::getMaxHealth() const
+{
+	return this->maxHealth;
+}
+
+void CBoss::TakeDamage(CEntity * ent)
+{
+	float damageMultiplier = 0.25f;
+	if (this->state == F_VULNERABLE || this->state == F_SURPRISED)
+		damageMultiplier = 1;
+	CProjectile* proj = dynamic_cast<CProjectile*>(ent);
+	if (proj)
+	{
+		switch (proj->getProjType())
+		{
+		case CProjectile::PTYPE_BEAM:
+			this->health -= 30 * damageMultiplier;
+		default:
+			this->health -= 20 * damageMultiplier;
+			break;
+		}
+	}
+	if (this->health < 0)
+		this->health = 0;
 }

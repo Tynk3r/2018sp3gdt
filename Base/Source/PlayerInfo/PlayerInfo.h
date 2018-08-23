@@ -187,8 +187,25 @@ public:
 
 	float FirstHeight = 0;
 
+	void setSpellModLimit(SPELLMOD_TYPE smtype) { spellModLimit = smtype; }
+
 	float getManaCost()
 	{
+		if (spellModLimit != SMTYPE_TOTAL)
+		{
+			switch (spellModLimit)
+			{
+			case SMTYPE_NORMAL: return 10;
+				break;
+			case SMTYPE_BURST: return 25;
+				break;
+			case SMTYPE_SPECIAL: return 50;
+				break;
+			default: return 10;
+				break;
+			}
+		}
+
 		switch (spellMod)
 		{
 		case SMTYPE_NORMAL: return 10;
@@ -214,7 +231,7 @@ private:
 	bool hasMoved, hasRan;
 
 	SPELLMOD_TYPE spellMod;
-
+	SPELLMOD_TYPE spellModLimit = SMTYPE_TOTAL;
 	int m_dHealth;
 	float m_dMana;
 	int m_dScore;

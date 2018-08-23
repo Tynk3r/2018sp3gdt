@@ -12,7 +12,8 @@ CProjectile::CProjectile(PROJECTILE_TYPE projectileType, SPELLMOD_TYPE spellModT
 	source(NULL),
 	burstPivotRotOffset(0),
 	burstPivotRot(Vector3(0, 0, 0)),
-	originDir(Vector3(0, 0, 0))
+	originDir(Vector3(0, 0, 0)),
+	bossDone(false)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -89,11 +90,11 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 	}
 	case PTYPE_SPECIAL_KILLERNADO:
 	{
-		this->setSpeed(200);
+		this->setSpeed(500);
 		this->particleRate = 1.f / 60.f;
 		this->setScale(Vector3(60, 60, 60));
 		setGrav(Vector3(0, 0, 0));
-		lifespanTime = 10;
+		lifespanTime = 5;
 		break;
 	}
 
@@ -207,4 +208,9 @@ void CProjectile::EmitParticles(int amt)
 CEntity * CProjectile::getSource()
 {
 	return this->source;
+}
+
+void CProjectile::setSource(CEntity * source)
+{
+	this->source = source;
 }

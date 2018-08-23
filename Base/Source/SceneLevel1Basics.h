@@ -1,5 +1,5 @@
-#ifndef SCENE_BOSS_H
-#define SCENE_BOSS_H
+#ifndef SCENE_LEVEL1_H
+#define SCENE_LEVEL1_H
 
 #define PAINT_LENGTH 20
 
@@ -22,18 +22,16 @@
 #include "Entities/Enemy.h"
 #include "Entities/Drone.h"
 #include "Entities/NPC.h"
-#include "Entities/Boss.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
 #include "TimeTrackerManager.h"
-#include "EasingStyles\QuadEase.h"
 
 using namespace std;
 
-class SceneBoss : public Scene
+class SceneLevel1 : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -97,7 +95,7 @@ class SceneBoss : public Scene
 		U_SHADOW_COLOR_TEXTURE_ENABLED,
 		U_SHADOW_COLOR_TEXTURE_ENABLED1,
 		U_SHADOW_COLOR_TEXTURE_ENABLED2,
-		
+
 		//TRANSPARENCY/ALPHA UNIFORM VALUES
 		U_COLOR_ALPHA,
 
@@ -159,14 +157,8 @@ class SceneBoss : public Scene
 		GEO_GOBLIN,
 		GEO_BARREL,
 		GEO_LIBRARIAN,
-		GEO_OCTO_HEAD,
-		GEO_OCTO_BODY,
-		GEO_OCTO_HEAD_SHIELD,
-		GEO_OCTO_BODY_SHIELD,
-		GEO_OCTO_TRIDENT,
-		GEO_OCTO_TENTACLE_SPHERE,
-		GEO_QUAD_GREEN,
-		GEO_QUAD_RED,
+		GEO_KILLERNADO,
+		GEO_ICEBLOCK,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -180,8 +172,8 @@ class SceneBoss : public Scene
 		T_MOVING,
 	};
 public:
-	SceneBoss();
-	~SceneBoss();
+	SceneLevel1();
+	~SceneLevel1();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -241,16 +233,15 @@ private:
 	CPlayerInfo* playerInfo;
 
 	CEntity* wall1;
-	CBoss* boss;
 
-	CEntity* targets[3];
-	CEntity* targetsMoving[3];
+	CEntity* targets[4];
+	CEntity* targetsMoving[4];
 	TARGET_STATE targetState = T_STATIONARY;
 	int stateChangeTimer = 0;
 
-	CEntity* targets1[3];
-	CEntity* targetsMoving1[3];
-	TARGET_STATE targetState1 = T_STATIONARY;
+	CEntity* targets1[2];
+	CEntity* targetsMoving1[2];
+	TARGET_STATE targetState1 = T_MOVING;
 	int stateChangeTimer1 = 0;
 
 	//Terrain
@@ -258,5 +249,11 @@ private:
 
 	float testvar;
 };
+
+//LEVEL 1 : Greenhorn in a flash
+//Restrictions : 60s, no flight, normal spells only
+//Targets : 4 Normal Targets, 2 Moving Targets
+//Goal : Destroy all targets
+//Intention : Teaching the basics
 
 #endif

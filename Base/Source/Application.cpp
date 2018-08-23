@@ -23,6 +23,10 @@
 #include "SceneBoss.h"
 #include "SceneRangeMoving.h"
 
+#include "SceneLevel1Basics.h"
+#include "SceneLevel2Burst.h"
+#include "SceneLevel4Flight.h"
+
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
 const unsigned int frameTime = 1000 / FPS; // time for each frame
@@ -214,6 +218,8 @@ void Application::Run()
 	Scene *scene8 = new SceneBoss();
 	Scene *scene9 = new SceneRangeMoving();
 	
+	Scene *scene9 = new SceneLevel1();
+
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
 	sceneManager->AddScene(scene2);
@@ -242,6 +248,7 @@ void Application::Run()
 				break;
 		case CSceneManager::SCENE_TERRAIN:
 		case CSceneManager::SCENE_RANGE:
+		case CSceneManager::SCENE_LEVEL1:
 		default:
 				wrapAroundEnabled = true;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

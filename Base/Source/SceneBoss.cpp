@@ -272,9 +272,16 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_HEAD]->textureArray[0]= LoadTGA("Image//octoHead.tga");
 	meshList[GEO_OCTO_BODY] = MeshBuilder::GenerateOBJ("octoBody", "OBJ//octoBody.obj");
 	meshList[GEO_OCTO_BODY]->textureArray[0] = LoadTGA("Image//octoBody.tga");
+	meshList[GEO_OCTO_HEAD_SHIELD] = MeshBuilder::GenerateOBJ("octoHeadShield", "OBJ//octoHead.obj");
+	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
+	meshList[GEO_OCTO_BODY_SHIELD] = MeshBuilder::GenerateOBJ("octoBodyShield", "OBJ//octoBody.obj");
+	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
 	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
+
+	meshList[GEO_QUAD_GREEN] = MeshBuilder::GenerateQuad("greenquad", Color(0, 1, 0));
+	meshList[GEO_QUAD_RED] = MeshBuilder::GenerateQuad("redquad", Color(1, 0, 0));
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -1265,9 +1272,33 @@ void SceneBoss::RenderWorld()
 						modelStack.Scale(entSca.x, entSca.y, entSca.z);
 						modelStack.Scale(0.275f, 0.125f, 0.275f);
 						RenderMesh(meshList[GEO_OCTO_BODY], godlights);
+						if (!(boss->getState() == CBoss::F_VULNERABLE || boss->getState() == CBoss::F_SURPRISED || boss->getState() == CBoss::F_DEAD))
+						{
+							modelStack.PushMatrix();
+							modelStack.Scale(1.1f, 1.1f, 1.1f);
+							glUniform1f(m_parameters[U_COLOR_ALPHA], 0.25f);
+							glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+							glUniform2f(m_parameters[U_UV_OFFSET], bossElapsedTime, bossElapsedTime);
+							RenderMesh(meshList[GEO_OCTO_BODY_SHIELD], godlights);
+							glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+							glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+							modelStack.PopMatrix();
+						}
 						modelStack.Translate(0, 10.5f, 0);
 						modelStack.Scale(1.55f, 0.9f, 1.55f);
 						RenderMesh(meshList[GEO_OCTO_HEAD], godlights);
+						if (!(boss->getState() == CBoss::F_VULNERABLE || boss->getState() == CBoss::F_SURPRISED || boss->getState() == CBoss::F_DEAD))
+						{
+							modelStack.PushMatrix();
+							modelStack.Scale(1.1f, 1.1f, 1.1f);
+							glUniform1f(m_parameters[U_COLOR_ALPHA], 0.25f);
+							glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+							glUniform2f(m_parameters[U_UV_OFFSET], bossElapsedTime, bossElapsedTime);
+							RenderMesh(meshList[GEO_OCTO_HEAD_SHIELD], godlights);
+							glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+							glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+							modelStack.PopMatrix();
+						}
 					modelStack.PopMatrix();
 					modelStack.PushMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 						modelStack.Scale(entSca.x, entSca.y, entSca.z);
@@ -1601,6 +1632,18 @@ void SceneBoss::RenderPassMain()
 
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
+	if (boss)
+	{
+		std::ostringstream ss;
+		ss << "Boss Health";
+		float aH = Application::GetWindowHeight();
+		float aW = Application::GetWindowWidth();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 3, aW*0.1f*0.375f, aH*0.1f*0.95f);
+		float healthpercentage = boss->getCurrHealth() / boss->getMaxHealth();
+		//RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.6f*healthpercentage, aH*0.1f*0.1f, aW*0.01f*(1-healthpercentage), aH*0.1f*0.11f);
+		RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.8f*healthpercentage, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
+		RenderMeshIn2D(meshList[GEO_QUAD_RED], false, aW*0.1f*0.8f, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
+	}
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
 	{
 		std::list < CameraEffect *> ::iterator it, end;

@@ -58,6 +58,7 @@ public:
 	void setIsDone(const bool _value);
 
 	virtual void setGrav(Vector3 _grav) { gravVel = _grav; }
+	virtual Vector3 getGrav() const { return gravVel; }
 
 	// Check if this entity has a collider class parent
 	virtual bool hasCollider(void) const;
