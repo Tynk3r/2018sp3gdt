@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "../Particles/ParticleManager.h"
 
 CEntity::CEntity():
 	position(Vector3(0.f,0.f,0.f)),
@@ -59,10 +60,18 @@ void CEntity::Update(double dt)
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
+	case E_TARGET_FIRE:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		if (!this->done)
+			ParticleManager::GetInstance()->AddParticle(this);
+		break;
+	case E_TARGET_ICE:
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		if (!this->done)
+			ParticleManager::GetInstance()->AddParticle(this);
+		break;
 	case E_PLAYER:
 	case E_TARGET:
-	case E_TARGET_FIRE:
-	case E_TARGET_ICE:
 	case E_WALL:
 	case E_NPC:
 	case E_BOSS:
@@ -115,5 +124,11 @@ bool CEntity::hasCollider(void) const
 void CEntity::setCollider(const bool _value)
 {
 	m_bCollider = _value;
+}
+
+void CEntity::EmitParticles(int amt)
+{
+	for (int i = 0; i < amt; ++i)
+		ParticleManager::GetInstance()->AddParticle(this);
 }
 

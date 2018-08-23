@@ -51,6 +51,7 @@
     <ClCompile Include="Source\SceneLevel4Flight.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\SceneRange.cpp" />
+    <ClCompile Include="Source\SceneRangeMoving.cpp" />
     <ClCompile Include="Source\SceneTerrain.cpp" />
     <ClCompile Include="Source\SceneStartMenu.cpp" />
     <ClCompile Include="Source\shader.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="Source\SceneLevel4Flight.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\SceneRange.h" />
+    <ClInclude Include="Source\SceneRangeMoving.h" />
     <ClInclude Include="Source\SceneTerrain.h" />
     <ClInclude Include="Source\SceneStartMenu.h" />
     <ClInclude Include="Source\shader.hpp" />

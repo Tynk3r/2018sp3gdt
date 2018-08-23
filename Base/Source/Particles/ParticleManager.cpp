@@ -60,6 +60,12 @@ void ParticleManager::AddParticle(CEntity * entity)
 			}
 			break;
 		}
+		case CEntity::E_TARGET_FIRE:
+			newPar = new CParticle_2(CParticle_2::PTYPE_FIRE, entity);
+			break;
+		case CEntity::E_TARGET_ICE:
+			newPar = new CParticle_2(CParticle_2::PTYPE_ICE, entity);
+			break;
 	}
 	if (newPar != NULL)
 		this->AddParticle(newPar);

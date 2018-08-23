@@ -271,6 +271,7 @@ bool EntityManager::CheckForCollision(float dt)
 							aa->setTarget(aa->getTarget() + Vector3(0, aa->getScale().y, 0));
 						}
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						(*it)->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->PlayASound("Death");
 						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 
