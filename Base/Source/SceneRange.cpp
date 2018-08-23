@@ -543,7 +543,7 @@ void SceneRange::Update(double dt)
 		{
 			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_WALL || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
 			{
-				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
+				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 2000;
 				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
@@ -565,7 +565,7 @@ void SceneRange::Update(double dt)
 		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
 		{
 
-			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
+			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * ((aa->getPos().y + 0) / (aa->getPos() - aa->getTarget()).Normalized().y);
 			if (tempTempProj.Length() >= tempProj.Length())
 			{
 
