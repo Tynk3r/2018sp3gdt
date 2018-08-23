@@ -1,4 +1,4 @@
-#include "SceneRange.h"
+#include "SceneRangeMoving.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -11,11 +11,11 @@
 #include <sstream>
 #define SP3_DEBUG
 
-SceneRange::SceneRange()
+SceneRangeMoving::SceneRangeMoving()
 {
 }
 
-SceneRange::~SceneRange()
+SceneRangeMoving::~SceneRangeMoving()
 {
 	if (theMouse)
 	{
@@ -29,7 +29,7 @@ SceneRange::~SceneRange()
 	}
 }
 
-void SceneRange::Init()
+void SceneRangeMoving::Init()
 {
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -220,7 +220,7 @@ void SceneRange::Init()
 
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
 
-	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
+	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 3500.f, 4000.f, 1.0f, 1.0f);
 	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
@@ -239,15 +239,11 @@ void SceneRange::Init()
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
-	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
-	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
-	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
-	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
 	// For Ter Rain
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRange.raw", m_heightMap);
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeMoving.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
@@ -318,13 +314,45 @@ void SceneRange::Init()
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
-		targets[i]->setType(CEntity::E_TARGET);
-		targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setType(CEntity::E_MOVING_TARGET);
+		targets[i]->setPos(Vector3(-750 + i * 750, 100.f, 1700.f));
 		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+		targets[i]->setTarget(Vector3(0 + i * 750, 100.f, 1700.f));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setOriginTarget(targets[i]->getTarget());
 	}
-	for (int i = 0; i < 3; i++) 
+
+	targets[3] = new CEntity();
+	targets[3]->Init();
+	targets[3]->setType(CEntity::E_MOVING_TARGET);
+	targets[3]->setPos(Vector3(-1500.f, 200.f, -1700.f));
+	targets[3]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[3]->setTarget(Vector3(-250.f, 100.f, -1700.f));
+	targets[3]->setSpeed(200.f);
+	targets[3]->setOriginPos(targets[3]->getPos());
+	targets[3]->setOriginTarget(targets[3]->getTarget());
+
+	targets[4] = new CEntity();
+	targets[4]->Init();
+	targets[4]->setType(CEntity::E_MOVING_TARGET);
+	targets[4]->setPos(Vector3(-250.f, 200.f, -1500.f));
+	targets[4]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[4]->setTarget(Vector3(-1500.f, 220.f, -1500.f));
+	targets[4]->setSpeed(200.f);
+	targets[4]->setOriginPos(targets[4]->getPos());
+	targets[4]->setOriginTarget(targets[4]->getTarget());
+
+	targets[5] = new CEntity();
+	targets[5]->Init();
+	targets[5]->setType(CEntity::E_MOVING_TARGET);
+	targets[5]->setPos(Vector3(-1500.f, 100.f, -1300.f));
+	targets[5]->setScale(Vector3(40.f, 40.f, 40.f));
+	targets[5]->setTarget(Vector3(-250.f, 200.f, -1300.f));
+	targets[5]->setSpeed(200.f);
+	targets[5]->setOriginPos(targets[5]->getPos());
+	targets[5]->setOriginTarget(targets[5]->getTarget());
+
+	/*for (int i = 0; i < 3; i++) 
 	{
 		targetsMoving[i] = new CEntity();
 		targetsMoving[i]->Init();
@@ -332,7 +360,6 @@ void SceneRange::Init()
 		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
 		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
 	}
 
 	for (int i = 0; i < 3; i++)
@@ -354,7 +381,7 @@ void SceneRange::Init()
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}
+	}*/
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -382,14 +409,11 @@ void SceneRange::Init()
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 }
 
-void SceneRange::Update(double dt)
+void SceneRangeMoving::Update(double dt)
 {
 	//cout << playerInfo->getPos() << endl;
-	if (playerInfo->getPos().x > 740) 
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
-	}
-	/*if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
+	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
+	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
@@ -548,9 +572,9 @@ void SceneRange::Update(double dt)
 		end = EntityManager::GetInstance()->entityList.end();
 		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
 		{
-			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_WALL || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE)
+			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_WALL || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
 			{
-				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 2000;
+				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
 				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
 				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
 				{
@@ -572,7 +596,7 @@ void SceneRange::Update(double dt)
 		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
 		{
 
-			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * ((aa->getPos().y + 0) / (aa->getPos() - aa->getTarget()).Normalized().y);
+			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
 			if (tempTempProj.Length() >= tempProj.Length())
 			{
 
@@ -620,10 +644,6 @@ void SceneRange::Update(double dt)
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
-	}
-	if (Application::IsKeyPressed('V'))
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
 	}
 #endif // SP3_DEBUG
 
@@ -703,24 +723,11 @@ void SceneRange::Update(double dt)
 
 	bool shouldChange = true;
 	//check if shouldnt change (any targets still up)
-	switch (targetState)
+	for (int i = 0; i < 3; ++i)
 	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if(!targetsMoving[i]->isDone()){ shouldChange = false; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets[i]->isDone()) { shouldChange = false; }
-		}
-		break;
-	default:
-		break;
+		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getPos().y + targets[1]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getOriginPos().y + targets[1]->getScale().y + 10; }
 	//if should change switches state
 	if (shouldChange)
 	{
@@ -728,138 +735,145 @@ void SceneRange::Update(double dt)
 		if (stateChangeTimer <= 0)
 		{
 			stateChangeTimer = 0;
-			switch (targetState)
+			rotateAngle = 0;
+			for (int i = 0; i < 3; i++)
 			{
-			case T_MOVING:
-				targetState = T_STATIONARY;
-				for (int i = 0; i < 3; i++)
-				{
-					targets[i]->setIsDone(false);
-					targets[i]->setType(CEntity::E_TARGET);
-					targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targets[i]->setOriginPos(targets[i]->getPos());
-					targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
-			case T_STATIONARY:
-				targetState = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving[i]->setIsDone(false);
-					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-					targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-				}
-				break;
-			default:
-				break;
+				targets[i]->setIsDone(false);
+				targets[i]->setType(CEntity::E_MOVING_TARGET);
+				targets[i]->setPos(Vector3(-750 + i * 750, 100.f, 1700.f));
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(Vector3(0 + i * 750, 100.f, 1700.f));
 			}
 		}
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets[i]->setIsDone(true);
-			if(!targetsMoving[i]->isDone()){ targetsMoving[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
-			targetsMoving[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
 	}
 
-	bool shouldChange1 = true;
+	shouldChange = true;
 	//check if shouldnt change (any targets still up)
-	switch (targetState1)
+	for (int i = 3; i < 6; ++i)
 	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { 
-				shouldChange1 = false; 
-			}
-		}
-		break;
-	default:
-		break;
+		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer1 == 0.f && targets[3]->isDone()) { stateChangeTimer1 = targets[3]->getOriginPos().y + targets[3]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer2 == 0.f && targets[4]->isDone()) { stateChangeTimer2 = targets[4]->getOriginPos().y + targets[4]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer3 == 0.f && targets[5]->isDone()) { stateChangeTimer3 = targets[5]->getOriginPos().y + targets[5]->getScale().y + 10; }
 	//if should change switches state
-	if (shouldChange1)
+	if (shouldChange)
 	{
 		stateChangeTimer1--;
-		if (stateChangeTimer1 <= 0)
+		if (stateChangeTimer1 <= 0.f) { stateChangeTimer1 = -1.f; }
+		stateChangeTimer2--;
+		if (stateChangeTimer2 <= 0.f) { stateChangeTimer2 = -1.f; }
+		stateChangeTimer3--;
+		if (stateChangeTimer3 <= 0.f) { stateChangeTimer3 = -1.f; }
+		rotateAngle = 0;
+		if (stateChangeTimer1 == -1.f && stateChangeTimer2 == -1.f && stateChangeTimer3 == -1.f)
 		{
-			stateChangeTimer1 = 0;
-			switch (targetState1)
-			{
-			case T_MOVING:
-				targetState1 = T_STATIONARY;
-				for (int i = 0; i < 3; i++)
-				{
-					targets1[i]->setIsDone(false);
-					targets1[i]->setType(CEntity::E_TARGET_FIRE);
-					targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-					targets1[i]->setOriginPos(targets1[i]->getPos());
-					targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
-			case T_STATIONARY:
-				targetState1 = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-					targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-					targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-				}
-				break;
-			default:
-				break;
-			}
+			stateChangeTimer1 = 0.f;
+			targets[3]->setIsDone(false);
+			targets[3]->setType(CEntity::E_MOVING_TARGET);
+			targets[3]->setPos(Vector3(-1500.f, 200.f, -1700.f));
+			targets[3]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[3]->setTarget(Vector3(-250.f, 100.f, -1700.f));
+			targets[3]->setSpeed(200.f);
+
+			stateChangeTimer2 = 0.f;
+			targets[4]->setIsDone(false);
+			targets[4]->setType(CEntity::E_MOVING_TARGET);
+			targets[4]->setPos(Vector3(-250.f, 200.f, -1500.f));
+			targets[4]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[4]->setTarget(Vector3(-1500.f, 220.f, -1500.f));
+			targets[4]->setSpeed(200.f);
+
+			stateChangeTimer3 = 0.f;
+			targets[5]->setIsDone(false);
+			targets[5]->setType(CEntity::E_MOVING_TARGET);
+			targets[5]->setPos(Vector3(-1500.f, 100.f, -1300.f));
+			targets[5]->setScale(Vector3(40.f, 40.f, 40.f));
+			targets[5]->setTarget(Vector3(-250.f, 200.f, -1300.f));
+			targets[5]->setSpeed(200.f);
 		}
 	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets1[i]->setIsDone(true);
-			if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-			targetsMoving1[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
+
+	//bool shouldChange1 = true;
+	////check if shouldnt change (any targets still up)
+	//switch (targetState1)
+	//{
+	//case T_MOVING:
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
+	//	}
+	//	break;
+	//case T_STATIONARY:
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		if (!targets1[i]->isDone()) { 
+	//			shouldChange1 = false; 
+	//		}
+	//	}
+	//	break;
+	//default:
+	//	break;
+	//}
+	//if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
+	////if should change switches state
+	//if (shouldChange1)
+	//{
+	//	stateChangeTimer1--;
+	//	if (stateChangeTimer1 <= 0)
+	//	{
+	//		stateChangeTimer1 = 0;
+	//		switch (targetState1)
+	//		{
+	//		case T_MOVING:
+	//			targetState1 = T_STATIONARY;
+	//			for (int i = 0; i < 3; i++)
+	//			{
+	//				targets1[i]->setIsDone(false);
+	//				targets1[i]->setType(CEntity::E_TARGET_FIRE);
+	//				targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
+	//				targets1[i]->setOriginPos(targets1[i]->getPos());
+	//				targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+	//				targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+	//			}
+	//			break;
+	//		case T_STATIONARY:
+	//			targetState1 = T_MOVING;
+	//			for (int i = 0; i < 3; i++)
+	//			{
+	//				targetsMoving1[i]->setIsDone(false);
+	//				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
+	//				targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
+	//				targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
+	//				targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
+	//				targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
+	//			}
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//	}
+	//}
+	////updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
+	//switch (targetState1)
+	//{
+	//case T_MOVING:
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		targets1[i]->setIsDone(true);
+	//		if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
+	//	}
+	//	break;
+	//case T_STATIONARY:
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
+	//		targetsMoving1[i]->setIsDone(true);
+	//	}
+	//	break;
+	//default:
+	//	break;
+	//}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -880,7 +894,7 @@ void SceneRange::Update(double dt)
 	//std::cout << camera.position << std::endl;
 }
 
-void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneRangeMoving::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if (!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -907,7 +921,7 @@ void SceneRange::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRange::RenderTerrain() {
+void SceneRangeMoving::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -916,7 +930,7 @@ void SceneRange::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneRange::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneRangeMoving::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -955,7 +969,7 @@ void SceneRange::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, f
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRange::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneRangeMoving::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -1021,7 +1035,7 @@ void SceneRange::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, floa
 
 }
 
-void SceneRange::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneRangeMoving::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -1111,7 +1125,7 @@ void SceneRange::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneRange::RenderGround()
+void SceneRangeMoving::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -1135,7 +1149,7 @@ void SceneRange::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneRange::Render()
+void SceneRangeMoving::Render()
 {
 	//******************************* PRE RENDER PASS*************************************
 		RenderPassGPass();
@@ -1143,7 +1157,7 @@ void SceneRange::Render()
 		RenderPassMain();
 }
 
-void SceneRange::Exit()
+void SceneRangeMoving::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -1176,7 +1190,7 @@ void SceneRange::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneRange::RenderTrees() 
+void SceneRangeMoving::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -1191,7 +1205,7 @@ void SceneRange::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneRange::GetParticle(void)
+ParticleObject* SceneRangeMoving::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1215,7 +1229,7 @@ ParticleObject* SceneRange::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneRange::UpdateParticles(double dt)
+void SceneRangeMoving::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -1279,7 +1293,7 @@ void SceneRange::UpdateParticles(double dt)
 	}
 }
 
-void SceneRange::RenderParticles(ParticleObject *particle)
+void SceneRangeMoving::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -1304,7 +1318,7 @@ void SceneRange::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneRange::RenderWorld()
+void SceneRangeMoving::RenderWorld()
 {
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
@@ -1468,22 +1482,13 @@ void SceneRange::RenderWorld()
 				break;
 			}
 			case CEntity::E_TARGET_FIRE:
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				//modelStack.Rotate(rotateAngle, 1, 1, 1);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
-				modelStack.PopMatrix();
-				break;
-			}
 			case CEntity::E_TARGET_ICE:
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
+				RenderMesh(meshList[GEO_BARREL], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1520,32 +1525,39 @@ void SceneRange::RenderWorld()
 		for (int i = 0; i < 3; i++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), 1500.f);
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale(40.f, 40.f, 40.f);
 			RenderMesh(meshList[GEO_BARREL], godlights);
 			modelStack.PopMatrix();
 		}
 	}
-	if (stateChangeTimer1 > 0)
+	if (stateChangeTimer1 != 0)
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), -1500.f);
-			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-			modelStack.Scale(40.f, 40.f, 40.f);
-			switch (targetState1)
-			{
-			case T_STATIONARY:
-				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
-				break;
-			case T_MOVING:
-				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
-				break;
-			}
-			modelStack.PopMatrix();
-		}
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[3]->getOriginPos().x, targets[3]->getOriginPos().y - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (targets[3]->getOriginPos().x) / 4000, (targets[3]->getOriginPos().z) / 4000), targets[3]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
+	}
+	if (stateChangeTimer2 != 0)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[4]->getOriginPos().x, targets[4]->getOriginPos().y - stateChangeTimer2 + 350.f * ReadHeightMap(m_heightMap, (targets[4]->getOriginPos().x) / 4000, (targets[4]->getOriginPos().z) / 4000), targets[4]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
+	}
+	if (stateChangeTimer3 != 0)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(targets[5]->getOriginPos().x, targets[5]->getOriginPos().y - stateChangeTimer3 + 350.f * ReadHeightMap(m_heightMap, (targets[5]->getOriginPos().x) / 4000, (targets[5]->getOriginPos().z) / 4000), targets[5]->getOriginPos().z);
+		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+		modelStack.Scale(40.f, 40.f, 40.f);
+		RenderMesh(meshList[GEO_BARREL], godlights);
+		modelStack.PopMatrix();
 	}
 
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
@@ -1769,7 +1781,7 @@ void SceneRange::RenderWorld()
 	}
 }
 
-void SceneRange::RenderPassMain()
+void SceneRangeMoving::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1900,7 +1912,7 @@ void SceneRange::RenderPassMain()
 	}
 	
 }
-void SceneRange::RenderPassGPass()
+void SceneRangeMoving::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();

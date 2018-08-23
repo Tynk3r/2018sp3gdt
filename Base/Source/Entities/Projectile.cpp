@@ -12,7 +12,8 @@ CProjectile::CProjectile(PROJECTILE_TYPE projectileType, SPELLMOD_TYPE spellModT
 	source(NULL),
 	burstPivotRotOffset(0),
 	burstPivotRot(Vector3(0, 0, 0)),
-	originDir(Vector3(0, 0, 0))
+	originDir(Vector3(0, 0, 0)),
+	bossDone(false)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -207,4 +208,9 @@ void CProjectile::EmitParticles(int amt)
 CEntity * CProjectile::getSource()
 {
 	return this->source;
+}
+
+void CProjectile::setSource(CEntity * source)
+{
+	this->source = source;
 }

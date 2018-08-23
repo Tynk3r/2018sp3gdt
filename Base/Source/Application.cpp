@@ -21,6 +21,7 @@
 #include "SceneTerrain.h"
 #include "SceneRange.h"
 #include "SceneBoss.h"
+#include "SceneRangeMoving.h"
 
 #include "SceneLevel1Basics.h"
 #include "SceneLevel2Burst.h"
@@ -215,9 +216,10 @@ void Application::Run()
 	Scene *scene6 = new SceneTerrain();
 	Scene *scene7 = new SceneRange();
 	Scene *scene8 = new SceneBoss();
-	
-	Scene *scene9 = new SceneLevel1();
-	Scene *scene10 = new SceneLevel2();
+	Scene *scene9 = new SceneRangeMoving();
+
+	Scene *scene10 = new SceneLevel1();
+	Scene *scene11 = new SceneLevel2();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -230,6 +232,7 @@ void Application::Run()
 	sceneManager->AddScene(scene8);
 	sceneManager->AddScene(scene9);
 	sceneManager->AddScene(scene10);
+	sceneManager->AddScene(scene11);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame

@@ -50,9 +50,10 @@ void CEntity::Update(double dt)
 		break;
 	}
 	case E_MOVING_TARGET:
-		if ((getTarget() - getPos()).LengthSquared() < 1.f) { 
+		if ((getTarget() - getPos()).LengthSquared() < 3.f * 3.f) { 
 			setTarget(getOriginPos());
-			setOriginPos(getPos());
+			if ((getOriginPos() - getPos()).LengthSquared() < 3.f * 3.f) { setTarget(getOriginTarget()); }
+			//setOriginPos(getPos());
 			viewVector = (getTarget() - getPos()).Normalized();
 		}
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));

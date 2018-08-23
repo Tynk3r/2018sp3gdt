@@ -32,6 +32,8 @@ public:
 	void setPos(Vector3 p) { position = p; }
 	Vector3 getOriginPos(void) { return originPosition; }
 	void setOriginPos(Vector3 p) { originPosition = p; }
+	Vector3 getOriginTarget(void) { return originTarget; }
+	void setOriginTarget(Vector3 t) { originTarget = t; }
 	Vector3 getScale(void) { return scale; }
 	void setScale(Vector3 s) { scale = s; }
 	TYPE getType(void) { return type; }
@@ -56,6 +58,7 @@ public:
 	void setIsDone(const bool _value);
 
 	virtual void setGrav(Vector3 _grav) { gravVel = _grav; }
+	virtual Vector3 getGrav() const { return gravVel; }
 
 	// Check if this entity has a collider class parent
 	virtual bool hasCollider(void) const;
@@ -76,6 +79,7 @@ private:
 	bool m_bCollider;
 protected:
 	Vector3 originPosition;
+	Vector3 originTarget;
 };
 
 #endif

@@ -24,7 +24,7 @@ CRigInfo::~CRigInfo()
 	{
 		if (it->second)
 			delete it->second;
-		this->jointinfos.erase(it->first);
+		it = this->jointinfos.erase(it);
 	}
 }
 

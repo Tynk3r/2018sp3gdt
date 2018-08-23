@@ -1,5 +1,5 @@
-#ifndef SCENE_RANGE_H
-#define SCENE_RANGE_H
+#ifndef SCENE_RANGE_MOVING_H
+#define SCENE_RANGE_MOVING_H
 
 #define PAINT_LENGTH 20
 
@@ -31,7 +31,7 @@
 
 using namespace std;
 
-class SceneRange : public Scene
+class SceneRangeMoving : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -156,8 +156,6 @@ class SceneRange : public Scene
 		GEO_BOLT,
 		GEO_GOBLIN,
 		GEO_BARREL,
-		GEO_BARREL_ICE,
-		GEO_BARREL_FIRE,
 		GEO_LIBRARIAN,
 		GEO_KILLERNADO,
 		GEO_ICEBLOCK,
@@ -174,8 +172,8 @@ class SceneRange : public Scene
 		T_MOVING,
 	};
 public:
-	SceneRange();
-	~SceneRange();
+	SceneRangeMoving();
+	~SceneRangeMoving();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -236,15 +234,16 @@ private:
 
 	CEntity* wall1;
 
-	CEntity* targets[3];
-	CEntity* targetsMoving[3];
-	TARGET_STATE targetState = T_STATIONARY;
+	CEntity* targets[6];
 	int stateChangeTimer = 0;
+	int stateChangeTimer1 = 0;
+	int stateChangeTimer2 = 0;
+	int stateChangeTimer3 = 0;
 
-	CEntity* targets1[3];
+	/*CEntity* targets1[3];
 	CEntity* targetsMoving1[3];
 	TARGET_STATE targetState1 = T_STATIONARY;
-	int stateChangeTimer1 = 0;
+	int stateChangeTimer1 = 0;*/
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
