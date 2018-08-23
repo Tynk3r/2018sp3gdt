@@ -187,6 +187,22 @@ public:
 
 	float FirstHeight = 0;
 
+	float getManaCost()
+	{
+		switch (spellMod)
+		{
+		case SMTYPE_NORMAL: return 10;
+			break;
+		case SMTYPE_BURST: return 25;
+			break;
+		case SMTYPE_SPECIAL: return 50;
+			break;
+		default: return 10;
+			break;
+		}
+		return 10;
+	}
+
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 up;
