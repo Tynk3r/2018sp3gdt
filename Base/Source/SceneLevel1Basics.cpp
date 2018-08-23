@@ -1,4 +1,4 @@
-#include "SceneLeveL1Basics.h"
+#include "SceneLevel1Basics.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -614,6 +614,10 @@ void SceneLevel1::Update(double dt)
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+	}
+	if (playerInfo->GetScore() >= 10)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
 	}
 #endif // SP3_DEBUG
 

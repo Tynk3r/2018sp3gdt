@@ -25,7 +25,7 @@ public:
 		SCENE_RANGE,
 		SCENE_BOSS,
 		SCENE_LEVEL1,
-
+		SCENE_LEVEL2,
 		SCENE_TOTAL
 	};
 
