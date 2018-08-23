@@ -275,6 +275,8 @@ void SceneRange::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_PILLAR] = MeshBuilder::GenerateOBJ("pillar", "OBJ//pillar.obj");
+	meshList[GEO_PILLAR]->textureArray[0] = LoadTGA("Image//pillar.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -1510,6 +1512,16 @@ void SceneRange::RenderWorld()
 				RenderMesh(meshList[GEO_CUBE], false);
 				modelStack.PopMatrix();
 				break;
+			case CEntity::E_PILLAR:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + (*it)->getScale().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_PILLAR], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}

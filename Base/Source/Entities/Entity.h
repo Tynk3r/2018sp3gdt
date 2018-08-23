@@ -19,6 +19,7 @@ public:
 		E_WALL,
 		E_NPC,
 		E_BOSS,
+		E_PILLAR,
 		E_TOTAL
 	};
 
