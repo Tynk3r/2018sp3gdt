@@ -192,6 +192,16 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3());
 				break;
+			case KEYFRAME_OCTO_ICEBALL_1:
+				jKeyframes.push_back(Vector3(-1.f, -0.05f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-3, 3, 0));
+				break;
+			case KEYFRAME_OCTO_ICEBALL_2:
+				jKeyframes.push_back(Vector3(-1.f, -0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-1, 1, 0));
+				break;
 			}
 			break;
 		}
@@ -207,6 +217,16 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 			case KEYFRAME_OCTO_TRIDENT_1:
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3());
+				break;
+			case KEYFRAME_OCTO_ICEBALL_1:
+				jKeyframes.push_back(Vector3(-2.5f, 4.5f, 1));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, -1, 2));
+				break;
+			case KEYFRAME_OCTO_ICEBALL_2:
+				jKeyframes.push_back(Vector3(0.5f, 1.5f, 6));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, 1, 2));
 				break;
 			}
 			break;

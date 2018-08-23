@@ -28,6 +28,8 @@ public:
 		KEYFRAME_OCTO_TRIDENT_1,//rising up his trident thing
 		KEYFRAME_OCTO_FIREBALL_1,//raising his right arm 
 		KEYFRAME_OCTO_FIREBALL_2,//kinda does a throwing motion with his right arm
+		KEYFRAME_OCTO_ICEBALL_1,//raising his left arm 
+		KEYFRAME_OCTO_ICEBALL_2,//kinda does a throwing motion with his left arm
 		KEYFRAME_TOTAL
 	};
 	CJointInfo(JOINT_TYPE jointType = TYPE_TOTAL);
