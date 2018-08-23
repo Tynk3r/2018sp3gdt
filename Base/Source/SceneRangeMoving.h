@@ -159,6 +159,8 @@ class SceneRangeMoving : public Scene
 		GEO_LIBRARIAN,
 		GEO_KILLERNADO,
 		GEO_ICEBLOCK,
+		GEO_PILLAR,
+		GEO_WATER,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -232,8 +234,6 @@ private:
 	CMouse* theMouse;
 	CPlayerInfo* playerInfo;
 
-	CEntity* wall1;
-
 	CEntity* targets[9];
 	int stateChangeTimer = 0;
 	int stateChangeTimer1 = 0;
@@ -242,6 +242,8 @@ private:
 	int stateChangeTimer4 = 0;
 	int stateChangeTimer5 = 0;
 	int stateChangeTimer6 = 0;
+	
+	CEntity* pillars[2];
 
 	/*CEntity* targets1[3];
 	CEntity* targetsMoving1[3];

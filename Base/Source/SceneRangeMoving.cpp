@@ -271,6 +271,12 @@ void SceneRangeMoving::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_PILLAR] = MeshBuilder::GenerateOBJ("pillar", "OBJ//pillar.obj");
+	meshList[GEO_PILLAR]->textureArray[0] = LoadTGA("Image//pillar.tga");
+	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("water", Color(1, 1, 1), 10.f);
+	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//water.tga");
+	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
+	meshList[GEO_WATER]->textureArray[2] = LoadTGA("Image//water.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -303,13 +309,6 @@ void SceneRangeMoving::Init()
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
-
-	CNPC* npc = new CNPC(
-		Vector3(0, 0, 80),
-		Vector3(4, 12, 4),
-		Vector3(0, 0, 80.f)
-	);
-	npc->setPlayerRef(playerInfo);
 
 	//slow ez one
 	for (int i = 0; i < 3; i++)
@@ -386,36 +385,16 @@ void SceneRangeMoving::Init()
 	targets[8]->setOriginPos(targets[8]->getPos());
 	targets[8]->setOriginTarget(targets[8]->getTarget());
 
-	/*for (int i = 0; i < 3; i++) 
+	//pillars on sides
+	for (int i = 0; i < 2; i++)
 	{
-		targetsMoving[i] = new CEntity();
-		targetsMoving[i]->Init();
-		targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		pillars[i] = new CEntity();
+		pillars[i]->Init();
+		pillars[i]->setType(CEntity::E_PILLAR);
+		pillars[i]->setPos(Vector3(1500 - i * 3000, 0.f, 100.f));
+		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
+		pillars[i]->setOriginPos(pillars[i]->getPos());
 	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		targets1[i] = new CEntity();
-		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-		targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targets1[i]->setOriginPos(targets1[i]->getPos());
-		targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	}
-	for (int i = 0; i < 3; i++) 
-	{
-		targetsMoving1[i] = new CEntity();
-		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-		targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-		targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}*/
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -1599,6 +1578,16 @@ void SceneRangeMoving::RenderWorld()
 				RenderMesh(meshList[GEO_CUBE], false);
 				modelStack.PopMatrix();
 				break;
+			case CEntity::E_PILLAR:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + (*it)->getScale().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_PILLAR], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}
@@ -1960,6 +1949,17 @@ void SceneRangeMoving::RenderPassMain()
 	////////////////////////////////
 	RenderWorld(); //casts shadow
 	////////////////////////////////	
+
+	float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, -10.f + 350.f * ReadHeightMap(m_heightMap, 0.f / 4000, 0.f / 4000), 0.f);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(4000, 4000, 4000);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.1f, timeElapsed * 0.1f);
+	RenderMesh(meshList[GEO_WATER], godlights);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	modelStack.PopMatrix();
 
 	//Render particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
