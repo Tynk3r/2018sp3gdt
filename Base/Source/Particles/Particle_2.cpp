@@ -26,7 +26,14 @@ CParticle_2::CParticle_2(PARTICLE_TYPE particleType, CEntity * parent) :
 	rot(0)
 {
 	this->setType(E_PARTICLE);
-	this->setPos(parent->getPos());
+	if (this->parent->getType() == CEntity::E_PROJECTILE)
+		this->setPos(parent->getPos());
+	else
+		this->setPos(parent->getPos() +
+			Vector3(Math::RandFloatMinMax(-parent->getScale().x, parent->getScale().x),
+				Math::RandFloatMinMax(-parent->getScale().y, parent->getScale().y),
+				Math::RandFloatMinMax(-parent->getScale().z, parent->getScale().z)));
+	
 	this->originPosition = parent->getOriginPos();
 	this->Init();
 }
@@ -64,7 +71,8 @@ void CParticle_2::Init()
 			Vector3 tarViewVec = (this->parent->getTarget() - this->parent->getPos()).Normalized();
 			if (this->parent->isDone())
 			{
-				this->vel = Vector3(Math::RandFloatMinMax(-800, 800), Math::RandFloatMinMax(-800, 800), Math::RandFloatMinMax(-800, 800));
+				float totalscale = (parent->getScale().x + parent->getScale().y + parent->getScale().z) *0.035f;
+				this->vel = Vector3(Math::RandFloatMinMax(-800, 800), Math::RandFloatMinMax(-800, 800), Math::RandFloatMinMax(-800, 800))*totalscale;
 				this->setScale(this->parent->getScale()*Math::RandFloatMinMax(1.5f, 3.3f));
 				this->lifeSpan = Math::RandFloatMinMax(0.3f, 0.7f);
 				this->acc = -this->vel*1.75f;
@@ -72,7 +80,8 @@ void CParticle_2::Init()
 			}
 			else
 			{
-				this->vel = tarViewVec * Math::RandFloatMinMax(18, 150) + Vector3(Math::RandFloatMinMax(-40, 40), Math::RandFloatMinMax(-25, 25), Math::RandFloatMinMax(-40, 40));
+				float totalscale = (parent->getScale().x + parent->getScale().y + parent->getScale().z) *0.05f;
+				this->vel = tarViewVec * Math::RandFloatMinMax(18, 150) + Vector3(Math::RandFloatMinMax(-40, 40), Math::RandFloatMinMax(-25, 25), Math::RandFloatMinMax(-40, 40))*totalscale;
 				this->setScale(this->parent->getScale()*Math::RandFloatMinMax(1.f, 1.3f));
 			}
 			this->startScale = this->getScale();
@@ -88,7 +97,8 @@ void CParticle_2::Init()
 			Vector3 tarViewVec = (this->parent->getTarget() - this->parent->getPos()).Normalized();
 			if (this->parent->isDone())
 			{
-				this->vel = Vector3(Math::RandFloatMinMax(-350, 350), Math::RandFloatMinMax(-350, 350), Math::RandFloatMinMax(-350, 350));
+				float totalscale = (parent->getScale().x + parent->getScale().y + parent->getScale().z) *0.225f;
+				this->vel = Vector3(Math::RandFloatMinMax(-350, 350), Math::RandFloatMinMax(-350, 350), Math::RandFloatMinMax(-350, 350))*totalscale;
 				this->setScale(this->parent->getScale()*Math::RandFloatMinMax(1.5f, 3.5f));
 				this->lifeSpan = Math::RandFloatMinMax(0.5f, 1.f);
 				this->acc = -this->vel*2.f;
@@ -96,8 +106,10 @@ void CParticle_2::Init()
 			}
 			else
 			{
-				this->vel = tarViewVec * Math::RandFloatMinMax(15, 40) + Vector3(Math::RandFloatMinMax(-20, 20), Math::RandFloatMinMax(10, 35), Math::RandFloatMinMax(-20, 20));
+				float totalscale = (parent->getScale().x + parent->getScale().y + parent->getScale().z) *0.1f;
+				this->vel = tarViewVec * Math::RandFloatMinMax(15, 40) + Vector3(Math::RandFloatMinMax(-20, 20), Math::RandFloatMinMax(10, 35), Math::RandFloatMinMax(-20, 20))*totalscale;
 				this->setScale(this->parent->getScale()*Math::RandFloatMinMax(0.9f, 1.15f));
+				this->acc = Vector3(0, -Math::RandFloatMinMax(150, 400), 0)*totalscale;
 			}
 			this->startScale = this->getScale();
 		}

@@ -218,6 +218,7 @@ void Application::Run()
 	Scene *scene8 = new SceneBoss();
 	Scene *scene9 = new SceneRangeMoving();
 	Scene *scene10 = new SceneLevel1();
+	Scene *scene11 = new SceneLevel2();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -230,6 +231,7 @@ void Application::Run()
 	sceneManager->AddScene(scene8);
 	sceneManager->AddScene(scene9);
 	sceneManager->AddScene(scene10);
+	sceneManager->AddScene(scene11);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
@@ -249,6 +251,7 @@ void Application::Run()
 		case CSceneManager::SCENE_TERRAIN:
 		case CSceneManager::SCENE_RANGE:
 		case CSceneManager::SCENE_LEVEL1:
+		case CSceneManager::SCENE_LEVEL2:
 		default:
 				wrapAroundEnabled = true;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

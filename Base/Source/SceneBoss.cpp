@@ -311,13 +311,14 @@ void SceneBoss::Init()
 	playerInfo->Init();
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
+	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	CNPC* npc = new CNPC(
-		Vector3(0, 0, 80),
-		Vector3(4, 12, 4),
-		Vector3(0, 0, 80.f)
-	);
-	npc->setPlayerRef(playerInfo);
+	//CNPC* npc = new CNPC(
+	//	Vector3(0, 0, 80),
+	//	Vector3(4, 12, 4),
+	//	Vector3(0, 0, 80.f)
+	//);
+	//npc->setPlayerRef(playerInfo);
 
 	wall1 = new CEntity();
 	wall1->Init();
@@ -1303,7 +1304,7 @@ void SceneBoss::RenderWorld()
 					modelStack.PushMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< START >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 						modelStack.Scale(entSca.x, entSca.y, entSca.z);
 						glUniform1f(m_parameters[U_COLOR_ALPHA], 0.25f);
-						RenderMesh(meshList[GEO_CUBE], false);
+						//RenderMesh(meshList[GEO_CUBE], false);
 						glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 					modelStack.PopMatrix(); //render the hitbox <<<<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 				modelStack.PopMatrix();

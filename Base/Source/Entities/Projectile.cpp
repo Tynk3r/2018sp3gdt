@@ -38,7 +38,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 		else if (spellModType == SMTYPE_BURST)
 		{
 			this->setSpeed(500);
-			this->setScale(Vector3(8, 8, 8));
+			this->setScale(Vector3(12, 12, 12));
 			this->particleRate = 1.f / 30.f;
 			lifespanTime = 4;
 			setGrav(Vector3(0, 0, 0));
@@ -65,7 +65,7 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 		else if (spellModType == SMTYPE_BURST)
 		{
 			this->setSpeed(600);
-			this->setScale(Vector3(2, 2, 2));
+			this->setScale(Vector3(6, 6, 6));
 			this->particleRate = 1.f / 30.f;
 			lifespanTime = 5;
 			setGrav(Vector3(0, 0, 0));
@@ -138,7 +138,7 @@ void CProjectile::Update(double dt)
 		}
 		break;
 	}
-	
+	std::cout << getPos() << std::endl;
 	if (projectileType == PTYPE_FIRE && spellModType == SMTYPE_BURST)
 	{
 		setTarget(getPos() - burstPivotRot);

@@ -308,6 +308,7 @@ void SceneRange::Init()
 	playerInfo->AttachCamera(&camera);
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
+	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
 	CNPC* npc = new CNPC(
 		Vector3(0, 0, 80),

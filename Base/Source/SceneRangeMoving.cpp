@@ -308,6 +308,7 @@ void SceneRangeMoving::Init()
 	playerInfo->AttachCamera(&camera);
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
+	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
 	//slow ez one
 	for (int i = 0; i < 3; i++)

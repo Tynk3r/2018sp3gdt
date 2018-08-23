@@ -1,4 +1,4 @@
-#include "SceneLeveL1Basics.h"
+#include "SceneLevel1Basics.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -349,6 +349,7 @@ void SceneLevel1::Init()
 			targets1[i]->setPos(Vector3(800, 200, 500));
 			targets1[i]->setTarget(Vector3(800, 400, 500));
 		}
+		targets1[i]->setOriginTarget(targets1[i]->getTarget());
 		targets1[i]->setOriginPos(targets1[i]->getPos());
 		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
 	}
@@ -368,6 +369,7 @@ void SceneLevel1::Init()
 			targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
 		}
 		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
+		targetsMoving1[i]->setOriginTarget(targets1[i]->getTarget());
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
 		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
@@ -397,6 +399,9 @@ void SceneLevel1::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+
+	totalTime = 60;
+	totalBarrelsDown = 0;
 }
 
 void SceneLevel1::Update(double dt)
@@ -615,6 +620,11 @@ void SceneLevel1::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
 	}
+	//if (playerInfo->GetScore() >= 10)
+	//{
+	//	CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
+	//}
+
 #endif // SP3_DEBUG
 
 	//if (KeyboardController::GetInstance()->IsKeyPressed('U'))
@@ -694,18 +704,19 @@ void SceneLevel1::Update(double dt)
 	//bool shouldChange = true;
 	bool shouldChange = false;
 	//check if shouldnt change (any targets still up)
+	totalBarrelsDown = 0;
 	switch (targetState)
 	{
 	case T_MOVING:
 		for (int i = 0; i < 4; ++i)
 		{
-			if (!targetsMoving[i]->isDone()) { shouldChange = false; }
+			if (!targetsMoving[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
 		for (int i = 0; i < 4; ++i)
 		{
-			if (!targets[i]->isDone()) { shouldChange = false; }
+			if (!targets[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	default:
@@ -779,14 +790,14 @@ void SceneLevel1::Update(double dt)
 	case T_MOVING:
 		for (int i = 0; i < 2; ++i)
 		{
-			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; }
+			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
 		for (int i = 0; i < 2; ++i)
 		{
 			if (!targets1[i]->isDone()) {
-				shouldChange1 = false;
+				shouldChange1 = false; ++totalBarrelsDown;
 			}
 		}
 		break;
@@ -852,6 +863,10 @@ void SceneLevel1::Update(double dt)
 	default:
 		break;
 	}
+	if (totalBarrelsDown <= 0)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
+	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
 	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
@@ -870,6 +885,12 @@ void SceneLevel1::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+
+	totalTime -= dt;
+	if (totalTime <= 0)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+	}
 }
 
 void SceneLevel1::RenderText(Mesh* mesh, std::string text, Color color)
@@ -1873,7 +1894,14 @@ void SceneLevel1::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
-
+	std::ostringstream ss3;
+	ss3.precision(2);
+	ss3 << "Targets Left: " << totalBarrelsDown;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 0, 16);
+	std::ostringstream ss4;
+	ss4.precision((int)floor(log10f(totalTime)) + 1);
+	ss4 << "Time: " << totalTime;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
 }
 void SceneLevel1::RenderPassGPass()
 {

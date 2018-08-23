@@ -65,6 +65,7 @@ public:
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
 	virtual void setCollider(const bool _value);
+	virtual void EmitParticles(int amt);
 private:
 	Vector3 position;
 	Vector3 scale;
