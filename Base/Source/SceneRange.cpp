@@ -239,6 +239,10 @@ void SceneRange::Init()
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
+	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
+	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
@@ -1464,13 +1468,22 @@ void SceneRange::RenderWorld()
 				break;
 			}
 			case CEntity::E_TARGET_FIRE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			case CEntity::E_TARGET_ICE:
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_BARREL], godlights);
+				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1522,7 +1535,15 @@ void SceneRange::RenderWorld()
 			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), -1500.f);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale(40.f, 40.f, 40.f);
-			RenderMesh(meshList[GEO_BARREL], godlights);
+			switch (targetState1)
+			{
+			case T_STATIONARY:
+				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
+				break;
+			case T_MOVING:
+				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
+				break;
+			}
 			modelStack.PopMatrix();
 		}
 	}
