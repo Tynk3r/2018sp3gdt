@@ -335,7 +335,7 @@ bool EntityManager::CheckForCollision(float dt)
 			}
 			else
 			{
-				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
+				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* tempProjectile = (CProjectile*)*it2;
@@ -353,6 +353,8 @@ bool EntityManager::CheckForCollision(float dt)
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
 									break;
 								case CEntity::E_MOVING_TARGET:
+								case CEntity::E_TARGET_ICE:
+								case CEntity::E_TARGET_FIRE:
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 									break;
 								case CEntity::E_TARGET:
