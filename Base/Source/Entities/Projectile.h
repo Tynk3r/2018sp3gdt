@@ -34,6 +34,8 @@ public:
 	Vector3 GetBurstPivRot() { return burstPivotRot; }
 	void EmitParticles(int amt = 1);
 	CEntity* getSource();
+	void setSource(CEntity* source);
+	bool bossDone;
 private:
 	PROJECTILE_TYPE projectileType;
 	SPELLMOD_TYPE spellModType;
