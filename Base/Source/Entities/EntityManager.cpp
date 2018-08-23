@@ -209,7 +209,18 @@ bool EntityManager::CheckForCollision(float dt)
 				break;
 			}
 			}						//pre-collision check updates <<<<<<<<<<<<END>>>>>>>>>>>>
-			if (CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) 
+
+			bool notBeam = true;
+			if ((*it2)->getType() == CEntity::E_PROJECTILE)
+			{
+				CProjectile* beamCheck = static_cast<CProjectile*>((*it2));
+				if (beamCheck->getProjType() == CProjectile::PTYPE_BEAM)
+				{
+					notBeam = false;
+				}
+			}
+
+			if ((CheckAABBCollision(*it, *it2) || CheckSphereCollision(*it, *it2)) && notBeam) 
 			{ 
 				switch ((*it)->getType())
 				{
@@ -220,14 +231,16 @@ bool EntityManager::CheckForCollision(float dt)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE || proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
+						if ((*it)->getType() == CEntity::E_TARGET_FIRE && (proj->getProjType() != CProjectile::PTYPE_FIRE && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO))
 						{
-							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM) 
+								(*it2)->setIsDone(true);
 							break;
 						}
 						if ((*it)->getType() == CEntity::E_TARGET_ICE && proj->getProjType() != CProjectile::PTYPE_ICE)
 						{
-							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) 
+								(*it2)->setIsDone(true);
 						
 							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 							{

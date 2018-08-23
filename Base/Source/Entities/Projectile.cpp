@@ -89,11 +89,11 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 	}
 	case PTYPE_SPECIAL_KILLERNADO:
 	{
-		this->setSpeed(200);
+		this->setSpeed(500);
 		this->particleRate = 1.f / 60.f;
 		this->setScale(Vector3(60, 60, 60));
 		setGrav(Vector3(0, 0, 0));
-		lifespanTime = 10;
+		lifespanTime = 5;
 		break;
 	}
 
