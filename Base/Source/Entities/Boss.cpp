@@ -11,13 +11,15 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	elapsedTime(0),
 	animFrame(0),
 	rig(CRigInfo::RIG_BOSS),
-	holdingProjectile(NULL)
+	holdingProjectile(NULL),
+	maxHealth(300)
 {
 	target.y = pos.y;
 	this->setPos(pos);
 	this->setScale(scale);
 	this->originalScale = scale;
 	this->setTarget(target);
+	this->health = this->maxHealth;
 }
 
 
@@ -224,4 +226,14 @@ Vector3 CBoss::getOrigScale() const
 float CBoss::getElapsedTime() const
 {
 	return this->elapsedTime;
+}
+
+float CBoss::getCurrHealth() const
+{
+	return this->health;
+}
+
+float CBoss::getMaxHealth() const
+{
+	return this->maxHealth;
 }

@@ -307,12 +307,25 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_PROJECTILE:
-					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 				case CEntity::E_BOSS:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE && CheckAABBCollision(*it, *it2))
 						std::cout << "col betwen boss & proj" << std::endl;
 					break;
+				case CEntity::E_PROJECTILE:
+				{
+					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
+					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
+					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
+					{
+						proj1->setIsDone(true);
+						proj2->setIsDone(true);
+						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						break;
+					}
+				}
+					
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
