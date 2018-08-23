@@ -331,8 +331,9 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							bos->TakeDamage((*it2));
-							((*it2))->setIsDone(true);
+							bos->TakeDamage(proj);
+							proj->setIsDone(true);
+							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						}
 					}
 					break;

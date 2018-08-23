@@ -33,6 +33,11 @@ void CEntity::Update(double dt)
 	Vector3 viewVector = (getTarget() - getPos()).Normalized();
 	switch (type) 
 	{
+	case E_BOSS:
+		if ((getTarget() - getPos()).LengthSquared() < 180*180) { viewVector.SetZero(); }
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		break;
 	case E_ENEMY:
 		if ((getTarget() - getPos()).LengthSquared() < 1.f) { viewVector.SetZero(); }
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
@@ -74,7 +79,6 @@ void CEntity::Update(double dt)
 	case E_TARGET:
 	case E_WALL:
 	case E_NPC:
-	case E_BOSS:
 	default:
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
