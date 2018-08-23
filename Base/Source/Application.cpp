@@ -217,7 +217,6 @@ void Application::Run()
 	Scene *scene7 = new SceneRange();
 	Scene *scene8 = new SceneBoss();
 	Scene *scene9 = new SceneRangeMoving();
-
 	Scene *scene10 = new SceneLevel1();
 	Scene *scene11 = new SceneLevel2();
 

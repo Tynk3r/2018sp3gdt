@@ -234,11 +234,14 @@ private:
 
 	CEntity* wall1;
 
-	CEntity* targets[6];
+	CEntity* targets[9];
 	int stateChangeTimer = 0;
 	int stateChangeTimer1 = 0;
 	int stateChangeTimer2 = 0;
 	int stateChangeTimer3 = 0;
+	int stateChangeTimer4 = 0;
+	int stateChangeTimer5 = 0;
+	int stateChangeTimer6 = 0;
 
 	/*CEntity* targets1[3];
 	CEntity* targetsMoving1[3];
