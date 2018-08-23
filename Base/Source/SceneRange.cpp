@@ -435,6 +435,7 @@ void SceneRange::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				playerInfo->setMana(playerInfo->getMana() - 10);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -449,6 +450,7 @@ void SceneRange::Update(double dt)
 				aa2->SetBurstPivRotOff(120);
 				aa3->Init(campos + viewvec, camtar + viewvec*1.5f);
 				aa3->SetBurstPivRotOff(240);
+				playerInfo->setMana(playerInfo->getMana() - 20);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
@@ -457,10 +459,11 @@ void SceneRange::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				playerInfo->setMana(playerInfo->getMana() - 50);
 			}
 
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
-			playerInfo->setMana(playerInfo->getMana() - 10);
+			//playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
@@ -471,6 +474,7 @@ void SceneRange::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				playerInfo->setMana(playerInfo->getMana() - 10);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -488,6 +492,7 @@ void SceneRange::Update(double dt)
 				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
 				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
 				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				playerInfo->setMana(playerInfo->getMana() - 25);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
@@ -496,10 +501,11 @@ void SceneRange::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				playerInfo->setMana(playerInfo->getMana() - 40);
 			}
 
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
-			playerInfo->setMana(playerInfo->getMana() - 10);
+			//playerInfo->setMana(playerInfo->getMana() - 10);
 		}
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);

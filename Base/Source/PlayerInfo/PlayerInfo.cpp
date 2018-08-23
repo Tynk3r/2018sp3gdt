@@ -31,7 +31,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_dMana(50)
 	, m_dScore(0)
 	, climbHeight(10)
-	, spellMod(SMTYPE_BURST)
+	, spellMod(SMTYPE_NORMAL)
 {
 }
 
@@ -292,6 +292,8 @@ void CPlayerInfo::Update(double dt)
 {
 	if (m_dMana < 100) { m_dMana += 0.05; }
 	if (m_dMana >= 100) { m_dMana = 100; }
+
+	spellMod = (SPELLMOD_TYPE)(int)MouseController::GetInstance()->GetMouseScrollStatus(MouseController::SCROLL_TYPE_YOFFSET);
 
 	if (!rocketMode)
 	{

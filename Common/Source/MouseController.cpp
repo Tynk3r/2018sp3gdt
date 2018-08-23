@@ -37,10 +37,10 @@ void MouseController::UpdateMouseScroll(const double xoffset, const double yoffs
 	else if (this->xoffset < -3.0)
 		this->xoffset = -3.0;
 	this->yoffset += yoffset;
-	if (this->yoffset > 3.0)
-		this->yoffset = 3.0;
-	else if (this->yoffset < -3.0)
-		this->yoffset = -3.0;
+	if (this->yoffset > 2.0)
+		this->yoffset = 0.0;
+	else if (this->yoffset < 0.0)
+		this->yoffset = 2.0;
 }
 
 void MouseController::EndFrameUpdate()
