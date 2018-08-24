@@ -220,6 +220,8 @@ public:
 		return 10;
 	}
 
+	void setScreenShakeTime(float time);
+	void setScreenShakeIntensity(float amt) { this->screenShakeIntensity = amt; }
 private:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 up;
@@ -255,6 +257,10 @@ private:
 	float animFrame;
 	SPELL_TYPE spelltype;
 	CEntity* currentNPC;//the npc that the player is currently talkin to
+	
+	float screenShakeIntensity;
+	float screenShakeDuration;
+	float screenShakeElapsedTime;
 public:
 	// Camera Sway
 	float m_fCameraSwayAngle;

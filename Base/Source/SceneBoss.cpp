@@ -242,6 +242,14 @@ void SceneBoss::Init()
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("geoheart", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("geomana", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRange.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
@@ -273,9 +281,9 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_BODY] = MeshBuilder::GenerateOBJ("octoBody", "OBJ//octoBody.obj");
 	meshList[GEO_OCTO_BODY]->textureArray[0] = LoadTGA("Image//octoBody.tga");
 	meshList[GEO_OCTO_HEAD_SHIELD] = MeshBuilder::GenerateOBJ("octoHeadShield", "OBJ//octoHead.obj");
-	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
+	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
 	meshList[GEO_OCTO_BODY_SHIELD] = MeshBuilder::GenerateOBJ("octoBodyShield", "OBJ//octoBody.obj");
-	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
+	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
 	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
 	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
@@ -356,6 +364,7 @@ void SceneBoss::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+	playerInfo->screenShakeOn = true;
 }
 
 void SceneBoss::Update(double dt)
@@ -366,6 +375,10 @@ void SceneBoss::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+	}
+	if (playerInfo && playerInfo->GetHealth() <= 0)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
 	}
 
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -702,6 +715,8 @@ void SceneBoss::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
+	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 }
 
 void SceneBoss::RenderText(Mesh* mesh, std::string text, Color color)
@@ -988,7 +1003,7 @@ void SceneBoss::Exit()
 		EntityManager::GetInstance()->entityList.pop_back();
 	}
 	playerInfo->DetachCamera();
-
+	playerInfo->setHealth(100);
 	/*if (playerInfo->DropInstance() == false)
 	{
 #if _DEBUGMODE==1
@@ -1188,7 +1203,8 @@ void SceneBoss::RenderWorld()
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
 						CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
-
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + entSca.x*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + entSca.x*0.015f);
 						if (proj->getProjType() == CProjectile::PTYPE_FIRE)
 						{
 							CSoundEngine::GetInstance()->PlayASound("floorImpact");
@@ -1712,7 +1728,18 @@ void SceneBoss::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (boss)
@@ -1761,11 +1788,11 @@ void SceneBoss::RenderPassMain()
 		std::ostringstream ss1;
 		ss1.precision(5);
 		ss1 << "Health: " << playerInfo->GetHealth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 		std::ostringstream ss2;
 		ss2.precision(5);
 		ss2 << "Mana: " << playerInfo->getMana();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 
 #ifdef SP3_DEBUG
 		ss1.str("");

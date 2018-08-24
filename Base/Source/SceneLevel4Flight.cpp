@@ -218,7 +218,7 @@ void SceneLevel4::Init()
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
 
 	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
-	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
+	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange2.tga");
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
@@ -246,7 +246,7 @@ void SceneLevel4::Init()
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapLevel4.raw", m_heightMap);
-	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
+	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor2.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
 	testvar = 0;
@@ -262,7 +262,13 @@ void SceneLevel4::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -289,7 +295,7 @@ void SceneLevel4::Init()
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
 	playerInfo->Init();
-	playerInfo->setPos(Vector3(0, 0, 750));
+	playerInfo->setPos(Vector3(0, 0, 1100));
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
@@ -303,37 +309,84 @@ void SceneLevel4::Init()
 		);
 	npc->setPlayerRef(playerInfo);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
 		targets[i]->setType(CEntity::E_TARGET);
 		if (i == 0)
 		{
-			targets[i]->setPos(Vector3(-1000, 500, -500));
+			targets[i]->setPos(Vector3(-900, 80, -1150));
 		}
 		else if (i == 1)
 		{
-			targets[i]->setPos(Vector3(-800, 500, -500));
+			targets[i]->setPos(Vector3(-750, 80, -1150));
 		}
 		else if (i == 2)
 		{
-			targets[i]->setPos(Vector3(800, 500, -500));
+			targets[i]->setPos(Vector3(-600, 80, -1150));
 		}
 		else if (i == 3)
 		{
-			targets[i]->setPos(Vector3(1000, 500, -500));
+			targets[i]->setPos(Vector3(-1050, 80, -1150));
+		}
+		else if (i == 4)
+		{
+			targets[i]->setPos(Vector3(-450, 80, -1150));
+		}
+		else if (i == 5)
+		{
+			targets[i]->setPos(Vector3(-1300, 80, 500));
+		}
+		else if (i == 6)
+		{
+			targets[i]->setPos(Vector3(1000, 900, -300));
+		}
+		else if (i == 7)
+		{
+			targets[i]->setPos(Vector3(600, 800, 600));
 		}
 		targets[i]->setOriginPos(targets[i]->getPos());
 		targets[i]->setScale(Vector3(30.f, 30.f, 30.f));
 		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
 	}
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		targetsMoving[i] = new CEntity();
 		targetsMoving[i]->Init();
 		targetsMoving[i]->setType(CEntity::E_TARGET);
-		targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
+		if (i == 0)
+		{
+			targetsMoving[i]->setPos(Vector3(-900, 100, -1000));
+		}
+		else if (i == 1)
+		{
+			targetsMoving[i]->setPos(Vector3(-800, 80, -1000));
+		}
+		else if (i == 2)
+		{
+			targetsMoving[i]->setPos(Vector3(-700, 80, -1000));
+		}
+		else if (i == 3)
+		{
+			targetsMoving[i]->setPos(Vector3(-600, 80, -1000));
+		}
+		else if (i == 4)
+		{
+			targetsMoving[i]->setPos(Vector3(-500, 80, -1000));
+		}
+		else if (i == 5)
+		{
+			targetsMoving[i]->setPos(Vector3(-1300, 80, 500));
+		}
+		else if (i == 6)
+		{
+			targetsMoving[i]->setPos(Vector3(1000, 900, -300));
+		}
+		else if (i == 7)
+		{
+			targetsMoving[i]->setPos(Vector3(600, 800, 600));
+		}
 		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
@@ -346,17 +399,17 @@ void SceneLevel4::Init()
 		targets1[i]->setType(CEntity::E_TARGET_FIRE);
 		if (i == 0)
 		{
-			targets1[i]->setPos(Vector3(-200, 100, 850));
+			targets1[i]->setPos(Vector3(100, 80, 0));
 			//targets1[i]->setTarget(Vector3(650, 50, 300));
 		}
 		else if (i == 1)
 		{
-			targets1[i]->setPos(Vector3(-200, 100, 1000));
+			targets1[i]->setPos(Vector3(1100, 80, -1000));
 			//targets1[i]->setTarget(Vector3(800, 400, 500));
 		}
 		else if (i == 2)
 		{
-			targets1[i]->setPos(Vector3(-200, 100, 1150));
+			targets1[i]->setPos(Vector3(1100, 80, -1100));
 			//targets1[i]->setTarget(Vector3(800, 400, 500));
 		}
 		targets1[i]->setOriginPos(targets1[i]->getPos());
@@ -370,23 +423,64 @@ void SceneLevel4::Init()
 		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
 		if (i == 0)
 		{
-			targetsMoving1[i]->setPos(Vector3(-200, 100, 850));
+			targetsMoving1[i]->setPos(Vector3(100, 80, 0));
 			//targetsMoving1[i]->setTarget(Vector3(850, 50, 500));
 		}
 		else if (i == 1)
 		{
-			targetsMoving1[i]->setPos(Vector3(-200, 100, 1000));
+			targetsMoving1[i]->setPos(Vector3(1100, 80, -1000));
 			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
 		}
 		else if (i == 2)
 		{
-			targetsMoving1[i]->setPos(Vector3(-200, 100, 1150));
+			targetsMoving1[i]->setPos(Vector3(1100, 80, -1100));
 			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
 		}
 		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
 		targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
+		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		targets2[i] = new CEntity();
+		targets2[i]->Init();
+		targets2[i]->setType(CEntity::E_MOVING_TARGET);
+		if (i == 0)
+		{
+			targets2[i]->setPos(Vector3(-700, 800, -200));
+			targets2[i]->setTarget(Vector3(-700, 600, 800));
+		}
+		else if (i == 1)
+		{
+			targets2[i]->setPos(Vector3(-800, 700, -1200));
+			targets2[i]->setTarget(Vector3(800, 700, -1100));
+		}
+		targets2[i]->setOriginTarget(targets2[i]->getTarget());
+		targets2[i]->setOriginPos(targets2[i]->getPos());
+		targets2[i]->setScale(Vector3(20.f, 20.f, 20.f));
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		targetsMoving2[i] = new CEntity();
+		targetsMoving2[i]->Init();
+		targetsMoving2[i]->setType(CEntity::E_MOVING_TARGET);
+		if (i == 0)
+		{
+			targetsMoving2[i]->setPos(Vector3(-700, 800, -200));
+			targetsMoving2[i]->setTarget(Vector3(-700, 600, 800));
+		}
+		else if (i == 1)
+		{
+			targetsMoving2[i]->setPos(Vector3(-800, 700, -1200));
+			targetsMoving2[i]->setTarget(Vector3(800, 700, -1100));
+		}
+		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
+		targetsMoving2[i]->setOriginTarget(targetsMoving2[i]->getTarget());
+		targetsMoving2[i]->setOriginPos(targetsMoving2[i]->getPos());
+		targetsMoving2[i]->setScale(Vector3(20.f, 20.f, 20.f));
 		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
@@ -415,7 +509,7 @@ void SceneLevel4::Init()
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 120;
+	totalTime = 110;
 	totalBarrelsDown = 0;
 	secondSetBarrel = false;
 }
@@ -567,7 +661,7 @@ void SceneLevel4::Update(double dt)
 			playerInfo->SetOnFreeFall(true);
 			playerInfo->rocketMode = false;
 		}
-		else if (!playerInfo->rocketMode)
+		else if (!playerInfo->rocketMode && playerInfo->getMana() >= 20)
 		{
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10 + 350 * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000), 0);
@@ -576,14 +670,14 @@ void SceneLevel4::Update(double dt)
 			playerInfo->rocketPitchAccel = 0;
 			playerInfo->rocketRollAccel = 0;
 			playerInfo->rocketYawAccel = 0;
+			playerInfo->setMana(playerInfo->getMana() - 20);
 		}
 	}
 	if (playerInfo->rocketMode)
 	{
 		playerInfo->setPos(playerInfo->rocketPosition);
-		playerInfo->setMana(playerInfo->getMana() - 3 * dt);
 	}
-	if (playerInfo->rocketMode && (playerInfo->rocketPosition.y + playerInfo->FirstHeight <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000) || playerInfo->getMana() <= 0))
+	if (playerInfo->rocketMode && (playerInfo->rocketPosition.y + playerInfo->FirstHeight <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000)))
 	{
 		playerInfo->SetUp(Vector3(0, 1, 0));
 		playerInfo->setPos(playerInfo->getPos() + Vector3(0, -playerInfo->getPos().y, 0));
@@ -639,13 +733,13 @@ void SceneLevel4::Update(double dt)
 	switch (targetState)
 	{
 	case T_MOVING:
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 8; ++i)
 		{
 			if (!targetsMoving[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 8; ++i)
 		{
 			if (!targets[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
@@ -665,7 +759,7 @@ void SceneLevel4::Update(double dt)
 			{
 			case T_MOVING:
 				targetState = T_STATIONARY;
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; i < 8; i++)
 				{
 					targets[i]->setIsDone(false);
 					targets[i]->setType(CEntity::E_TARGET);
@@ -677,7 +771,7 @@ void SceneLevel4::Update(double dt)
 				break;
 			case T_STATIONARY:
 				targetState = T_MOVING;
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; i < 8; i++)
 				{
 					targetsMoving[i]->setIsDone(false);
 					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
@@ -696,14 +790,14 @@ void SceneLevel4::Update(double dt)
 	switch (targetState)
 	{
 	case T_MOVING:
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 8; ++i)
 		{
 			targets[i]->setIsDone(true);
 			if (!targetsMoving[i]->isDone()) { targetsMoving[i]->setIsDone(false); }
 		}
 		break;
 	case T_STATIONARY:
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 8; ++i)
 		{
 			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
 			targetsMoving[i]->setIsDone(true);
@@ -746,7 +840,7 @@ void SceneLevel4::Update(double dt)
 		break;
 	}
 
-	if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
+	if (shouldChange1 && stateChangeTimer1 == 0) { secondSetBarrel = true; stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
 	//if should change switches state
 	if (shouldChange1)
 	{
@@ -786,7 +880,7 @@ void SceneLevel4::Update(double dt)
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
 					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
 					targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-					secondSetBarrel = true;
+					//secondSetBarrel = true;
 				}
 				break;
 			default:
@@ -814,6 +908,50 @@ void SceneLevel4::Update(double dt)
 	default:
 		break;
 	}
+
+
+	bool shouldChange2 = false;
+	//check if shouldnt change (any targets still up)
+	switch (targetState2)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 2; ++i)
+		{
+			if (!targetsMoving2[i]->isDone()) { shouldChange2 = false; ++totalBarrelsDown; }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 2; ++i)
+		{
+			if (!targets2[i]->isDone()) {
+				shouldChange2 = false; ++totalBarrelsDown;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
+	switch (targetState2)
+	{
+	case T_MOVING:
+		for (int i = 0; i < 2; ++i)
+		{
+			targets2[i]->setIsDone(true);
+			if (!targetsMoving2[i]->isDone()) { targetsMoving2[i]->setIsDone(false); }
+		}
+		break;
+	case T_STATIONARY:
+		for (int i = 0; i < 2; ++i)
+		{
+			if (!targets2[i]->isDone()) { targets2[i]->setIsDone(false); }
+			targetsMoving2[i]->setIsDone(true);
+		}
+		break;
+	default:
+		break;
+	}
+
 
 	if (totalBarrelsDown <= 0 && secondSetBarrel)
 	{
@@ -1807,7 +1945,18 @@ void SceneLevel4::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER

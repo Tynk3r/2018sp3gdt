@@ -4,6 +4,7 @@
 #include "EasingStyles\BackEase.h"
 #include "../SoundEngine.h"
 #include "Mtx44.h"
+#include "../Particles/ParticleManager.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
@@ -12,7 +13,9 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	animFrame(0),
 	rig(CRigInfo::RIG_BOSS),
 	holdingProjectile(NULL),
-	maxHealth(300)
+	maxHealth(400),
+	freezeTime(0),
+	burnTime(0)
 {
 	target.y = pos.y;
 	this->setPos(pos);
@@ -38,12 +41,26 @@ void CBoss::Init()
 
 void CBoss::Update(double dt)
 {
+	float speedMultiplier = 1.f;
+	if (this->IsOnFire() || this->IsFrozen())
+		this->EmitParticles(Math::RandIntMinMax(1, 2));
+	if (this->IsOnFire())
+	{
+		this->burnTime -= (float)dt;
+		this->TakeDamage((float)dt*10.f);
+	}
+	else if (this->IsFrozen())
+	{
+		this->freezeTime -= (float)dt;
+		speedMultiplier = 0.375f;
+		dt *= speedMultiplier;
+	}
 	CEntity::Update(dt);
 	elapsedTime += (float)dt;
-	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime();
+	float tElapsedTime = TimeTrackerManager::GetInstance()->getElapsedTime()*speedMultiplier;
 	this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 2), 60 + 3 * cosf(tElapsedTime * 4), 20 + 2 * cosf(tElapsedTime * 2)));
 	//this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 0.0f) * 50, 0, sinf(tElapsedTime * 0.0f) * 50));
-	if (this->health == 0 && this->state!=F_DEAD)
+	if (this->health == 0 && this->state != F_DEAD)
 	{
 		this->state = F_DEAD;
 		this->elapsedTime = 0;
@@ -240,7 +257,7 @@ void CBoss::Update(double dt)
 					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
 					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
-					CSoundEngine::GetInstance()->PlayASound("Iceball");
+					CSoundEngine::GetInstance()->PlayASound("Iceattack");
 				}
 			}
 			else if (this->elapsedTime > 4.5f)
@@ -271,8 +288,8 @@ void CBoss::Update(double dt)
 			{
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_VULNERABLE);
 				this->rig.Animate(1);
-				this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 20), 60 + 6 * cosf(tElapsedTime * 40), 20 + 2 * cosf(tElapsedTime * 20)));
-				this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 10.f) * 50, 0, sinf(tElapsedTime * 10.f) * 50));
+				this->setScale(Vector3(20 + 2 * cosf(this->elapsedTime * 20), 60 + 6 * cosf(this->elapsedTime * 40), 20 + 2 * cosf(this->elapsedTime * 20)));
+				this->setTarget(this->getPos() + Vector3(cosf(this->elapsedTime * 10.f) * 50, 0, sinf(this->elapsedTime * 10.f) * 50));
 			}
 			else
 			{
@@ -339,23 +356,63 @@ float CBoss::getMaxHealth() const
 	return this->maxHealth;
 }
 
-void CBoss::TakeDamage(CEntity * ent)
+float CBoss::TakeDamage(CEntity * ent)
 {
 	float damageMultiplier = 0.1f;
 	if (this->state == F_VULNERABLE || this->state == F_SURPRISED)
 		damageMultiplier = 1;
+	float damagetodo = 0;
 	CProjectile* proj = dynamic_cast<CProjectile*>(ent);
 	if (proj)
 	{
 		switch (proj->getProjType())
 		{
 		case CProjectile::PTYPE_BEAM:
-			this->health -= 30 * damageMultiplier;
-		default:
-			this->health -= 20 * damageMultiplier;
+			damagetodo = 40 * damageMultiplier;
+			break;
+		case CProjectile::PTYPE_ICE:
+			damagetodo = 20 * damageMultiplier;
+			break;
+		case CProjectile::PTYPE_FIRE:
+			damagetodo = 30 * damageMultiplier;
 			break;
 		}
 	}
+	this->health -= damagetodo;
+	if (this->health < 0)
+		this->health = 0;
+	return damagetodo;
+}
+
+void CBoss::SetBurnTime(float burntime)
+{
+	if (this->IsFrozen())
+		this->burnTime = this->freezeTime = 0;
+	else if (this->getState() == CBoss::F_VULNERABLE || this->getState() == CBoss::F_SURPRISED || this->getState() == CBoss::F_DEAD)
+		this->burnTime = burntime;
+}
+
+void CBoss::SetFreezeTime(float freezetime)
+{
+	if (this->IsOnFire())
+		this->burnTime = this->freezeTime = 0;
+	else if (this->getState() == CBoss::F_VULNERABLE || this->getState() == CBoss::F_SURPRISED || this->getState() == CBoss::F_DEAD)
+		this->freezeTime = freezetime;
+}
+;
+bool CBoss::IsOnFire()
+{
+	return this->burnTime > 0;
+}
+
+bool CBoss::IsFrozen()
+{
+	return this->freezeTime > 0;
+}
+
+void CBoss::TakeDamage(float damage)
+{
+	this->health -= damage;
 	if (this->health < 0)
 		this->health = 0;
 }

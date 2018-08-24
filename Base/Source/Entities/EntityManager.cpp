@@ -238,9 +238,25 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							bos->TakeDamage(proj);
+							int damagetaken = bos->TakeDamage(proj);
+							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
+								bos->SetBurnTime();
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							}
+							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
+								bos->SetFreezeTime();
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
+							//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+							//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 						}
 					}
 					break;
@@ -289,8 +305,8 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						(*it)->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->PlayASound("Death");
-						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+						CSoundEngine::GetInstance()->AddSound("barrelbreak","Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 
 						switch ((*it)->getType())
 						{
@@ -301,6 +317,14 @@ bool EntityManager::CheckForCollision(float dt)
 						case CEntity::E_MOVING_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
+							break;
+						case CEntity::E_TARGET_ICE:
+						case CEntity::E_TARGET_FIRE:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							if ((*it)->getType() == CEntity::E_TARGET_ICE)
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(0.1f, 0.1f, 1));
+							else
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(1, 0.1f, 0.1f));
 							break;
 						case CEntity::E_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
@@ -317,9 +341,8 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it)->setIsDone(true);
 						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("Death", "Sound//deathsound.mp3");
-						CSoundEngine::GetInstance()->PlayASound("Death");
-						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 
 						switch ((*it)->getType())
 						{
@@ -341,8 +364,25 @@ bool EntityManager::CheckForCollision(float dt)
 					}
 				case CEntity::E_PROJECTILE:
 				{
-					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					if ((*it2)->getType() == CEntity::E_PLAYER) 
+					{ 
+						if (proj1->getSource() != NULL && proj1->getSource()->getType() == CEntity::E_BOSS)
+						{
+							proj1->setIsDone(true);
+							proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj1->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj1->getScale().x*0.015f);
+							CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
+							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							break;
+						}
+						else
+							break;
+					}
 					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
 					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
 					{
@@ -363,6 +403,11 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
+						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+
 						break;
 					}
 				}

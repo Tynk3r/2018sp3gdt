@@ -32,8 +32,12 @@ public:
 	float getElapsedTime() const;
 	float getCurrHealth() const;
 	float getMaxHealth() const;
-	void TakeDamage(CEntity* ent);
+	float TakeDamage(CEntity* ent);
 	CRigInfo rig;
+	void SetBurnTime(float burntime = 2.f);
+	void SetFreezeTime(float freezetime = 1.5f);
+	bool IsOnFire();
+	bool IsFrozen();
 private:
 	FSM state;
 	CPlayerInfo* playerRef;
@@ -43,6 +47,9 @@ private:
 	CProjectile* holdingProjectile;
 	float health;
 	float maxHealth;
-	//std::auto_ptr<CProjectile*>holdingProjectile;
+	float freezeTime;
+	float burnTime;
+	
+	void TakeDamage(float damage);//raw damage
 };
 
