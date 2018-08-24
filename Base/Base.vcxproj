@@ -46,6 +46,8 @@
     <ClCompile Include="Source\Particles\ParticleManager.cpp" />
     <ClCompile Include="Source\Particles\Particle_2.cpp" />
     <ClCompile Include="Source\PlayerInfo\PlayerInfo.cpp" />
+    <ClCompile Include="Source\SceneInstructions.cpp" />
+    <ClCompile Include="Source\SceneInstructions1.cpp" />
     <ClCompile Include="Source\SceneLevel1Basics.cpp" />
     <ClCompile Include="Source\SceneLevel2Burst.cpp" />
     <ClCompile Include="Source\SceneLevel4Flight.cpp" />
@@ -99,6 +101,8 @@
     <ClInclude Include="Source\Particles\Particle_2.h" />
     <ClInclude Include="Source\PlayerInfo\PlayerInfo.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneInstructions.h" />
+    <ClInclude Include="Source\SceneInstructions1.h" />
     <ClInclude Include="Source\SceneLevel1Basics.h" />
     <ClInclude Include="Source\SceneLevel2Burst.h" />
     <ClInclude Include="Source\SceneLevel4Flight.h" />
