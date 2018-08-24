@@ -352,6 +352,8 @@ bool EntityManager::CheckForCollision(float dt)
 							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
 						}
 					}
 					break;
@@ -379,6 +381,8 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
 						break;
 					}
 				}

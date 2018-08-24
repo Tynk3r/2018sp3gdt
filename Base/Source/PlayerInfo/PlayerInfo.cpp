@@ -32,6 +32,9 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_dScore(0)
 	, climbHeight(10)
 	, spellMod(SMTYPE_NORMAL)
+	, screenShakeIntensity(3)
+	, screenShakeDuration(0)
+	, screenShakeElapsedTime(0)
 {
 }
 
@@ -292,6 +295,8 @@ void CPlayerInfo::Update(double dt)
 {
 	if (m_dMana < 100) { m_dMana += 0.05; }
 	if (m_dMana >= 100) { m_dMana = 100; }
+	if (screenShakeOn)
+		screenShakeElapsedTime = Math::Min(screenShakeDuration, screenShakeElapsedTime + (float)dt);
 
 	spellMod = (SPELLMOD_TYPE)(int)MouseController::GetInstance()->GetMouseScrollStatus(MouseController::SCROLL_TYPE_YOFFSET);
 
@@ -468,7 +473,10 @@ void CPlayerInfo::Update(double dt)
 			//rocketYawAccel = 0;
 	}
 
-	if (screenShakeOn) { screenshakeOffset.Set(Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5), Math::RandFloatMinMax(-2.5, 2.5)); }
+	if (screenShakeOn && screenShakeElapsedTime < screenShakeDuration) {
+		screenshakeOffset = Vector3(Math::RandFloatMinMax(-screenShakeIntensity, screenShakeIntensity), Math::RandFloatMinMax(-screenShakeIntensity, screenShakeIntensity)
+			, Math::RandFloatMinMax(-screenShakeIntensity, screenShakeIntensity)).lerped(Vector3(), (screenShakeElapsedTime / screenShakeDuration));
+	}
 	else { screenshakeOffset.SetZero(); }
 
 	// Update minimap rotation angle
@@ -909,6 +917,12 @@ int CPlayerInfo::GetHealth(void) const
 int CPlayerInfo::GetScore(void) const
 {
 	return m_dScore;
+}
+
+void CPlayerInfo::setScreenShakeTime(float time)
+{
+	this->screenShakeElapsedTime = 0;
+	this->screenShakeDuration = time;
 }
 
 Vector3 CPlayerInfo::GetLeftArmOffset() const

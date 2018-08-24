@@ -288,8 +288,8 @@ void CBoss::Update(double dt)
 			{
 				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_VULNERABLE);
 				this->rig.Animate(1);
-				this->setScale(Vector3(20 + 2 * cosf(tElapsedTime * 20), 60 + 6 * cosf(tElapsedTime * 40), 20 + 2 * cosf(tElapsedTime * 20)));
-				this->setTarget(this->getPos() + Vector3(cosf(tElapsedTime * 10.f) * 50, 0, sinf(tElapsedTime * 10.f) * 50));
+				this->setScale(Vector3(20 + 2 * cosf(this->elapsedTime * 20), 60 + 6 * cosf(this->elapsedTime * 40), 20 + 2 * cosf(this->elapsedTime * 20)));
+				this->setTarget(this->getPos() + Vector3(cosf(this->elapsedTime * 10.f) * 50, 0, sinf(this->elapsedTime * 10.f) * 50));
 			}
 			else
 			{
