@@ -419,6 +419,11 @@ void SceneRangeElemental::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
 
+	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+	}
+
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 

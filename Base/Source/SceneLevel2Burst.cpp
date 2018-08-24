@@ -813,9 +813,9 @@ void SceneLevel2::Update(double dt)
 	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
-	if (totalTime <= 0)
+	if (totalTime <= 0 || Application::IsKeyPressed('E'))
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
 	}
 
 }
