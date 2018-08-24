@@ -257,10 +257,4 @@ private:
 	bool secondSetBarrel;
 };
 
-//LEVEL 1 : Greenhorn in a flash
-//Restrictions : 60s, no flight, normal spells only
-//Targets : 4 Normal Targets, 2 Moving Targets
-//Goal : Destroy all targets
-//Intention : Teaching the basics
-
 #endif

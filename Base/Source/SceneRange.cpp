@@ -626,7 +626,8 @@ void SceneRange::Update(double dt)
 	}
 	if (Application::IsKeyPressed('V'))
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		//CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 #endif // SP3_DEBUG
 
@@ -1911,6 +1912,10 @@ void SceneRange::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
+	std::ostringstream ss9;
+	ss9.precision(1);
+	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 	
 }
 void SceneRange::RenderPassGPass()

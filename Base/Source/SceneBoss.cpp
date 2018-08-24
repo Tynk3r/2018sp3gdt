@@ -403,28 +403,110 @@ void SceneBoss::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
+	//if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
+	//{
+	//	CProjectile* aa;
+	//	if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
+	//	{
+	//		aa = new CProjectile(CProjectile::PTYPE_FIRE);
+	//		CSoundEngine::GetInstance()->PlayASound("Fireball");
+	//		playerInfo->setMana(playerInfo->getMana() - 10);
+	//	}
+	//	else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
+	//	{
+	//		aa = new CProjectile(CProjectile::PTYPE_ICE);
+	//		CSoundEngine::GetInstance()->PlayASound("Iceattack");
+	//		playerInfo->setMana(playerInfo->getMana() - 10);
+	//	}
+	//	Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+	//	Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+	//	Vector3 viewvec = (camtar - campos).Normalized();
+	//	aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+	//	CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+	//	playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
+	//	
+	//}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa;
 		if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
 		{
-			aa = new CProjectile(CProjectile::PTYPE_FIRE);
+			if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_NORMAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa2 = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa3 = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_BURST);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa2->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa2->SetBurstPivRotOff(120);
+				aa3->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa3->SetBurstPivRotOff(240);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_FIRE, CProjectile::SMTYPE_SPECIAL);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
-			playerInfo->setMana(playerInfo->getMana() - 10);
+			playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
 		{
-			aa = new CProjectile(CProjectile::PTYPE_ICE);
+			if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_NORMAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa2 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				CProjectile* aa3 = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_BURST);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				Mtx44 rotation;
+				Vector3 tempUp(0, 1, 0);
+				if (playerInfo->rocketMode) tempUp = playerInfo->rocketUp;
+				rotation.SetToRotation(30, tempUp.x, tempUp.y, tempUp.z);
+				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
+				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+			}
+			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
+			{
+				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_SPECIAL);
+				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+				Vector3 viewvec = (camtar - campos).Normalized();
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+			}
+
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
-			playerInfo->setMana(playerInfo->getMana() - 10);
+			playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 		}
-		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
-		Vector3 viewvec = (camtar - campos).Normalized();
-		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
-		
+
 	}
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
@@ -1691,6 +1773,10 @@ void SceneBoss::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
+	std::ostringstream ss9;
+	ss9.precision(1);
+	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 	
 }
 void SceneBoss::RenderPassGPass()

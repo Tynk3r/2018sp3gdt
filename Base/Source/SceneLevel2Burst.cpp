@@ -782,7 +782,7 @@ void SceneLevel2::Update(double dt)
 
 	if (totalBarrelsDown <= 0 && secondSetBarrel)
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -1829,6 +1829,10 @@ void SceneLevel2::RenderPassMain()
 	ss4.precision((int)floor(log10f(totalTime)) + 1);
 	ss4 << "Time: " << totalTime;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
+	std::ostringstream ss9;
+	ss9.precision(1);
+	ss9 << "SpellMod: Burst";
+	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
 void SceneLevel2::RenderPassGPass()
 {
