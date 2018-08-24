@@ -45,7 +45,7 @@ void CameraEffect::Init()
 		break;
 	case CE_TYPE_TIME_SLOW:
 		this->fadeDuration = 1.f;
-		this->transparency = 0;
+		this->transparency = 0.35f;
 		this->canFade = true;
 		this->animFrame = 0;
 		break;
@@ -81,7 +81,7 @@ void CameraEffect::Update(double dt)
 		{
 			this->animFrame += (float)dt;
 			float alpha = this->animFrame / this->fadeDuration;
-			this->transparency = Math::lerp(0.f, 1.f, alpha);
+			this->transparency = Math::lerp(0.35f, 1.f, alpha);
 
 		}
 		break;
@@ -101,6 +101,11 @@ Vector3 CameraEffect::getOffset() const
 float CameraEffect::getTransparency() const
 {
 	return this->transparency;
+}
+
+float CameraEffect::getAnimFrame() const
+{
+	return this->animFrame;
 }
 
 bool CameraEffect::IsDone()
