@@ -342,11 +342,13 @@ bool EntityManager::CheckForCollision(float dt)
 							{
 								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
 								bos->SetBurnTime();
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
 							}
 							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
 							{
 								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
 								bos->SetFreezeTime();
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
 							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));

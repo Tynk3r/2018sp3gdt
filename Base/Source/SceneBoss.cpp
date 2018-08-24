@@ -702,6 +702,8 @@ void SceneBoss::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
+	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 }
 
 void SceneBoss::RenderText(Mesh* mesh, std::string text, Color color)

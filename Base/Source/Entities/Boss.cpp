@@ -257,7 +257,7 @@ void CBoss::Update(double dt)
 					this->holdingProjectile->setTarget(plr->getPos() - this->holdingProjectile->getGrav()*dist);
 					//this->holdingProjectile->setSource(nullptr);//a different source other than null
 					this->holdingProjectile = NULL;
-					CSoundEngine::GetInstance()->PlayASound("Iceball");
+					CSoundEngine::GetInstance()->PlayASound("Iceattack");
 				}
 			}
 			else if (this->elapsedTime > 4.5f)
