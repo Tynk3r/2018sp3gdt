@@ -163,6 +163,7 @@ class SceneRange : public Scene
 		GEO_ICEBLOCK,
 		GEO_PILLAR,
 		GEO_WATER,
+		GEO_ROCKS,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

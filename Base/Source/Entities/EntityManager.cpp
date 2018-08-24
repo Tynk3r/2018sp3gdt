@@ -293,8 +293,6 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_WALL:
-					break;
 				case CEntity::E_ENEMY:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
@@ -365,6 +363,10 @@ bool EntityManager::CheckForCollision(float dt)
 					}
 				}
 					
+				case CEntity::E_WALL:
+				case CEntity::E_PILLAR:
+				case CEntity::E_ROCKS:
+					break;
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
