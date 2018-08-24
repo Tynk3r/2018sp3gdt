@@ -161,6 +161,7 @@ class SceneRangeMoving : public Scene
 		GEO_ICEBLOCK,
 		GEO_PILLAR,
 		GEO_WATER,
+		GEO_ROCKS,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -242,8 +243,11 @@ private:
 	int stateChangeTimer4 = 0;
 	int stateChangeTimer5 = 0;
 	int stateChangeTimer6 = 0;
+
+	CDrone* drone1;
 	
 	CEntity* pillars[2];
+	CEntity* rocks[5];
 
 	/*CEntity* targets1[3];
 	CEntity* targetsMoving1[3];

@@ -285,6 +285,14 @@ bool EntityManager::CheckForCollision(float dt)
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
 							break;
+						case CEntity::E_TARGET_ICE:
+						case CEntity::E_TARGET_FIRE:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							if ((*it)->getType() == CEntity::E_TARGET_ICE)
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(0.1f, 0.1f, 1));
+							else
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(1, 0.1f, 0.1f));
+							break;
 						case CEntity::E_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
 							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
@@ -293,8 +301,6 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_WALL:
-					break;
 				case CEntity::E_ENEMY:
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
@@ -331,7 +337,19 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							bos->TakeDamage(proj);
+							int damagetaken = bos->TakeDamage(proj);
+							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
+								bos->SetBurnTime();
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							}
+							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
+								bos->SetFreezeTime();
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						}
@@ -365,6 +383,10 @@ bool EntityManager::CheckForCollision(float dt)
 					}
 				}
 					
+				case CEntity::E_WALL:
+				case CEntity::E_PILLAR:
+				case CEntity::E_ROCKS:
+					break;
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response

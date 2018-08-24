@@ -136,6 +136,8 @@ class SceneRange : public Scene
 		//TSL
 		GEO_SKYPLANE,
 		GEO_TERRAIN,
+		GEO_HEART,
+		GEO_MANA,
 		GEO_SPRITE_ANIMATION,
 		GEO_LIGHT_DEPTH_QUAD,
 		//GEO_TESTPAINTQUAD,
@@ -163,6 +165,7 @@ class SceneRange : public Scene
 		GEO_ICEBLOCK,
 		GEO_PILLAR,
 		GEO_WATER,
+		GEO_ROCKS,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

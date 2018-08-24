@@ -20,6 +20,7 @@ public:
 		E_NPC,
 		E_BOSS,
 		E_PILLAR,
+		E_ROCKS,
 		E_TOTAL
 	};
 
