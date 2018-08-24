@@ -392,7 +392,7 @@ bool EntityManager::CheckForCollision(float dt)
 							proj2->bossDone = true;
 							proj1->setIsDone(true);
 						}
-						else
+						else if ((proj1->getSource() != proj2->getSource()))
 						{
 							proj1->setIsDone(true);
 							proj2->setIsDone(true);

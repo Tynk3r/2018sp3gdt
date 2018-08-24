@@ -43,6 +43,12 @@ void CameraEffect::Init()
 		this->canFade = true;
 		this->animFrame = 0;
 		break;
+	case CE_TYPE_TIME_SLOW:
+		this->fadeDuration = 1.f;
+		this->transparency = 0;
+		this->canFade = true;
+		this->animFrame = 0;
+		break;
 	}
 }
 
@@ -68,6 +74,15 @@ void CameraEffect::Update(double dt)
 			float alpha = this->animFrame / this->fadeDuration;
 			this->transparency = Math::lerp(0.f, 1.f, alpha);
 			
+		}
+		break;
+	case CE_TYPE_TIME_SLOW:
+		if (this->canFade)
+		{
+			this->animFrame += (float)dt;
+			float alpha = this->animFrame / this->fadeDuration;
+			this->transparency = Math::lerp(0.f, 1.f, alpha);
+
 		}
 		break;
 	}

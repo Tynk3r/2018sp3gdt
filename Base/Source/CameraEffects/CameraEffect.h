@@ -6,7 +6,7 @@ class CameraEffect
 public:
 	enum CAMEFFECT_TYPE {
 		CE_TYPE_ACTIONLINE_WHITE,
-
+		CE_TYPE_TIME_SLOW,
 		CE_TYPE_TOTAL
 	};
 
