@@ -4,6 +4,8 @@
 CSceneManager* CSceneManager::instance = nullptr;
 CSceneManager::CSceneManager() {
 	this->currentSceneID = Scenes::SCENE_START_MENU;
+	this->nextSceneID = Scenes::SCENE_START_MENU;
+	this->currentLevelID = Scenes::SCENE_TOTAL;
 	this->added = false;
 }
 
@@ -45,6 +47,19 @@ void CSceneManager::GoToScene(Scenes SceneID) {
 }
 
 void CSceneManager::Update(StopWatch* m_timer) {
+	switch (currentSceneID) {
+	case SCENE_RANGE:
+	case SCENE_BOSS:
+	case SCENE_RANGE_MOVING:
+	case SCENE_LEVEL1:
+	case SCENE_LEVEL2:
+	case SCENE_LEVEL4:
+	case SCENE_RANGE_ELEMENTAL:
+	case SCENE_TERRAIN:
+		currentLevelID = currentSceneID;
+	default:
+		break;
+	}
 	// Check if currentScene is empty
 	if (sceneList[currentSceneID] != nullptr) {
 		// Update and Render the scene
@@ -54,7 +69,6 @@ void CSceneManager::Update(StopWatch* m_timer) {
 	else {
 		std::cout << "WARNING! Scene has not been Added. Check AGAIN!" << std::endl;
 	}
-
 	// Check if need to change Scene
 	ChangeScene();
 }
@@ -62,9 +76,11 @@ void CSceneManager::Update(StopWatch* m_timer) {
 void CSceneManager::ChangeScene() {
 	if (nextSceneID != currentSceneID)
 	{
-		sceneList[currentSceneID]->Exit();
+		if(nextSceneID != SCENE_IN_GAME_MENU)
+			sceneList[currentSceneID]->Exit();
 		currentSceneID = nextSceneID;
-		sceneList[currentSceneID]->Init();
+		if (currentSceneID != currentLevelID)
+			InitScene();
 	}
 	
 }
@@ -72,6 +88,9 @@ void CSceneManager::ChangeScene() {
 int CSceneManager::GetCurrentSceneID() {
 	// Returns currentSceneID
 	return currentSceneID;
+}
+int CSceneManager::GetCurrentLevelID() {
+	return currentLevelID;
 }
 Scene* CSceneManager::GetCurrentScene() {
 	return sceneList[currentSceneID];

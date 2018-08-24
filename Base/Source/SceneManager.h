@@ -51,6 +51,8 @@ public:
 
 	// Get Current SceneID
 	int GetCurrentSceneID();
+	// Get Current Level ID
+	int GetCurrentLevelID();
 
 	// Init the Scene
 	void InitScene();
@@ -70,7 +72,7 @@ private:
 	// To Store the Current Scene enum
 	int currentSceneID;
 	int nextSceneID;
-
+	int currentLevelID;
 
 	// Change Scene?
 	void ChangeScene();

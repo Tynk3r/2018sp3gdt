@@ -163,7 +163,7 @@ void Application::Init()
 
 
 	//Create a window and create its OpenGL context
-	m_window = glfwCreateWindow(m_window_width, m_window_height, "SUPER MAGIC@ GAMEEEEEEEEE!!!!!!!!!!!!!@", NULL, NULL);
+	m_window = glfwCreateWindow(m_window_width, m_window_height, "SP3 GDT Group 12 - Shooting Range", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)
@@ -261,10 +261,14 @@ void Application::Run()
 				wrapAroundEnabled = false;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
-		case CSceneManager::SCENE_TERRAIN:
 		case CSceneManager::SCENE_RANGE:
+		case CSceneManager::SCENE_BOSS:
+		case CSceneManager::SCENE_RANGE_MOVING:
 		case CSceneManager::SCENE_LEVEL1:
 		case CSceneManager::SCENE_LEVEL2:
+		case CSceneManager::SCENE_LEVEL4:
+		case CSceneManager::SCENE_RANGE_ELEMENTAL:
+		case CSceneManager::SCENE_TERRAIN:
 		default:
 				wrapAroundEnabled = true;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -285,8 +289,18 @@ void Application::Run()
 	}
 	scene1->Exit();
 	delete scene1;
-
-	
+	delete scene2;
+	delete scene3;
+	delete scene4;
+	delete scene5;
+	delete scene6;
+	delete scene7;
+	delete scene8;
+	delete scene9;
+	delete scene10;
+	delete scene11;
+	delete scene12;
+	delete scene13;
 }
 
 void Application::Exit()

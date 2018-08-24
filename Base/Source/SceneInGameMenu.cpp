@@ -301,7 +301,7 @@ void SceneInGameMenu::Update(double dt)
 				CSoundEngine::GetInstance()->PlayASound("Click");
 				//SEngine->stopMenu();
 				SEngine->playGameMenu();
-				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
+				CSceneManager::Instance()->GoToScene((CSceneManager::Scenes)CSceneManager::Instance()->GetCurrentLevelID());
 			}
 		}
 		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
@@ -669,9 +669,9 @@ void SceneInGameMenu::Exit()
 		delete particle;
 		particleList.pop_back();
 	}
-	glDeleteProgram(m_programID);
+	/*glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
-	glDeleteVertexArrays(1, &m_vertexArrayID);
+	glDeleteVertexArrays(1, &m_vertexArrayID);*/
 }
 
 void SceneInGameMenu::RenderTrees() 
