@@ -717,7 +717,7 @@ void SceneLevel2::Update(double dt)
 		break;
 	}
 
-	if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
+	if (shouldChange1 && stateChangeTimer1 == 0) { secondSetBarrel = true; stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
 	//if should change switches state
 	if (shouldChange1)
 	{
@@ -757,7 +757,7 @@ void SceneLevel2::Update(double dt)
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
 					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
 					targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-					secondSetBarrel = true;
+					//secondSetBarrel = true;
 				}
 				break;
 			default:

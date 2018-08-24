@@ -293,7 +293,7 @@ void SceneLevel1::Init()
 		pillars[i] = new CEntity();
 		pillars[i]->Init();
 		pillars[i]->setType(CEntity::E_PILLAR);
-		pillars[i]->setPos(Vector3(-1000 + i * 2000, 0.f, -700.f));
+		pillars[i]->setPos(Vector3(-1000 + (i - 2) * 2000, 0.f, -700.f));
 		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
 		pillars[i]->setOriginPos(pillars[i]->getPos());
 	}
@@ -1883,7 +1883,7 @@ void SceneLevel1::RenderPassMain()
 	modelStack.Rotate(90, 1, 0, 0);
 	modelStack.Scale(4000, 4000, 4000);
 	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
-	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.1f, timeElapsed * 0.1f);
+	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.02f, timeElapsed * 0.02f);
 	RenderMesh(meshList[GEO_WATER], godlights);
 	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
 	modelStack.PopMatrix();
