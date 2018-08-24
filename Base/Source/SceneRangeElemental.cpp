@@ -1,4 +1,4 @@
-#include "SceneLevel4Flight.h"
+#include "SceneRangeElemental.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -11,11 +11,11 @@
 #include <sstream>
 #define SP3_DEBUG
 
-SceneLevel4::SceneLevel4()
+SceneRangeElemental::SceneRangeElemental()
 {
 }
 
-SceneLevel4::~SceneLevel4()
+SceneRangeElemental::~SceneRangeElemental()
 {
 	if (theMouse)
 	{
@@ -29,18 +29,18 @@ SceneLevel4::~SceneLevel4()
 	}
 }
 
-void SceneLevel4::Init()
+void SceneRangeElemental::Init()
 {
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-
+	glDepthFunc(GL_LESS); 
+	
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
-
+	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glEnable(GL_BLEND);
@@ -49,6 +49,9 @@ void SceneLevel4::Init()
 	glGenVertexArrays(1, &m_vertexArrayID);
 	glBindVertexArray(m_vertexArrayID);
 
+	/*m_programID = LoadShaders( "Shader//Texture.vertexshader", "Shader//Text.fragmentshader" );*/
+	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
+	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
 	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
@@ -115,7 +118,7 @@ void SceneLevel4::Init()
 		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
 	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
 		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
-
+	
 	//paint uniform value parameters
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
 	m_parameters[U_PAINT_TEXTURE] = glGetUniformLocation(m_programID, "paintTexture");
@@ -134,8 +137,8 @@ void SceneLevel4::Init()
 	lights[0].type = Light::LIGHT_POINT;
 	lights[0].position.Set(0, 350.f + 50.f, 100);
 	lights[0].color.Set(0, 69, 0);/*
-								  lights[0].position.Set(0, 350.f + 300.f, 0);
-								  lights[0].color.Set(1, 1, 1);*/
+	lights[0].position.Set(0, 350.f + 300.f, 0);
+	lights[0].color.Set(1, 1, 1);*/
 	lights[0].power = 0.5f;
 	lights[0].kC = 1.f;
 	lights[0].kL = 0.01f;
@@ -156,7 +159,7 @@ void SceneLevel4::Init()
 	lights[1].cosInner = cos(Math::DegreeToRadian(50));
 	lights[1].exponent = 3.f;
 	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
-
+	
 	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
 
@@ -169,7 +172,7 @@ void SceneLevel4::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], lights[0].cosCutoff);
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], lights[0].cosInner);
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
-
+	
 	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
 	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
 	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
@@ -196,7 +199,7 @@ void SceneLevel4::Init()
 
 	m_lightDepthFBO.Init(1024, 1024);
 
-	for (int i = 0; i < NUM_GEOMETRY; ++i)
+	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
@@ -217,8 +220,8 @@ void SceneLevel4::Init()
 
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(0, 0, 0.5), 10.f);
 
-	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 1000.0f, 2250.0f, 1.0f, 1.0f);
-	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange2.tga");
+	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 3500.f, 4000.f, 1.0f, 1.0f);
+	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//skyplaneRange.tga");
 
 	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
 	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
@@ -229,30 +232,35 @@ void SceneLevel4::Init()
 	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
+	meshList[GEO_DRONE_HEAD]->textureArray[0] = LoadTGA("Image//librarian.tga");
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
+	meshList[GEO_DRONE_LWING]->textureArray[0] = LoadTGA("Image//librarian.tga");
 	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
+	meshList[GEO_DRONE_RWING]->textureArray[0] = LoadTGA("Image//librarian.tga");
 
+	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
+	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
+	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("barrel", "OBJ//barrel.obj");
+	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
 	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
 	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
 	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
 	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
-
-	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
-	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
-	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
-	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
+	meshList[GEO_ROCKS] = MeshBuilder::GenerateOBJ("rocks", "OBJ//rocks.obj");
+	meshList[GEO_ROCKS]->textureArray[0] = LoadTGA("Image//rocks.tga");
+
 	// For Ter Rain
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapLevel4.raw", m_heightMap);
-	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor2.tga");
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeElemental.raw", m_heightMap);
+	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
 	testvar = 0;
 
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
-	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f / 255.f, 241.f / 255.f, 1), 6, 6, 1.f);
+	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 1.f);
 
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
@@ -262,13 +270,13 @@ void SceneLevel4::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
-	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+	meshList[GEO_PILLAR] = MeshBuilder::GenerateOBJ("pillar", "OBJ//pillar.obj");
+	meshList[GEO_PILLAR]->textureArray[0] = LoadTGA("Image//pillar.tga");
+	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("water", Color(1, 1, 1), 10.f);
+	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//water.tga");
+	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
+	meshList[GEO_WATER]->textureArray[2] = LoadTGA("Image//water.tga");
 
-	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -292,199 +300,87 @@ void SceneLevel4::Init()
 		sa_AL->m_anim->Set(0, (2 * 2) - 1, 1, 0.25f, true);
 	}
 
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
 	playerInfo->Init();
-	playerInfo->setPos(Vector3(0, 0, 1100));
+	playerInfo->climbHeight = 5.0;
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	//CNPC* npc = new CNPC(
-	//	Vector3(0, 0, 80),
-	//	Vector3(4, 12, 4),
-	//	Vector3(0, 0, 80.f)
-	//	);
-	//npc->setPlayerRef(playerInfo);
+	drone1 = new CDrone();
+	drone1->Init();
+	drone1->setPos(Vector3(0, 20.f, 0));
+	drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
-	for (int i = 0; i < 8; i++)
+	//lonk range
+	for (int i = 0; i < 3; i++)
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
-		targets[i]->setType(CEntity::E_TARGET);
-		if (i == 0)
-		{
-			targets[i]->setPos(Vector3(-900, 80, -1150));
-		}
-		else if (i == 1)
-		{
-			targets[i]->setPos(Vector3(-750, 80, -1150));
-		}
-		else if (i == 2)
-		{
-			targets[i]->setPos(Vector3(-600, 80, -1150));
-		}
-		else if (i == 3)
-		{
-			targets[i]->setPos(Vector3(-1050, 80, -1150));
-		}
-		else if (i == 4)
-		{
-			targets[i]->setPos(Vector3(-450, 80, -1150));
-		}
-		else if (i == 5)
-		{
-			targets[i]->setPos(Vector3(-1300, 80, 500));
-		}
-		else if (i == 6)
-		{
-			targets[i]->setPos(Vector3(1000, 900, -300));
-		}
-		else if (i == 7)
-		{
-			targets[i]->setPos(Vector3(600, 800, 600));
-		}
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
 		targets[i]->setOriginPos(targets[i]->getPos());
-		targets[i]->setScale(Vector3(30.f, 30.f, 30.f));
-		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
+		targets[i]->setOriginTarget(targets[i]->getTarget());
 	}
-	for (int i = 0; i < 8; i++)
+	//bigger range
+	for (int i = 3; i < 6; i++)
 	{
-		targetsMoving[i] = new CEntity();
-		targetsMoving[i]->Init();
-		targetsMoving[i]->setType(CEntity::E_TARGET);
-		if (i == 0)
-		{
-			targetsMoving[i]->setPos(Vector3(-900, 100, -1000));
-		}
-		else if (i == 1)
-		{
-			targetsMoving[i]->setPos(Vector3(-800, 80, -1000));
-		}
-		else if (i == 2)
-		{
-			targetsMoving[i]->setPos(Vector3(-700, 80, -1000));
-		}
-		else if (i == 3)
-		{
-			targetsMoving[i]->setPos(Vector3(-600, 80, -1000));
-		}
-		else if (i == 4)
-		{
-			targetsMoving[i]->setPos(Vector3(-500, 80, -1000));
-		}
-		else if (i == 5)
-		{
-			targetsMoving[i]->setPos(Vector3(-1300, 80, 500));
-		}
-		else if (i == 6)
-		{
-			targetsMoving[i]->setPos(Vector3(1000, 900, -300));
-		}
-		else if (i == 7)
-		{
-			targetsMoving[i]->setPos(Vector3(600, 800, 600));
-		}
-		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setOriginTarget(targets[i]->getTarget());
+	}
+	//smaller range
+	for (int i = 6; i < 9; i++)
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setOriginTarget(targets[i]->getTarget());
 	}
 
-	for (int i = 0; i < 3; i++)
-	{
-		targets1[i] = new CEntity();
-		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-		if (i == 0)
-		{
-			targets1[i]->setPos(Vector3(100, 80, 0));
-			//targets1[i]->setTarget(Vector3(650, 50, 300));
-		}
-		else if (i == 1)
-		{
-			targets1[i]->setPos(Vector3(1100, 80, -1000));
-			//targets1[i]->setTarget(Vector3(800, 400, 500));
-		}
-		else if (i == 2)
-		{
-			targets1[i]->setPos(Vector3(1100, 80, -1100));
-			//targets1[i]->setTarget(Vector3(800, 400, 500));
-		}
-		targets1[i]->setOriginPos(targets1[i]->getPos());
-		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		targets1[i]->setTarget(targets1[i]->getPos() + Vector3(1, 0, 0));
-		targets1[i]->setOriginTarget(targets1[i]->getTarget());
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		targetsMoving1[i] = new CEntity();
-		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-		if (i == 0)
-		{
-			targetsMoving1[i]->setPos(Vector3(100, 80, 0));
-			//targetsMoving1[i]->setTarget(Vector3(850, 50, 500));
-		}
-		else if (i == 1)
-		{
-			targetsMoving1[i]->setPos(Vector3(1100, 80, -1000));
-			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
-		}
-		else if (i == 2)
-		{
-			targetsMoving1[i]->setPos(Vector3(1100, 80, -1100));
-			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
-		}
-		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-		targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		targetsMoving1[i]->setTarget(targetsMoving1[i]->getPos() + Vector3(1, 0, 0));
-		targetsMoving1[i]->setOriginTarget(targetsMoving1[i]->getTarget());
-		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}
-
+	//pillars on sides
 	for (int i = 0; i < 2; i++)
 	{
-		targets2[i] = new CEntity();
-		targets2[i]->Init();
-		targets2[i]->setType(CEntity::E_MOVING_TARGET);
-		if (i == 0)
-		{
-			targets2[i]->setPos(Vector3(-700, 800, -200));
-			targets2[i]->setTarget(Vector3(-700, 600, 800));
-		}
-		else if (i == 1)
-		{
-			targets2[i]->setPos(Vector3(-800, 700, -1200));
-			targets2[i]->setTarget(Vector3(800, 700, -1100));
-		}
-		targets2[i]->setOriginTarget(targets2[i]->getTarget());
-		targets2[i]->setOriginPos(targets2[i]->getPos());
-		targets2[i]->setScale(Vector3(20.f, 20.f, 20.f));
+		pillars[i] = new CEntity();
+		pillars[i]->Init();
+		pillars[i]->setType(CEntity::E_PILLAR);
+		pillars[i]->setPos(Vector3(1500 - i * 3000, 0.f, 100.f));
+		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
+		pillars[i]->setOriginPos(pillars[i]->getPos());
 	}
-	for (int i = 0; i < 2; i++)
+	
+	//rocks tht r randomerino
+	for (int i = 0; i < 10; i++)
 	{
-		targetsMoving2[i] = new CEntity();
-		targetsMoving2[i]->Init();
-		targetsMoving2[i]->setType(CEntity::E_MOVING_TARGET);
-		if (i == 0)
-		{
-			targetsMoving2[i]->setPos(Vector3(-700, 800, -200));
-			targetsMoving2[i]->setTarget(Vector3(-700, 600, 800));
-		}
-		else if (i == 1)
-		{
-			targetsMoving2[i]->setPos(Vector3(-800, 700, -1200));
-			targetsMoving2[i]->setTarget(Vector3(800, 700, -1100));
-		}
-		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving2[i]->setOriginTarget(targetsMoving2[i]->getTarget());
-		targetsMoving2[i]->setOriginPos(targetsMoving2[i]->getPos());
-		targetsMoving2[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
+		rocks[i] = new CEntity();
+		rocks[i]->Init();
+		rocks[i]->setType(CEntity::E_ROCKS);
+		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
+		rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
+		rocks[i]->setOriginPos(rocks[i]->getPos());
 	}
 
 	// Hardware Abstraction
@@ -498,7 +394,7 @@ void SceneLevel4::Init()
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
-
+	
 	rotateAngle = 0;
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -511,51 +407,55 @@ void SceneLevel4::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
-
-	totalTime = 110;
-	totalBarrelsDown = 0;
-	secondSetBarrel = false;
 }
 
-void SceneLevel4::Update(double dt)
+void SceneRangeElemental::Update(double dt)
 {
+	//cout << playerInfo->getPos() << endl;
+	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
+	if (playerInfo->getPos().z < -800) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, -800)); }*/
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
 
+	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+	}
+
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
-	if (Application::IsKeyPressed('1'))
+	if(Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2'))
+	if(Application::IsKeyPressed('2'))
 		glDisable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('3'))
+	if(Application::IsKeyPressed('3'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if (Application::IsKeyPressed('4'))
+	if(Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	if (Application::IsKeyPressed('5'))
+	
+	if(Application::IsKeyPressed('5'))
 	{
 		lights[0].type = Light::LIGHT_POINT;
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	}
-	else if (Application::IsKeyPressed('6'))
+	else if(Application::IsKeyPressed('6'))
 	{
 		lights[0].type = Light::LIGHT_DIRECTIONAL;
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	}
-	else if (Application::IsKeyPressed('7'))
+	else if(Application::IsKeyPressed('7'))
 	{
 		lights[0].type = Light::LIGHT_SPOT;
 		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	}
-	else if (Application::IsKeyPressed('8'))
+	else if(Application::IsKeyPressed('8'))
 	{
 		bLightEnabled = true;
 	}
-	else if (Application::IsKeyPressed('9'))
+	else if(Application::IsKeyPressed('9'))
 	{
 		bLightEnabled = false;
 	}
@@ -639,20 +539,117 @@ void SceneLevel4::Update(double dt)
 		}
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
-
+		
 	}
 #ifdef SP3_DEBUG
+	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
+	{
+		cout << "key H was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
+	{
+		cout << "key J was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+	}
+	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
+	{
+		cout << "key K was pressed" << endl;
+		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
+		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
+		Vector3 viewvec = (camtar - campos).Normalized();
+		aa->Init(campos + viewvec * 5, camtar + viewvec* 6);
 
-	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))
+		//raycast check
+		Vector3 tempProj(9999, 9999, 9999);
+		std::list<CEntity*>::iterator it, it2, end;
+		end = EntityManager::GetInstance()->entityList.end();
+		for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+		{
+			if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_WALL || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET)
+			{
+				Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 1500;
+				Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					//(*it)->setTarget((*it)->getPos() + tempProj);
+					//aa->setScale(aa->getScale() + Vector3(0, 0, tempProj.Length()));
+				}
+				tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
+				if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+				{
+					tempProj = tempTempProj;
+					//(*it)->setTarget((*it)->getPos() + tempProj);
+					//aa->setScale(aa->getScale() + Vector3(0, -0.5, tempProj.Length()));
+				}
+			}
+		}
+
+		//add for wall also
+		if ((aa->getTarget() - aa->getPos()).Normalized().y < 0)
+		{
+
+			Vector3 tempTempProj = (aa->getTarget() - aa->getPos()).Normalized() * (aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y);
+			if (tempTempProj.Length() >= tempProj.Length())
+			{
+
+			}
+			else if (Math::FAbs((aa->getPos() + tempTempProj).x) >= 2000 || Math::FAbs((aa->getPos() + tempTempProj).z) >= 2000)
+			{
+
+			}
+			else
+			{
+				tempProj = tempTempProj;
+				meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, (((aa->getPos() + tempProj).x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), (((aa->getPos() + tempProj).z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(0, 0, 0), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_BURST);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+			}
+		}
+
+		if ((tempProj - Vector3(9999, 9999, 9999)).IsZero()) aa->setIsDone(true);
+		else
+		{
+			aa->setTarget(aa->getPos() + tempProj);
+			aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
+			CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+
+			meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(1, 0, 1), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+		}
+
+		////float tempScaleZ = aa->getPos().y / (aa->getPos() - aa->getTarget()).Normalized().y;
+		////if (tempScaleZ <= 0)
+		////{
+		////	aa->setScale(aa->getScale() + Vector3(0, 0, 400));
+		////}
+		////else aa->setScale(aa->getScale() + Vector3(0, 0, tempScaleZ ));
+
+
+
+		//aa->setTarget(aa->getTarget() + tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+		//for (int i = 0; i < 10; ++i)
+		//{
+		//	ParticleManager::GetInstance()->AddParticle(aa);
+		//}
+		//aa->setTarget(aa->getTarget() - tempScaleZ / 2 * (aa->getTarget() - aa->getPos()).Normalized());
+
+	}
+	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
 	}
-	//if (playerInfo->GetScore() >= 10)
-	//{
-	//	CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
-	//}
 #endif // SP3_DEBUG
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('U'))
@@ -664,42 +661,42 @@ void SceneLevel4::Update(double dt)
 			playerInfo->SetOnFreeFall(true);
 			playerInfo->rocketMode = false;
 		}
-		else if (!playerInfo->rocketMode && playerInfo->getMana() >= 20)
+		else if (!playerInfo->rocketMode)
 		{
 			playerInfo->rocketMode = true;
-			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10 + 350 * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000), 0);
+			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10, 0);
 			playerInfo->rocketTarget = playerInfo->rocketPosition + (playerInfo->getTarget() - playerInfo->getPos()).Normalized();
 			playerInfo->rocketUp = Vector3(0, 1, 0);
 			playerInfo->rocketPitchAccel = 0;
 			playerInfo->rocketRollAccel = 0;
 			playerInfo->rocketYawAccel = 0;
-			playerInfo->setMana(playerInfo->getMana() - 20);
 		}
 	}
+
 	if (playerInfo->rocketMode)
 	{
 		playerInfo->setPos(playerInfo->rocketPosition);
 	}
-	if (playerInfo->rocketMode && (playerInfo->rocketPosition.y + playerInfo->FirstHeight <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000)))
+	if (playerInfo->rocketMode && playerInfo->rocketPosition.y + 350 <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000))
 	{
 		playerInfo->SetUp(Vector3(0, 1, 0));
-		playerInfo->setPos(playerInfo->getPos() + Vector3(0, -playerInfo->getPos().y, 0));
+		playerInfo->setPos(playerInfo->getPos() + Vector3(0, - playerInfo->getPos().y, 0));
 		playerInfo->setTarget(playerInfo->getPos() + (playerInfo->rocketTarget - playerInfo->rocketPosition).Normalized());
 		playerInfo->terrainHeight = 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000);
 		playerInfo->rocketMode = false;
 	}
 
-	if (Application::IsKeyPressed('I'))
+	if(Application::IsKeyPressed('I'))
 		lights[0].position.z -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('K'))
+	if(Application::IsKeyPressed('K'))
 		lights[0].position.z += (float)(10.f * dt);
-	if (Application::IsKeyPressed('J'))
+	if(Application::IsKeyPressed('J'))
 		lights[0].position.x -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('L'))
+	if(Application::IsKeyPressed('L'))
 		lights[0].position.x += (float)(10.f * dt);
-	if (Application::IsKeyPressed('O'))
+	if(Application::IsKeyPressed('O'))
 		lights[0].position.y -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('P'))
+	if(Application::IsKeyPressed('P'))
 		lights[0].position.y += (float)(10.f * dt);
 
 	//rotateAngle += (float)(10 * dt);
@@ -729,28 +726,21 @@ void SceneLevel4::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
-	//bool shouldChange = true;
-	bool shouldChange = false;
-	totalBarrelsDown = 0;
+	//loink reng
+	bool shouldChange = true;
 	//check if shouldnt change (any targets still up)
-	switch (targetState)
+	for (int i = 0; i < 3; ++i)
 	{
-	case T_MOVING:
-		for (int i = 0; i < 8; ++i)
-		{
-			if (!targetsMoving[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 8; ++i)
-		{
-			if (!targets[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
-		}
-		break;
-	default:
-		break;
+		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getPos().y + targets[1]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer == 0) { 
+		stateChangeTimer = targets[1]->getOriginPos().y + targets[1]->getScale().y + 10; 
+		for (int i = 0; i < 3; i++)
+		{
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
+		}
+	}
 	//if should change switches state
 	if (shouldChange)
 	{
@@ -758,219 +748,91 @@ void SceneLevel4::Update(double dt)
 		if (stateChangeTimer <= 0)
 		{
 			stateChangeTimer = 0;
-			switch (targetState)
-			{
-			case T_MOVING:
-				targetState = T_STATIONARY;
-				for (int i = 0; i < 8; i++)
-				{
-					targets[i]->setIsDone(false);
-					targets[i]->setType(CEntity::E_TARGET);
-					targets[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targets[i]->setOriginPos(targets[i]->getPos());
-					targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				}
-				break;
-			case T_STATIONARY:
-				targetState = T_MOVING;
-				for (int i = 0; i < 8; i++)
-				{
-					targetsMoving[i]->setIsDone(false);
-					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
-					targetsMoving[i]->setPos(Vector3(-500 + i * 500, 100.f, 1500.f));
-					targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
-					targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
-					targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 8; ++i)
-		{
-			targets[i]->setIsDone(true);
-			if (!targetsMoving[i]->isDone()) { targetsMoving[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 8; ++i)
-		{
-			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
-			targetsMoving[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
-
-	bool shouldChange1 = true;
-	//check if shouldnt change (any targets still up)
-
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (targetsMoving1[i]->getType() == CEntity::E_TARGET_ICE)
-			{
-				shouldChange1 = false;
-			}
-
-			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; ++totalBarrelsDown; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (targets1[i]->getType() == CEntity::E_TARGET_ICE)
-			{
-				shouldChange1 = false;
-			}
-
-			if (!targets1[i]->isDone()) {
-				shouldChange1 = false; ++totalBarrelsDown;
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
-	if (shouldChange1 && stateChangeTimer1 == 0) { secondSetBarrel = true; stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
-	//if should change switches state
-	if (shouldChange1)
-	{
-		if (stateChangeTimer1 == targets1[1]->getPos().y + targets1[1]->getScale().y + 10)
-		{
+			rotateAngle = 0;
 			for (int i = 0; i < 3; i++)
 			{
-				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
+				targets[i]->setIsDone(false);
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
 			}
 		}
+	}
 
+	//bigger reng
+	shouldChange = true;
+	//check if shouldnt change (any targets still up)
+	for (int i = 3; i < 6; ++i)
+	{
+		if (!targets[i]->isDone()) { shouldChange = false; }
+	}
+	if (shouldChange && stateChangeTimer1 == 0) { 
+		stateChangeTimer1 = targets[3]->getOriginPos().y + targets[3]->getScale().y + 10; 
+		for (int i = 3; i < 6; i++)
+		{
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		}
+	}
+	//if should change switches state
+	if (shouldChange)
+	{
 		stateChangeTimer1--;
 		if (stateChangeTimer1 <= 0)
 		{
 			stateChangeTimer1 = 0;
-			switch (targetState1)
+			rotateAngle = 0;
+			for (int i = 3; i < 6; i++)
 			{
-				//case T_MOVING:
-				//	targetState1 = T_STATIONARY;
-				//	for (int i = 0; i < 3; i++)
-				//	{
-				//		targets1[i]->setIsDone(false);
-				//		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-				//		//targets1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-				//		//targets1[i]->setOriginPos(targets1[i]->getPos());
-				//		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-				//		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				//	}
-				//	break;
-			case T_STATIONARY:
-				targetState1 = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-					/*				targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
-					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-					//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-					//secondSetBarrel = true;
-				}
-				break;
-			default:
-				break;
+				targets[i]->setIsDone(false);
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
 			}
 		}
 	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets1[i]->setIsDone(true);
-			if (!targetsMoving1[i]->isDone()) { targetsMoving1[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-			targetsMoving1[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
 
-
-	bool shouldChange2 = false;
+	//smole reng
+	shouldChange = true;
 	//check if shouldnt change (any targets still up)
-	switch (targetState2)
+	for (int i = 6; i < 9; ++i)
 	{
-	case T_MOVING:
-		for (int i = 0; i < 2; ++i)
+		if (!targets[i]->isDone()) { shouldChange = false; }
+	}
+	if (shouldChange && stateChangeTimer2 == 0) { 
+		stateChangeTimer2 = targets[6]->getOriginPos().y + targets[6]->getScale().y + 10; 
+		for (int i = 6; i < 9; i++)
 		{
-			if (!targetsMoving2[i]->isDone()) { shouldChange2 = false; ++totalBarrelsDown; }
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
 		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 2; ++i)
+	}
+	//if should change switches state
+	if (shouldChange)
+	{
+		stateChangeTimer2--;
+		if (stateChangeTimer2 <= 0)
 		{
-			if (!targets2[i]->isDone()) {
-				shouldChange2 = false; ++totalBarrelsDown;
+			stateChangeTimer2 = 0;
+			rotateAngle = 0;
+			for (int i = 6; i < 9; i++)
+			{
+				targets[i]->setIsDone(false);
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
 			}
 		}
-		break;
-	default:
-		break;
 	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState2)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 2; ++i)
-		{
-			targets2[i]->setIsDone(true);
-			if (!targetsMoving2[i]->isDone()) { targetsMoving2[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 2; ++i)
-		{
-			if (!targets2[i]->isDone()) { targets2[i]->setIsDone(false); }
-			targetsMoving2[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
-
-
-	if (totalBarrelsDown <= 0 && secondSetBarrel)
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
-	}
-	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
-	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
-	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
-	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
-	//meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
 	testvar += 0.05 * dt;
 
-	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -978,20 +840,13 @@ void SceneLevel4::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
-
-	totalTime -= dt;
-	if (totalTime <= 0 || Application::IsKeyPressed('E'))
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
-	}
-
 }
 
-void SceneLevel4::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneRangeElemental::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if (!mesh || mesh->textureArray[0] <= 0)
 		return;
-
+	
 	glDisable(GL_DEPTH_TEST);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
@@ -1000,13 +855,13 @@ void SceneLevel4::RenderText(Mesh* mesh, std::string text, Color color)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
-	for (unsigned i = 0; i < text.length(); ++i)
+	for(unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
 		characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-
+	
 		mesh->Render((unsigned)text[i] * 6, 6);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1014,7 +869,7 @@ void SceneLevel4::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneLevel4::RenderTerrain() {
+void SceneRangeElemental::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -1023,112 +878,112 @@ void SceneLevel4::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneLevel4::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneRangeElemental::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
-	if (!mesh || mesh->textureArray[0] <= 0)
+	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(0, Application::GetInstance().GetWindowWidth() * 0.1f, 0, Application::GetInstance().GetWindowHeight() * 0.1f, -10, 10);
+	ortho.SetToOrtho(0, Application::GetInstance().GetWindowWidth() * 0.1f , 0, Application::GetInstance().GetWindowHeight() * 0.1f, -10, 10);
 	projectionStack.PushMatrix();
-	projectionStack.LoadMatrix(ortho);
-	viewStack.PushMatrix();
-	viewStack.LoadIdentity();
-	modelStack.PushMatrix();
-	modelStack.LoadIdentity();
-	modelStack.Translate(x, y, 0);
-	modelStack.Scale(size, size, size);
-	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
-	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
-	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
-	glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
-	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
-	for (unsigned i = 0; i < text.length(); ++i)
-	{
-		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
-		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
-		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-
-		mesh->Render((unsigned)text[i] * 6, 6);
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-	modelStack.PopMatrix();
-	viewStack.PopMatrix();
+		projectionStack.LoadMatrix(ortho);
+		viewStack.PushMatrix();
+			viewStack.LoadIdentity();
+			modelStack.PushMatrix();
+				modelStack.LoadIdentity();
+				modelStack.Translate(x, y, 0);
+				modelStack.Scale(size, size, size);
+				glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
+				glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
+				glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+				glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
+				glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+				for(unsigned i = 0; i < text.length(); ++i)
+				{
+					Mtx44 characterSpacing;
+					characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+					Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
+					glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+	
+					mesh->Render((unsigned)text[i] * 6, 6);
+				}
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
+			modelStack.PopMatrix();
+		viewStack.PopMatrix();
 	projectionStack.PopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneLevel4::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
 	projectionStack.PushMatrix();
-	projectionStack.LoadMatrix(ortho);
-	viewStack.PushMatrix();
-	viewStack.LoadIdentity();
-	modelStack.PushMatrix();
-	modelStack.LoadIdentity();
-	modelStack.Scale(size_x, size_y, 1);
-	modelStack.Translate(x, y, 0);
+		projectionStack.LoadMatrix(ortho);
+		viewStack.PushMatrix();
+			viewStack.LoadIdentity();
+			modelStack.PushMatrix();
+				modelStack.LoadIdentity();
+				modelStack.Scale(size_x, size_y, 1);
+				modelStack.Translate(x, y, 0);
+       
+				Mtx44 MVP, modelView, modelView_inverse_transpose;
+				
+				MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+				modelView = viewStack.Top() * modelStack.Top(); // Week 6
+				glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+				if (enableLight && bLightEnabled)
+				{
+					glUniform1i(m_parameters[U_LIGHTENABLED], 1);
+					modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
+					//modelView = viewStack.Top() * modelStack.Top();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+					//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
 
-	Mtx44 MVP, modelView, modelView_inverse_transpose;
+					Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+					glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
 
-	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
-	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-	modelView = viewStack.Top() * modelStack.Top(); // Week 6
-	glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-	if (enableLight && bLightEnabled)
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 1);
-		modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-		glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
-		//modelView = viewStack.Top() * modelStack.Top();
-		//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-		//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-		//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
+					//load material
+					glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
+					glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
+					glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
+					glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
+				}
+				else
+				{
+					glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+				}
+				for (int i = 0; i < MAX_TEXTURES; ++i) {
+					if (mesh->textureArray[i] > 0) {
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
+						glActiveTexture(GL_TEXTURE0 + i);
+						glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+						glUniform1i(m_parameters[U_COLOR_TEXTURE + i], i);
+					}
+					else {
 
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
-
-		//load material
-		glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
-		glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
-		glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
-		glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
-	}
-	else
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
-	}
-	for (int i = 0; i < MAX_TEXTURES; ++i) {
-		if (mesh->textureArray[i] > 0) {
-			glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-			glUniform1i(m_parameters[U_COLOR_TEXTURE + i], i);
-		}
-		else {
-
-			glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-	}
-	mesh->Render();
-	if (mesh->textureID > 0)
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	modelStack.PopMatrix();
-	viewStack.PopMatrix();
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 0);
+					}
+				}
+				mesh->Render();
+				if(mesh->textureID > 0)
+				{
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+       
+			modelStack.PopMatrix();
+		viewStack.PopMatrix();
 	projectionStack.PopMatrix();
 
 }
 
-void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneRangeElemental::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -1139,7 +994,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 		{
 			if (mesh->textureArray[i] > 0)
 			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 1);
+				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
 				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
@@ -1164,7 +1019,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 	modelView = viewStack.Top() * modelStack.Top(); // Week 6
 	glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-	if (enableLight && bLightEnabled)
+	if(enableLight && bLightEnabled)
 	{
 		glUniform1i(m_parameters[U_LIGHTENABLED], 1);
 		modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
@@ -1176,7 +1031,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 
 		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
 		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
-
+		
 		//load material
 		glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
 		glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
@@ -1184,7 +1039,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 		glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
 	}
 	else
-	{
+	{	
 		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
 	}
 	for (int i = 0; i < MAX_TEXTURES; ++i) {
@@ -1202,7 +1057,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 	mesh->Render();
 	//if(mesh->textureID > 0)
 	/*{
-	glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}*/
 
 	if (mesh->texturePaintID > 0)
@@ -1218,7 +1073,7 @@ void SceneLevel4::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneLevel4::RenderGround()
+void SceneRangeElemental::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -1226,13 +1081,13 @@ void SceneLevel4::RenderGround()
 	modelStack.Rotate(-90, 0, 0, 1);
 	modelStack.Scale(400.0f, 400.0f, 400.0f);
 
-	for (int x = 0; x<10; x++)
+	for (int x=0; x<10; x++)
 	{
-		for (int z = 0; z<10; z++)
+		for (int z=0; z<10; z++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(x - 5.0f, z - 5.0f, 0.0f);
-			if (((x * 9 + z) % 2) == 0)
+			modelStack.Translate(x-5.0f, z-5.0f, 0.0f);
+			if ( ((x*9+z) % 2) == 0)
 				RenderMesh(meshList[GEO_GRASS_DARKGREEN], false);
 			else
 				RenderMesh(meshList[GEO_GRASS_LIGHTGREEN], false);
@@ -1242,20 +1097,20 @@ void SceneLevel4::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneLevel4::Render()
+void SceneRangeElemental::Render()
 {
 	//******************************* PRE RENDER PASS*************************************
-	RenderPassGPass();
+		RenderPassGPass();
 	//******************************* MAIN RENDER PASS************************************
-	RenderPassMain();
+		RenderPassMain();
 }
 
-void SceneLevel4::Exit()
+void SceneRangeElemental::Exit()
 {
 	// Cleanup VBO
-	for (int i = 0; i < NUM_GEOMETRY; ++i)
+	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
-		if (meshList[i])
+		if(meshList[i])
 			delete meshList[i];
 	}
 	while (particleList.size() > 0)
@@ -1274,22 +1129,22 @@ void SceneLevel4::Exit()
 
 	/*if (playerInfo->DropInstance() == false)
 	{
-	#if _DEBUGMODE==1
-	cout << "Unable to drop PlayerInfo class" << endl;
-	#endif
+#if _DEBUGMODE==1
+		cout << "Unable to drop PlayerInfo class" << endl;
+#endif
 	}*/
 	glDeleteProgram(m_programID);
 	glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneLevel4::RenderTrees()
+void SceneRangeElemental::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
 	modelStack.PushMatrix();// Push Matrix.
-							// To position the tree so that it is sitting properly on the terrain.
-	modelStack.Translate(Pos.x, 450 * ReadHeightMap(m_heightMap, Pos.x / 4000, Pos.z / 4000), Pos.z);
+	// To position the tree so that it is sitting properly on the terrain.
+	modelStack.Translate(Pos.x, 450 * ReadHeightMap(m_heightMap, Pos.x / 4000,Pos.z / 4000), Pos.z);
 	// Based on Method 1 on slide 4, rotate camera’s look position towards the tree.
 	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - Pos.x, camera.position.z - Pos.z)), 0, 1, 0);
 	modelStack.Scale(100, 100, 100); // Scale by 100.
@@ -1298,7 +1153,7 @@ void SceneLevel4::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneLevel4::GetParticle(void)
+ParticleObject* SceneRangeElemental::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1322,7 +1177,7 @@ ParticleObject* SceneLevel4::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneLevel4::UpdateParticles(double dt)
+void SceneRangeElemental::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -1344,7 +1199,7 @@ void SceneLevel4::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(-20, 10), (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f), Math::RandFloatMinMax(80, 110));
 			break;
 		}
-
+		
 	}
 
 
@@ -1381,12 +1236,12 @@ void SceneLevel4::UpdateParticles(double dt)
 			}
 
 			/*if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))*/
-
+			
 		}
 	}
 }
 
-void SceneLevel4::RenderParticles(ParticleObject *particle)
+void SceneRangeElemental::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -1411,7 +1266,7 @@ void SceneLevel4::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneLevel4::RenderWorld()
+void SceneRangeElemental::RenderWorld()
 {
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
@@ -1436,7 +1291,7 @@ void SceneLevel4::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			}
-
+			
 			case CEnemy::E_PROJECTILE:
 			{
 				CProjectile* proj = dynamic_cast<CProjectile*>(ent);
@@ -1447,7 +1302,7 @@ void SceneLevel4::RenderWorld()
 					//modelStack.Translate(camera.position.x, camera.position.y - 1, camera.position.z);
 					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
-					modelStack.Rotate(Math::RadianToDegree(atan2((entTar - entPos).Normalized().y, 1)), 1, 0, 0);
+					modelStack.Rotate(Math::RadianToDegree(atan2((entTar-entPos).Normalized().y, 1)), 1, 0, 0);
 					modelStack.Translate(0, 0, -entSca.z / 2);
 					modelStack.Scale(entSca.x, entSca.y, entSca.z);
 					RenderMesh(meshList[GEO_BOLT], false);
@@ -1539,7 +1394,7 @@ void SceneLevel4::RenderWorld()
 				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
 				modelStack.PopMatrix();
 
-				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
+				CDrone* tempDrone = (CDrone*)*it;
 
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
@@ -1560,14 +1415,14 @@ void SceneLevel4::RenderWorld()
 				modelStack.PopMatrix();
 
 
-
+				
 			}
-			break;
+				break;
 			case CEntity::E_TARGET:
 			case CEntity::E_MOVING_TARGET:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y /*+ 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
@@ -1577,8 +1432,8 @@ void SceneLevel4::RenderWorld()
 			case CEntity::E_TARGET_FIRE:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
-				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
 				modelStack.PopMatrix();
@@ -1587,8 +1442,8 @@ void SceneLevel4::RenderWorld()
 			case CEntity::E_TARGET_ICE:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
-				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
 				modelStack.PopMatrix();
@@ -1601,6 +1456,16 @@ void SceneLevel4::RenderWorld()
 				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
+			case CEntity::E_ROCKS:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(Math::RadianToDegree(atan2(0.f - entPos.x, 0.f - entPos.z)), 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_ROCKS], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1617,32 +1482,54 @@ void SceneLevel4::RenderWorld()
 				RenderMesh(meshList[GEO_CUBE], false);
 				modelStack.PopMatrix();
 				break;
+			case CEntity::E_PILLAR:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + (*it)->getScale().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_PILLAR], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			default:
 				break;
 			}
 		}
 	}
-	if (stateChangeTimer > 0)
+	if (stateChangeTimer != 0) 
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(-500 + i * 500, 75.f - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), 1500.f);
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 			modelStack.Scale(40.f, 40.f, 40.f);
 			RenderMesh(meshList[GEO_BARREL], godlights);
 			modelStack.PopMatrix();
 		}
 	}
-	if (stateChangeTimer1 > 0)
+	if (stateChangeTimer1 != 0)
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 3; i < 6; i++)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(targets1[i]->getPos().x, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), targets1[i]->getPos().z);
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
 			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-			modelStack.Scale(20.f, 20.f, 20.f);
-			RenderMesh(meshList[GEO_BARREL_ICE], godlights);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_BARREL], godlights);
+			modelStack.PopMatrix();
+		}
+	}
+	if (stateChangeTimer2 != 0)
+	{
+		for (int i = 6; i < 9; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer2 + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
+			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_BARREL], godlights);
 			modelStack.PopMatrix();
 		}
 	}
@@ -1724,23 +1611,23 @@ void SceneLevel4::RenderWorld()
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
-					//modelStack.PushMatrix();
-					//modelStack.Translate(0, 400, 200);
-					//modelStack.Rotate(90, 1, 0, 0);
-					//modelStack.Scale(20, 20, 1);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-					//RenderMesh(meshList[GEO_TESTPAINTQUAD], godlights);
-					//modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0, 400, 200);
+	//modelStack.Rotate(90, 1, 0, 0);
+	//modelStack.Scale(20, 20, 1);
+	//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
+	//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
+	//RenderMesh(meshList[GEO_TESTPAINTQUAD], godlights);
+	//modelStack.PopMatrix();
 
-					//modelStack.PushMatrix();
-					//modelStack.Translate(0, 350, 300);
-					//modelStack.Rotate(90, 1, 0, 0);
-					//modelStack.Scale(90, 160, 1);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
-					//RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
-					//modelStack.PopMatrix();
+	//modelStack.PushMatrix();
+	//modelStack.Translate(0, 350, 300);
+	//modelStack.Rotate(90, 1, 0, 0);
+	//modelStack.Scale(90, 160, 1);
+	//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
+	//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
+	//RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
+	//modelStack.PopMatrix();
 
 	Vector3 tempDir = (camera.target - camera.position).Normalized();
 	Vector3 lArmOffset, rArmOffset, lArmRot, rArmRot;
@@ -1771,7 +1658,7 @@ void SceneLevel4::RenderWorld()
 			0, 0, 0,
 			0, 0, -1,
 			0, 1, 0
-			);
+		);
 
 		modelStack.PushMatrix();
 		modelStack.Translate(0, -4.5, -5);
@@ -1809,7 +1696,7 @@ void SceneLevel4::RenderWorld()
 			camera.position.x, camera.position.y, camera.position.z,
 			camera.target.x, camera.target.y, camera.target.z,
 			camera.up.x, camera.up.y, camera.up.z
-			);
+		);
 	}
 
 	modelStack.PushMatrix();
@@ -1832,7 +1719,7 @@ void SceneLevel4::RenderWorld()
 			0, 0, 0,
 			0, 0, -1,
 			0, 1, 0
-			);
+		);
 
 		modelStack.Translate(3 + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
 		modelStack.Rotate(rArmRot.x, 1, 0, 0);
@@ -1864,11 +1751,11 @@ void SceneLevel4::RenderWorld()
 			camera.position.x, camera.position.y, camera.position.z,
 			camera.target.x, camera.target.y, camera.target.z,
 			camera.up.x, camera.up.y, camera.up.z
-			);
+		);
 	}
 }
 
-void SceneLevel4::RenderPassMain()
+void SceneRangeElemental::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1894,7 +1781,7 @@ void SceneLevel4::RenderPassMain()
 		camera.position.x, camera.position.y, camera.position.z,
 		camera.target.x, camera.target.y, camera.target.z,
 		camera.up.x, camera.up.y, camera.up.z
-		);
+	);
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
@@ -1935,9 +1822,20 @@ void SceneLevel4::RenderPassMain()
 
 	////////////////////////////////
 	RenderWorld(); //casts shadow
-				   ////////////////////////////////	
+	////////////////////////////////	
 
-				   //Render particles
+	float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, -10.f + 350.f * ReadHeightMap(m_heightMap, 0.f / 4000, 0.f / 4000), 0.f);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(4000, 4000, 4000);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.1f, timeElapsed * 0.1f);
+	RenderMesh(meshList[GEO_WATER], godlights);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	modelStack.PopMatrix();
+
+	//Render particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
 		ParticleObject *particle = (ParticleObject *)*it;
@@ -1948,6 +1846,7 @@ void SceneLevel4::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float cosfsi = cosf(TimeTrackerManager::GetInstance()->getElapsedTime());
 	float PHealth = playerInfo->GetHealth();
 	for (int i = 0; i < (PHealth *0.1); ++i)
 	{
@@ -1961,7 +1860,7 @@ void SceneLevel4::RenderPassMain()
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
 	{
 		std::list < CameraEffect *> ::iterator it, end;
@@ -1980,7 +1879,7 @@ void SceneLevel4::RenderPassMain()
 		}
 	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
 
-																//On screen text
+	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
 	if (playerInfo->GetCurrentNPC() != NULL)
@@ -1995,7 +1894,7 @@ void SceneLevel4::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
 		std::ostringstream ss1;
 		ss1.precision(5);
-		ss1 << "Health: " << playerInfo->GetHealth();
+		ss1 << "Health: " << playerInfo->getPos();// playerInfo->GetHealth();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 		std::ostringstream ss2;
 		ss2.precision(5);
@@ -2008,20 +1907,12 @@ void SceneLevel4::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
-	std::ostringstream ss3;
-	ss3.precision(2);
-	ss3 << "Targets Left: " << totalBarrelsDown;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 0, 16);
-	std::ostringstream ss4;
-	ss4.precision((int)floor(log10f(totalTime)) + 1);
-	ss4 << "Time: " << totalTime;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
 	std::ostringstream ss9;
 	ss9.precision(1);
 	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
-void SceneLevel4::RenderPassGPass()
+void SceneRangeElemental::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();
@@ -2032,7 +1923,7 @@ void SceneLevel4::RenderPassGPass()
 	//These matrices should change when light position or direction changes
 	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
 		m_lightDepthProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
-	else
+	else 
 		m_lightDepthProj.SetToPerspective(90, 1.f, 0.1, 200);
 	m_lightDepthView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
 	RenderWorld();

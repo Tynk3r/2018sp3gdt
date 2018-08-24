@@ -328,11 +328,11 @@ void SceneBoss::Init()
 	//);
 	//npc->setPlayerRef(playerInfo);
 
-	wall1 = new CEntity();
+	/*wall1 = new CEntity();
 	wall1->Init();
 	wall1->setType(CEntity::E_WALL);
 	wall1->setPos(Vector3(0, 0, 740));
-	wall1->setScale(Vector3(25.f, 25.f, 25.f));
+	wall1->setScale(Vector3(25.f, 25.f, 25.f));*/
 
 	boss = new CBoss();
 	boss->Init();

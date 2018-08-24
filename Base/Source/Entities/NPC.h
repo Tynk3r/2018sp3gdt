@@ -9,6 +9,7 @@ class CNPC : public CEntity
 public:
 	enum NPC_TYPE {
 		NPC_WIZARD,
+		NPC_WIZARDBASIC,
 	};
 
 	CNPC(Vector3 pos = Vector3(0, 0, 0), Vector3 scale = Vector3(1, 1, 1), Vector3 target = Vector3(0, 0, 1));
@@ -19,6 +20,7 @@ public:
 	void Update(double dt);
 
 	NPC_TYPE getType(void) { return this->type; }
+	void setNPCType(NPC_TYPE type) { this->type = type; }
 	//void setState(NPC_TYPE s) { state = s; }
 	//void tempMoveBack(float dt);
 	string getCurrentLine();

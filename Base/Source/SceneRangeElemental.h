@@ -1,5 +1,5 @@
-#ifndef SCENE_RANGE_MOVING_H
-#define SCENE_RANGE_MOVING_H
+#ifndef SCENE_RANGE_ELEMENTAL_H
+#define SCENE_RANGE_ELEMENTAL_H
 
 #define PAINT_LENGTH 20
 
@@ -31,7 +31,7 @@
 
 using namespace std;
 
-class SceneRangeMoving : public Scene
+class SceneRangeElemental : public Scene
 {
 	enum UNIFORM_TYPE
 	{
@@ -158,6 +158,8 @@ class SceneRangeMoving : public Scene
 		GEO_BOLT,
 		GEO_GOBLIN,
 		GEO_BARREL,
+		GEO_BARREL_ICE,
+		GEO_BARREL_FIRE,
 		GEO_LIBRARIAN,
 		GEO_KILLERNADO,
 		GEO_ICEBLOCK,
@@ -177,8 +179,8 @@ class SceneRangeMoving : public Scene
 		T_MOVING,
 	};
 public:
-	SceneRangeMoving();
-	~SceneRangeMoving();
+	SceneRangeElemental();
+	~SceneRangeElemental();
 
 	virtual void Init();
 	virtual void Update(double dt);
@@ -240,16 +242,16 @@ private:
 	CEntity* targets[9];
 	int stateChangeTimer = 0;
 	int stateChangeTimer1 = 0;
-	int stateChangeTimer2 = 0;
+	int stateChangeTimer2 = 0;/*
 	int stateChangeTimer3 = 0;
 	int stateChangeTimer4 = 0;
 	int stateChangeTimer5 = 0;
-	int stateChangeTimer6 = 0;
+	int stateChangeTimer6 = 0;*/
 
 	CDrone* drone1;
 	
 	CEntity* pillars[2];
-	CEntity* rocks[5];
+	CEntity* rocks[10];
 
 	/*CEntity* targets1[3];
 	CEntity* targetsMoving1[3];

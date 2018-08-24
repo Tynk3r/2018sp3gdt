@@ -48,6 +48,7 @@
     <ClCompile Include="Source\SceneLevel2Burst.cpp" />
     <ClCompile Include="Source\SceneLevel4Flight.cpp" />
     <ClCompile Include="Source\SceneRangeMoving.cpp" />
+    <ClCompile Include="Source\SceneRangeElemental.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -102,5 +103,6 @@
     <ClInclude Include="Source\SceneLevel2Burst.h" />
     <ClInclude Include="Source\SceneLevel4Flight.h" />
     <ClInclude Include="Source\SceneRangeMoving.h" />
+    <ClInclude Include="Source\SceneRangeElemental.h" />
   </ItemGroup>
 </Project>

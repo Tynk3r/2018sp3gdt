@@ -242,6 +242,7 @@ void SceneRangeMoving::Init()
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("barrel", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
+
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
@@ -295,6 +296,14 @@ void SceneRangeMoving::Init()
 		sa_AL->m_anim = new Animation();
 		sa_AL->m_anim->Set(0, (2 * 2) - 1, 1, 0.25f, true);
 	}
+
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
@@ -403,9 +412,9 @@ void SceneRangeMoving::Init()
 		rocks[i] = new CEntity();
 		rocks[i]->Init();
 		rocks[i]->setType(CEntity::E_ROCKS);
-		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
+		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-1000.f, 1000.f), 0.f, Math::RandFloatMinMax(-1000.f, 1000.f)));
 		rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		rocks[i]->setOriginPos(targets[i]->getPos());
+		rocks[i]->setOriginPos(rocks[i]->getPos());
 	}
 
 	// Hardware Abstraction
@@ -442,6 +451,10 @@ void SceneRangeMoving::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+	}
+	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 	}
 
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -1994,7 +2007,19 @@ void SceneRangeMoving::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float cosfsi = cosf(TimeTrackerManager::GetInstance()->getElapsedTime());
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
