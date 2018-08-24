@@ -302,12 +302,12 @@ void SceneLevel4::Init()
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	CNPC* npc = new CNPC(
-		Vector3(0, 0, 80),
-		Vector3(4, 12, 4),
-		Vector3(0, 0, 80.f)
-		);
-	npc->setPlayerRef(playerInfo);
+	//CNPC* npc = new CNPC(
+	//	Vector3(0, 0, 80),
+	//	Vector3(4, 12, 4),
+	//	Vector3(0, 0, 80.f)
+	//	);
+	//npc->setPlayerRef(playerInfo);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -414,7 +414,8 @@ void SceneLevel4::Init()
 		}
 		targets1[i]->setOriginPos(targets1[i]->getPos());
 		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		targets1[i]->setTarget(Vector3(0, 0, 0));
+		targets1[i]->setTarget(targets1[i]->getPos() + Vector3(1, 0, 0));
+		targets1[i]->setOriginTarget(targets1[i]->getTarget());
 	}
 	for (int i = 0; i < 3; i++)
 	{
@@ -437,9 +438,11 @@ void SceneLevel4::Init()
 			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
 		}
 		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
+		//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
 		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
 		targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
+		targetsMoving1[i]->setTarget(targetsMoving1[i]->getPos() + Vector3(1, 0, 0));
+		targetsMoving1[i]->setOriginTarget(targetsMoving1[i]->getTarget());
 		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
@@ -879,7 +882,7 @@ void SceneLevel4::Update(double dt)
 					/*				targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
 					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
 					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-					targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
+					//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
 					//secondSetBarrel = true;
 				}
 				break;

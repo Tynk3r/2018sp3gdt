@@ -44,6 +44,11 @@ void CNPC::Init()
 		this->dialogues.push_back("shoot the fire barrels with ice");
 		this->dialogues.push_back("shoot the ice barrels with fire");
 		break;
+	case NPC_WIZARDBASIC:
+		this->dialogues.push_back("Your adventure has just begun!");
+		this->dialogues.push_back("Face these perilous trials");
+		this->dialogues.push_back("and you'll probably find treasure");
+		break;
 	}
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);

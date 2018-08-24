@@ -329,6 +329,7 @@ void SceneLevel1::Init()
 		Vector3(4, 12, 4),
 		Vector3(0, 0, 80.f)
 		);
+	npc->setNPCType(CNPC::NPC_WIZARDBASIC);
 	npc->setPlayerRef(playerInfo);
 
 	for (int i = 0; i < 4; i++)
