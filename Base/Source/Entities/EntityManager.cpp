@@ -260,6 +260,83 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 					}
 					break;
+				case CEntity::E_ENEMY:
+					if ((*it2)->getType() == CEntity::E_PROJECTILE)
+					{
+						CProjectile* proj = static_cast<CProjectile*>((*it2));
+						(*it)->setIsDone(true);
+						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
+						proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+
+						switch ((*it)->getType())
+						{
+						case CEntity::E_ENEMY:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+							ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f,1,0.1f));
+							break;
+						case CEntity::E_MOVING_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
+							break;
+						case CEntity::E_TARGET:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
+							break;
+						}
+						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
+						break;
+					}
+				case CEntity::E_PROJECTILE:
+				{
+					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					if ((*it2)->getType() == CEntity::E_PLAYER) 
+					{ 
+						if (proj1->getSource() != NULL && proj1->getSource() != nullptr && proj1->getSource()->getType() == CEntity::E_BOSS)
+						{
+							proj1->setIsDone(true);
+							proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj1->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj1->getScale().x*0.015f);
+							CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
+							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							break;
+						}
+						else
+							break;
+					}
+					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
+					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
+					{
+						if ((proj1->getSource() != NULL || proj1->getSource() != nullptr) && proj1->getSource()->getType() == CEntity::E_BOSS)//if proj1 beglons to boss
+						{
+							proj1->bossDone = true;
+							proj2->setIsDone(true);
+						}
+						else if ((proj2->getSource() || proj2->getSource() != nullptr) != NULL && proj2->getSource()->getType() == CEntity::E_BOSS)
+						{
+							proj2->bossDone = true;
+							proj1->setIsDone(true);
+						}
+						else
+						{
+							proj1->setIsDone(true);
+							proj2->setIsDone(true);
+						}
+						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
+						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+
+						break;
+					}
+				}
 				case CEntity::E_TARGET:
 				case CEntity::E_MOVING_TARGET:
 				case CEntity::E_TARGET_FIRE:
@@ -334,83 +411,6 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_ENEMY:
-					if ((*it2)->getType() == CEntity::E_PROJECTILE)
-					{
-						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						(*it)->setIsDone(true);
-						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
-						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
-						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
-
-						switch ((*it)->getType())
-						{
-						case CEntity::E_ENEMY:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
-							ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f,1,0.1f));
-							break;
-						case CEntity::E_MOVING_TARGET:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
-							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
-							break;
-						case CEntity::E_TARGET:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
-							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
-							break;
-						}
-						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
-						break;
-					}
-				case CEntity::E_PROJECTILE:
-				{
-					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
-					if ((*it2)->getType() == CEntity::E_PLAYER) 
-					{ 
-						if (proj1->getSource() != NULL && proj1->getSource()->getType() == CEntity::E_BOSS)
-						{
-							proj1->setIsDone(true);
-							proj1->EmitParticles(Math::RandIntMinMax(16, 32));
-							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj1->getScale().x*0.5f);
-							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj1->getScale().x*0.015f);
-							CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
-							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
-								CSoundEngine::GetInstance()->PlayASound("floorImpact");
-							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)
-								CSoundEngine::GetInstance()->PlayASound("IceImpact");
-							break;
-						}
-						else
-							break;
-					}
-					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
-					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
-					{
-						if ((proj1->getSource() != NULL || proj1->getSource() != nullptr) && proj1->getSource()->getType() == CEntity::E_BOSS)//if proj1 beglons to boss
-						{
-							proj1->bossDone = true;
-							proj2->setIsDone(true);
-						}
-						else if ((proj2->getSource() || proj2->getSource() != nullptr) != NULL && proj2->getSource()->getType() == CEntity::E_BOSS)
-						{
-							proj2->bossDone = true;
-							proj1->setIsDone(true);
-						}
-						else
-						{
-							proj1->setIsDone(true);
-							proj2->setIsDone(true);
-						}
-						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
-						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
-						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
-						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
-						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
-						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
-
-						break;
-					}
-				}
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response

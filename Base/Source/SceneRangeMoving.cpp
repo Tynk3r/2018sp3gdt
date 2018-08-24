@@ -297,6 +297,14 @@ void SceneRangeMoving::Init()
 		sa_AL->m_anim->Set(0, (2 * 2) - 1, 1, 0.25f, true);
 	}
 
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
 	playerInfo->Init();
@@ -1999,7 +2007,19 @@ void SceneRangeMoving::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float cosfsi = cosf(TimeTrackerManager::GetInstance()->getElapsedTime());
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
