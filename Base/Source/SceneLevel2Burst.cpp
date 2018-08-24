@@ -782,7 +782,7 @@ void SceneLevel2::Update(double dt)
 
 	if (totalBarrelsDown <= 0 && secondSetBarrel)
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
