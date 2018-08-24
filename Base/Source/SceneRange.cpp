@@ -634,8 +634,8 @@ void SceneRange::Update(double dt)
 	}
 	if (Application::IsKeyPressed('V'))
 	{
-		//CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		//CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 #endif // SP3_DEBUG
 

@@ -136,6 +136,8 @@ class SceneLevel1 : public Scene
 		//TSL
 		GEO_SKYPLANE,
 		GEO_TERRAIN,
+		GEO_HEART,
+		GEO_MANA,
 		GEO_SPRITE_ANIMATION,
 		GEO_LIGHT_DEPTH_QUAD,
 		//GEO_TESTPAINTQUAD,
@@ -159,6 +161,8 @@ class SceneLevel1 : public Scene
 		GEO_LIBRARIAN,
 		GEO_KILLERNADO,
 		GEO_ICEBLOCK,
+		GEO_PILLAR,
+		GEO_WATER,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
@@ -243,6 +247,8 @@ private:
 	CEntity* targetsMoving1[2];
 	TARGET_STATE targetState1 = T_MOVING;
 	int stateChangeTimer1 = 0;
+
+	CEntity* pillars[4];
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
