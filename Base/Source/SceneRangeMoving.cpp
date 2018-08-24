@@ -232,15 +232,21 @@ void SceneRangeMoving::Init()
 	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 
 	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
+	meshList[GEO_DRONE_HEAD]->textureArray[0] = LoadTGA("Image//librarian.tga");
 	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
+	meshList[GEO_DRONE_LWING]->textureArray[0] = LoadTGA("Image//librarian.tga");
 	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
+	meshList[GEO_DRONE_RWING]->textureArray[0] = LoadTGA("Image//librarian.tga");
 
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
-	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
+	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("barrel", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
+
+	meshList[GEO_ROCKS] = MeshBuilder::GenerateOBJ("rocks", "OBJ//rocks.obj");
+	meshList[GEO_ROCKS]->textureArray[0] = LoadTGA("Image//rocks.tga");
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeMoving.raw", m_heightMap);
@@ -248,17 +254,6 @@ void SceneRangeMoving::Init()
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
 	testvar = 0;
-
-	//meshList[GEO_TESTPAINTQUAD] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD", Color(1, 1, 1), 1.f);
-	//meshList[GEO_TESTPAINTQUAD]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	//meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint = 1;
-	//meshList[GEO_TESTPAINTQUAD]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint);
-
-	//meshList[GEO_TESTPAINTQUAD2] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD2", Color(1, 1, 1), 1.f);
-	//meshList[GEO_TESTPAINTQUAD2]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	//meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint = 64;
-	//meshList[GEO_TESTPAINTQUAD2]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-
 
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 1.f);
@@ -309,6 +304,12 @@ void SceneRangeMoving::Init()
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
+
+	drone1 = new CDrone();
+	drone1->Init();
+	drone1->setPos(Vector3(0, 20.f, 0));
+	drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
 	//slow ez one
 	for (int i = 0; i < 3; i++)
@@ -394,6 +395,17 @@ void SceneRangeMoving::Init()
 		pillars[i]->setPos(Vector3(1500 - i * 3000, 0.f, 100.f));
 		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
 		pillars[i]->setOriginPos(pillars[i]->getPos());
+	}
+	
+	//rocks tht r randomerino
+	for (int i = 0; i < 5; i++)
+	{
+		rocks[i] = new CEntity();
+		rocks[i]->Init();
+		rocks[i]->setType(CEntity::E_ROCKS);
+		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
+		rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
+		rocks[i]->setOriginPos(targets[i]->getPos());
 	}
 
 	// Hardware Abstraction
@@ -945,9 +957,9 @@ void SceneRangeMoving::Update(double dt)
 
 	testvar += 0.05 * dt;
 
-	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
@@ -1509,7 +1521,7 @@ void SceneRangeMoving::RenderWorld()
 				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
 				modelStack.PopMatrix();
 
-				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
+				CDrone* tempDrone = (CDrone*)*it;
 
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
@@ -1562,6 +1574,16 @@ void SceneRangeMoving::RenderWorld()
 				//modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
+			case CEntity::E_ROCKS:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(Math::RadianToDegree(atan2(0.f - entPos.x, 0.f - entPos.z)), 0, 1, 0);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_ROCKS], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
