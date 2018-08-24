@@ -360,8 +360,25 @@ bool EntityManager::CheckForCollision(float dt)
 					break;
 				case CEntity::E_PROJECTILE:
 				{
-					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
 					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					if ((*it2)->getType() == CEntity::E_PLAYER) 
+					{ 
+						if (proj1->getSource() != NULL && proj1->getSource()->getType() == CEntity::E_BOSS)
+						{
+							proj1->setIsDone(true);
+							proj1->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj1->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj1->getScale().x*0.015f);
+							CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
+							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							break;
+						}
+						else
+							break;
+					}
 					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
 					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
 					{
@@ -384,8 +401,9 @@ bool EntityManager::CheckForCollision(float dt)
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
 						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
 						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
-						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
-						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+
 						break;
 					}
 				}

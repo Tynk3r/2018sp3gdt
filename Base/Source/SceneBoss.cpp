@@ -242,6 +242,14 @@ void SceneBoss::Init()
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("geoheart", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("geomana", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRange.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
@@ -367,6 +375,10 @@ void SceneBoss::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+	}
+	if (playerInfo && playerInfo->GetHealth() <= 0)
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
 	}
 
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -991,7 +1003,7 @@ void SceneBoss::Exit()
 		EntityManager::GetInstance()->entityList.pop_back();
 	}
 	playerInfo->DetachCamera();
-
+	playerInfo->setHealth(100);
 	/*if (playerInfo->DropInstance() == false)
 	{
 #if _DEBUGMODE==1
@@ -1716,7 +1728,18 @@ void SceneBoss::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (boss)
@@ -1765,11 +1788,11 @@ void SceneBoss::RenderPassMain()
 		std::ostringstream ss1;
 		ss1.precision(5);
 		ss1 << "Health: " << playerInfo->GetHealth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 		std::ostringstream ss2;
 		ss2.precision(5);
 		ss2 << "Mana: " << playerInfo->getMana();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 
 #ifdef SP3_DEBUG
 		ss1.str("");

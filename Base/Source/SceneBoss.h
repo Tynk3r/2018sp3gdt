@@ -167,6 +167,8 @@ class SceneBoss : public Scene
 		GEO_OCTO_TENTACLE_SPHERE,
 		GEO_QUAD_GREEN,
 		GEO_QUAD_RED,
+		GEO_HEART,
+		GEO_MANA,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS
