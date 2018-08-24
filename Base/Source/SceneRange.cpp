@@ -634,7 +634,8 @@ void SceneRange::Update(double dt)
 	}
 	if (Application::IsKeyPressed('V'))
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		//CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 #endif // SP3_DEBUG
 
@@ -1920,7 +1921,7 @@ void SceneRange::RenderPassMain()
 		std::ostringstream ss1;
 		ss1.precision(5);
 		ss1 << "Health: " << playerInfo->GetHealth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+	//	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 
 		// Health
 		//float cosfsi = cosf(TimeTrackerManager::GetInstance()->getElapsedTime());
@@ -1935,7 +1936,7 @@ void SceneRange::RenderPassMain()
 		std::ostringstream ss2;
 		ss2.precision(5);
 		ss2 << "Mana: " << playerInfo->getMana();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+	//	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 
 #ifdef SP3_DEBUG
 		ss1.str("");
