@@ -272,8 +272,8 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						(*it)->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->PlayASound("Death");
-						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+						CSoundEngine::GetInstance()->AddSound("barrelbreak","Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 
 						switch ((*it)->getType())
 						{
@@ -308,9 +308,8 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it)->setIsDone(true);
 						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("Death", "Sound//deathsound.mp3");
-						CSoundEngine::GetInstance()->PlayASound("Death");
-						CSoundEngine::GetInstance()->PlayASound("floorImpact");
+						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 
 						switch ((*it)->getType())
 						{
@@ -352,6 +351,10 @@ bool EntityManager::CheckForCollision(float dt)
 							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
+							//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+							//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 						}
 					}
 					break;
@@ -379,6 +382,10 @@ bool EntityManager::CheckForCollision(float dt)
 						}
 						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
+						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 						break;
 					}
 				}
