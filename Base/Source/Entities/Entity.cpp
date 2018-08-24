@@ -66,11 +66,14 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_TARGET_FIRE:
-		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
-		if (!this->done)
-			ParticleManager::GetInstance()->AddParticle(this);
-		break;
 	case E_TARGET_ICE:
+		if ((getTarget() - getPos()).LengthSquared() < 3.f * 3.f) { 
+			setTarget(getOriginPos());
+			if ((getOriginPos() - getPos()).LengthSquared() < 3.f * 3.f) { setTarget(getOriginTarget()); }
+			//setOriginPos(getPos());
+			viewVector = (getTarget() - getPos()).Normalized();
+		}
+		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		if (!this->done)
 			ParticleManager::GetInstance()->AddParticle(this);

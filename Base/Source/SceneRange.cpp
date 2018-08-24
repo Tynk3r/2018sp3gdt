@@ -387,6 +387,10 @@ void SceneRange::Init()
 
 void SceneRange::Update(double dt)
 {
+	if (Application::IsKeyPressed('E'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
+	}
 	//cout << playerInfo->getPos() << endl;
 	if (playerInfo->getPos().x > 740) 
 	{

@@ -227,6 +227,23 @@ bool EntityManager::CheckForCollision(float dt)
 			{ 
 				switch ((*it)->getType())
 				{
+				case CEntity::E_WALL:
+				case CEntity::E_PILLAR:
+				case CEntity::E_ROCKS:
+					break;
+				case CEntity::E_BOSS:
+					if ((*it2)->getType() == CEntity::E_PROJECTILE) //&& CheckAABBCollision(*it, *it2))
+					{
+						CProjectile* proj = static_cast<CProjectile*>(*it2);
+						CBoss* bos = static_cast<CBoss*>(*it);
+						if (proj->getSource() != (*it))
+						{
+							bos->TakeDamage(proj);
+							proj->setIsDone(true);
+							proj->EmitParticles(Math::RandIntMinMax(16, 32));
+						}
+					}
+					break;
 				case CEntity::E_TARGET:
 				case CEntity::E_MOVING_TARGET:
 				case CEntity::E_TARGET_FIRE:
@@ -322,19 +339,6 @@ bool EntityManager::CheckForCollision(float dt)
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
-				case CEntity::E_BOSS:
-					if ((*it2)->getType() == CEntity::E_PROJECTILE) //&& CheckAABBCollision(*it, *it2))
-					{
-						CProjectile* proj = static_cast<CProjectile*>(*it2);
-						CBoss* bos = static_cast<CBoss*>(*it);
-						if (proj->getSource() != (*it))
-						{
-							bos->TakeDamage(proj);
-							proj->setIsDone(true);
-							proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						}
-					}
-					break;
 				case CEntity::E_PROJECTILE:
 				{
 					if ((*it2)->getType() == CEntity::E_PLAYER) { break; }
@@ -362,11 +366,6 @@ bool EntityManager::CheckForCollision(float dt)
 						break;
 					}
 				}
-					
-				case CEntity::E_WALL:
-				case CEntity::E_PILLAR:
-				case CEntity::E_ROCKS:
-					break;
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response

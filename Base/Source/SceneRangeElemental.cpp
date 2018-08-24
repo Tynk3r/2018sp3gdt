@@ -1,4 +1,4 @@
-#include "SceneRangeMoving.h"
+#include "SceneRangeElemental.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -11,11 +11,11 @@
 #include <sstream>
 #define SP3_DEBUG
 
-SceneRangeMoving::SceneRangeMoving()
+SceneRangeElemental::SceneRangeElemental()
 {
 }
 
-SceneRangeMoving::~SceneRangeMoving()
+SceneRangeElemental::~SceneRangeElemental()
 {
 	if (theMouse)
 	{
@@ -29,7 +29,7 @@ SceneRangeMoving::~SceneRangeMoving()
 	}
 }
 
-void SceneRangeMoving::Init()
+void SceneRangeElemental::Init()
 {
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
@@ -242,7 +242,10 @@ void SceneRangeMoving::Init()
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("barrel", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
-
+	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
+	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
+	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
@@ -250,7 +253,7 @@ void SceneRangeMoving::Init()
 	meshList[GEO_ROCKS]->textureArray[0] = LoadTGA("Image//rocks.tga");
 
 	// For Ter Rain
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeMoving.raw", m_heightMap);
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeElemental.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
@@ -300,6 +303,7 @@ void SceneRangeMoving::Init()
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
 	playerInfo->Init();
+	playerInfo->climbHeight = 5.0;
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
@@ -312,80 +316,42 @@ void SceneRangeMoving::Init()
 	drone1->setScale(Vector3(10.f, 10.f, 10.f));
 	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
-	//slow ez one
+	//lonk range
 	for (int i = 0; i < 3; i++)
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
-		targets[i]->setType(CEntity::E_MOVING_TARGET);
-		targets[i]->setPos(Vector3(-750 + i * 750, 100.f, 1700.f));
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
 		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-		targets[i]->setTarget(Vector3(0 + i * 750, 100.f, 1700.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
 		targets[i]->setOriginPos(targets[i]->getPos());
 		targets[i]->setOriginTarget(targets[i]->getTarget());
 	}
-
-	// left right
-	targets[3] = new CEntity();
-	targets[3]->Init();
-	targets[3]->setType(CEntity::E_MOVING_TARGET);
-	targets[3]->setPos(Vector3(-1500.f, 200.f, -1700.f));
-	targets[3]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[3]->setTarget(Vector3(-250.f, 100.f, -1700.f));
-	targets[3]->setSpeed(200.f);
-	targets[3]->setOriginPos(targets[3]->getPos());
-	targets[3]->setOriginTarget(targets[3]->getTarget());
-
-	targets[4] = new CEntity();
-	targets[4]->Init();
-	targets[4]->setType(CEntity::E_MOVING_TARGET);
-	targets[4]->setPos(Vector3(-250.f, 200.f, -1500.f));
-	targets[4]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[4]->setTarget(Vector3(-1500.f, 220.f, -1500.f));
-	targets[4]->setSpeed(200.f);
-	targets[4]->setOriginPos(targets[4]->getPos());
-	targets[4]->setOriginTarget(targets[4]->getTarget());
-
-	targets[5] = new CEntity();
-	targets[5]->Init();
-	targets[5]->setType(CEntity::E_MOVING_TARGET);
-	targets[5]->setPos(Vector3(-1500.f, 100.f, -1300.f));
-	targets[5]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[5]->setTarget(Vector3(-250.f, 200.f, -1300.f));
-	targets[5]->setSpeed(200.f);
-	targets[5]->setOriginPos(targets[5]->getPos());
-	targets[5]->setOriginTarget(targets[5]->getTarget());
-
-	//front back
-	targets[6] = new CEntity();
-	targets[6]->Init();
-	targets[6]->setType(CEntity::E_MOVING_TARGET);
-	targets[6]->setPos(Vector3(1500.f, 200.f, -1200.f));
-	targets[6]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[6]->setTarget(Vector3(1500.f, 125.f, -1900.f));
-	targets[6]->setSpeed(200.f);
-	targets[6]->setOriginPos(targets[6]->getPos());
-	targets[6]->setOriginTarget(targets[6]->getTarget());
-
-	targets[7] = new CEntity();
-	targets[7]->Init();
-	targets[7]->setType(CEntity::E_MOVING_TARGET);
-	targets[7]->setPos(Vector3(875.f, 200.f, -1200.f));
-	targets[7]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[7]->setTarget(Vector3(875.f, 220.f, -1900.f));
-	targets[7]->setSpeed(200.f);
-	targets[7]->setOriginPos(targets[7]->getPos());
-	targets[7]->setOriginTarget(targets[7]->getTarget());
-
-	targets[8] = new CEntity();
-	targets[8]->Init();
-	targets[8]->setType(CEntity::E_MOVING_TARGET);
-	targets[8]->setPos(Vector3(250.f, 100.f, -1200.f));
-	targets[8]->setScale(Vector3(40.f, 40.f, 40.f));
-	targets[8]->setTarget(Vector3(250.f, 200.f, -1900.f));
-	targets[8]->setSpeed(200.f);
-	targets[8]->setOriginPos(targets[8]->getPos());
-	targets[8]->setOriginTarget(targets[8]->getTarget());
+	//bigger range
+	for (int i = 3; i < 6; i++)
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setOriginTarget(targets[i]->getTarget());
+	}
+	//smaller range
+	for (int i = 6; i < 9; i++)
+	{
+		targets[i] = new CEntity();
+		targets[i]->Init();
+		targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+		targets[i]->setPos(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+		targets[i]->setTarget(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		targets[i]->setOriginPos(targets[i]->getPos());
+		targets[i]->setOriginTarget(targets[i]->getTarget());
+	}
 
 	//pillars on sides
 	for (int i = 0; i < 2; i++)
@@ -399,12 +365,12 @@ void SceneRangeMoving::Init()
 	}
 	
 	//rocks tht r randomerino
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		rocks[i] = new CEntity();
 		rocks[i]->Init();
 		rocks[i]->setType(CEntity::E_ROCKS);
-		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-1000.f, 1000.f), 0.f, Math::RandFloatMinMax(-1000.f, 1000.f)));
+		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
 		rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
 		rocks[i]->setOriginPos(rocks[i]->getPos());
 	}
@@ -435,7 +401,7 @@ void SceneRangeMoving::Init()
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 }
 
-void SceneRangeMoving::Update(double dt)
+void SceneRangeElemental::Update(double dt)
 {
 	//cout << playerInfo->getPos() << endl;
 	/*if (playerInfo->getPos().z > 740) { playerInfo->setPos(Vector3(playerInfo->getPos().x, playerInfo->getPos().y, 740)); }
@@ -443,10 +409,6 @@ void SceneRangeMoving::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
-	}
-	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
-	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 	}
 
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -751,14 +713,21 @@ void SceneRangeMoving::Update(double dt)
 
 	playerInfo->SetNotMoving();
 
-	//ezpz
+	//loink reng
 	bool shouldChange = true;
 	//check if shouldnt change (any targets still up)
 	for (int i = 0; i < 3; ++i)
 	{
 		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange && stateChangeTimer == 0) { stateChangeTimer = targets[1]->getOriginPos().y + targets[1]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer == 0) { 
+		stateChangeTimer = targets[1]->getOriginPos().y + targets[1]->getScale().y + 10; 
+		for (int i = 0; i < 3; i++)
+		{
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(-1600.f, 1600.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(1250.f, 1700.f)));
+		}
+	}
 	//if should change switches state
 	if (shouldChange)
 	{
@@ -770,195 +739,81 @@ void SceneRangeMoving::Update(double dt)
 			for (int i = 0; i < 3; i++)
 			{
 				targets[i]->setIsDone(false);
-				targets[i]->setType(CEntity::E_MOVING_TARGET);
-				targets[i]->setPos(Vector3(-750 + i * 750, 100.f, 1700.f));
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
 				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
-				targets[i]->setTarget(Vector3(0 + i * 750, 100.f, 1700.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
 			}
 		}
 	}
 
-	//left right
+	//bigger reng
 	shouldChange = true;
 	//check if shouldnt change (any targets still up)
 	for (int i = 3; i < 6; ++i)
 	{
 		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange && stateChangeTimer1 == 0.f && targets[3]->isDone()) { stateChangeTimer1 = targets[3]->getOriginPos().y + targets[3]->getScale().y + 10; }
-	if (shouldChange && stateChangeTimer2 == 0.f && targets[4]->isDone()) { stateChangeTimer2 = targets[4]->getOriginPos().y + targets[4]->getScale().y + 10; }
-	if (shouldChange && stateChangeTimer3 == 0.f && targets[5]->isDone()) { stateChangeTimer3 = targets[5]->getOriginPos().y + targets[5]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer1 == 0) { 
+		stateChangeTimer1 = targets[3]->getOriginPos().y + targets[3]->getScale().y + 10; 
+		for (int i = 3; i < 6; i++)
+		{
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(200.f, 1500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		}
+	}
 	//if should change switches state
 	if (shouldChange)
 	{
 		stateChangeTimer1--;
-		if (stateChangeTimer1 <= 0.f) { stateChangeTimer1 = -1.f; }
-		stateChangeTimer2--;
-		if (stateChangeTimer2 <= 0.f) { stateChangeTimer2 = -1.f; }
-		stateChangeTimer3--;
-		if (stateChangeTimer3 <= 0.f) { stateChangeTimer3 = -1.f; }
-		rotateAngle = 0;
-		if (stateChangeTimer1 == -1.f && stateChangeTimer2 == -1.f && stateChangeTimer3 == -1.f)
+		if (stateChangeTimer1 <= 0)
 		{
-			stateChangeTimer1 = 0.f;
-			targets[3]->setIsDone(false);
-			targets[3]->setType(CEntity::E_MOVING_TARGET);
-			targets[3]->setPos(Vector3(-1500.f, 200.f, -1700.f));
-			targets[3]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[3]->setTarget(Vector3(-250.f, 100.f, -1700.f));
-			targets[3]->setSpeed(200.f);
-
-			stateChangeTimer2 = 0.f;
-			targets[4]->setIsDone(false);
-			targets[4]->setType(CEntity::E_MOVING_TARGET);
-			targets[4]->setPos(Vector3(-250.f, 200.f, -1500.f));
-			targets[4]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[4]->setTarget(Vector3(-1500.f, 220.f, -1500.f));
-			targets[4]->setSpeed(200.f);
-
-			stateChangeTimer3 = 0.f;
-			targets[5]->setIsDone(false);
-			targets[5]->setType(CEntity::E_MOVING_TARGET);
-			targets[5]->setPos(Vector3(-1500.f, 100.f, -1300.f));
-			targets[5]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[5]->setTarget(Vector3(-250.f, 200.f, -1300.f));
-			targets[5]->setSpeed(200.f);
+			stateChangeTimer1 = 0;
+			rotateAngle = 0;
+			for (int i = 3; i < 6; i++)
+			{
+				targets[i]->setIsDone(false);
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
+			}
 		}
 	}
 
-	//front back
+	//smole reng
 	shouldChange = true;
 	//check if shouldnt change (any targets still up)
 	for (int i = 6; i < 9; ++i)
 	{
 		if (!targets[i]->isDone()) { shouldChange = false; }
 	}
-	if (shouldChange && stateChangeTimer4 == 0.f && targets[6]->isDone()) { stateChangeTimer4 = targets[6]->getOriginPos().y + targets[6]->getScale().y + 10; }
-	if (shouldChange && stateChangeTimer5 == 0.f && targets[7]->isDone()) { stateChangeTimer5 = targets[7]->getOriginPos().y + targets[7]->getScale().y + 10; }
-	if (shouldChange && stateChangeTimer6 == 0.f && targets[8]->isDone()) { stateChangeTimer6 = targets[8]->getOriginPos().y + targets[8]->getScale().y + 10; }
+	if (shouldChange && stateChangeTimer2 == 0) { 
+		stateChangeTimer2 = targets[6]->getOriginPos().y + targets[6]->getScale().y + 10; 
+		for (int i = 6; i < 9; i++)
+		{
+			targets[i]->setOriginPos(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+			targets[i]->setOriginTarget(Vector3(Math::RandFloatMinMax(-1100.f, -500.f), Math::RandFloatMinMax(75.f, 225.f), Math::RandFloatMinMax(-1400.f, -500.f)));
+		}
+	}
 	//if should change switches state
 	if (shouldChange)
 	{
-		stateChangeTimer4--;
-		if (stateChangeTimer4 <= 0.f) { stateChangeTimer4 = -1.f; }
-		stateChangeTimer5--;
-		if (stateChangeTimer5 <= 0.f) { stateChangeTimer5 = -1.f; }
-		stateChangeTimer6--;
-		if (stateChangeTimer6 <= 0.f) { stateChangeTimer6 = -1.f; }
-		rotateAngle = 0;
-		if (stateChangeTimer4 == -1.f && stateChangeTimer5 == -1.f && stateChangeTimer6 == -1.f)
+		stateChangeTimer2--;
+		if (stateChangeTimer2 <= 0)
 		{
-			stateChangeTimer4 = 0.f;
-			targets[6]->setIsDone(false);
-			targets[6]->setType(CEntity::E_MOVING_TARGET);
-			targets[6]->setPos(Vector3(1500.f, 200.f, -1200.f));
-			targets[6]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[6]->setTarget(Vector3(1500.f, 125.f, -1900.f));
-			targets[6]->setSpeed(200.f);
-
-			stateChangeTimer5 = 0.f;
-			targets[7]->setIsDone(false);
-			targets[7]->setType(CEntity::E_MOVING_TARGET);
-			targets[7]->setPos(Vector3(875.f, 200.f, -1200.f));
-			targets[7]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[7]->setTarget(Vector3(875.f, 220.f, -1900.f));
-			targets[7]->setSpeed(200.f);
-
-			stateChangeTimer6 = 0.f;
-			targets[8]->setIsDone(false);
-			targets[8]->setType(CEntity::E_MOVING_TARGET);
-			targets[8]->setPos(Vector3(250.f, 100.f, -1200.f));
-			targets[8]->setScale(Vector3(40.f, 40.f, 40.f));
-			targets[8]->setTarget(Vector3(250.f, 200.f, -1900.f));
-			targets[8]->setSpeed(200.f);
+			stateChangeTimer2 = 0;
+			rotateAngle = 0;
+			for (int i = 6; i < 9; i++)
+			{
+				targets[i]->setIsDone(false);
+				targets[i]->setType((CEntity::TYPE)Math::RandIntMinMax(3, 4));
+				targets[i]->setPos(targets[i]->getOriginPos());
+				targets[i]->setScale(Vector3(40.f, 40.f, 40.f));
+				targets[i]->setTarget(targets[i]->getOriginTarget());
+			}
 		}
 	}
-
-	//bool shouldChange1 = true;
-	////check if shouldnt change (any targets still up)
-	//switch (targetState1)
-	//{
-	//case T_MOVING:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
-	//	}
-	//	break;
-	//case T_STATIONARY:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if (!targets1[i]->isDone()) { 
-	//			shouldChange1 = false; 
-	//		}
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
-	//if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
-	////if should change switches state
-	//if (shouldChange1)
-	//{
-	//	stateChangeTimer1--;
-	//	if (stateChangeTimer1 <= 0)
-	//	{
-	//		stateChangeTimer1 = 0;
-	//		switch (targetState1)
-	//		{
-	//		case T_MOVING:
-	//			targetState1 = T_STATIONARY;
-	//			for (int i = 0; i < 3; i++)
-	//			{
-	//				targets1[i]->setIsDone(false);
-	//				targets1[i]->setType(CEntity::E_TARGET_FIRE);
-	//				targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-	//				targets1[i]->setOriginPos(targets1[i]->getPos());
-	//				targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-	//				targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	//			}
-	//			break;
-	//		case T_STATIONARY:
-	//			targetState1 = T_MOVING;
-	//			for (int i = 0; i < 3; i++)
-	//			{
-	//				targetsMoving1[i]->setIsDone(false);
-	//				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-	//				targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-	//				targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-	//				targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-	//				targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	//			}
-	//			break;
-	//		default:
-	//			break;
-	//		}
-	//	}
-	//}
-	////updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	//switch (targetState1)
-	//{
-	//case T_MOVING:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		targets1[i]->setIsDone(true);
-	//		if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
-	//	}
-	//	break;
-	//case T_STATIONARY:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-	//		targetsMoving1[i]->setIsDone(true);
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
-	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
-	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
-	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
-	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
-	//meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
 	testvar += 0.05 * dt;
 
@@ -974,7 +829,7 @@ void SceneRangeMoving::Update(double dt)
 	//std::cout << camera.position << std::endl;
 }
 
-void SceneRangeMoving::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneRangeElemental::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if (!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -1001,7 +856,7 @@ void SceneRangeMoving::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRangeMoving::RenderTerrain() {
+void SceneRangeElemental::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -1010,7 +865,7 @@ void SceneRangeMoving::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneRangeMoving::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneRangeElemental::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureArray[0] <= 0)
 		return;
@@ -1049,7 +904,7 @@ void SceneRangeMoving::RenderTextOnScreen(Mesh* mesh, std::string text, Color co
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRangeMoving::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -1115,7 +970,7 @@ void SceneRangeMoving::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x
 
 }
 
-void SceneRangeMoving::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneRangeElemental::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 	if (m_renderPass == RENDER_PASS_PRE)
@@ -1205,7 +1060,7 @@ void SceneRangeMoving::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneRangeMoving::RenderGround()
+void SceneRangeElemental::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -1229,7 +1084,7 @@ void SceneRangeMoving::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneRangeMoving::Render()
+void SceneRangeElemental::Render()
 {
 	//******************************* PRE RENDER PASS*************************************
 		RenderPassGPass();
@@ -1237,7 +1092,7 @@ void SceneRangeMoving::Render()
 		RenderPassMain();
 }
 
-void SceneRangeMoving::Exit()
+void SceneRangeElemental::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -1270,7 +1125,7 @@ void SceneRangeMoving::Exit()
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneRangeMoving::RenderTrees() 
+void SceneRangeElemental::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -1285,7 +1140,7 @@ void SceneRangeMoving::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneRangeMoving::GetParticle(void)
+ParticleObject* SceneRangeElemental::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1309,7 +1164,7 @@ ParticleObject* SceneRangeMoving::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneRangeMoving::UpdateParticles(double dt)
+void SceneRangeElemental::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -1373,7 +1228,7 @@ void SceneRangeMoving::UpdateParticles(double dt)
 	}
 }
 
-void SceneRangeMoving::RenderParticles(ParticleObject *particle)
+void SceneRangeElemental::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -1398,7 +1253,7 @@ void SceneRangeMoving::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneRangeMoving::RenderWorld()
+void SceneRangeElemental::RenderWorld()
 {
 	// Render all entities
 	if (!EntityManager::GetInstance()->entityList.empty()) {
@@ -1562,13 +1417,22 @@ void SceneRangeMoving::RenderWorld()
 				break;
 			}
 			case CEntity::E_TARGET_FIRE:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_BARREL_FIRE], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			case CEntity::E_TARGET_ICE:
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_BARREL], godlights);
+				RenderMesh(meshList[GEO_BARREL_ICE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1620,7 +1484,7 @@ void SceneRangeMoving::RenderWorld()
 			}
 		}
 	}
-	if (stateChangeTimer > 0) 
+	if (stateChangeTimer != 0) 
 	{
 		for (int i = 0; i < 3; i++)
 		{
@@ -1634,57 +1498,27 @@ void SceneRangeMoving::RenderWorld()
 	}
 	if (stateChangeTimer1 != 0)
 	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[3]->getOriginPos().x, targets[3]->getOriginPos().y - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (targets[3]->getOriginPos().x) / 4000, (targets[3]->getOriginPos().z) / 4000), targets[3]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
+		for (int i = 3; i < 6; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
+			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_BARREL], godlights);
+			modelStack.PopMatrix();
+		}
 	}
 	if (stateChangeTimer2 != 0)
 	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[4]->getOriginPos().x, targets[4]->getOriginPos().y - stateChangeTimer2 + 350.f * ReadHeightMap(m_heightMap, (targets[4]->getOriginPos().x) / 4000, (targets[4]->getOriginPos().z) / 4000), targets[4]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
-	}
-	if (stateChangeTimer3 != 0)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[5]->getOriginPos().x, targets[5]->getOriginPos().y - stateChangeTimer3 + 350.f * ReadHeightMap(m_heightMap, (targets[5]->getOriginPos().x) / 4000, (targets[5]->getOriginPos().z) / 4000), targets[5]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
-	}
-	if (stateChangeTimer4 != 0)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[6]->getOriginPos().x, targets[6]->getOriginPos().y - stateChangeTimer4 + 350.f * ReadHeightMap(m_heightMap, (targets[6]->getOriginPos().x) / 4000, (targets[6]->getOriginPos().z) / 4000), targets[6]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
-	}
-	if (stateChangeTimer5 != 0)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[7]->getOriginPos().x, targets[7]->getOriginPos().y - stateChangeTimer5 + 350.f * ReadHeightMap(m_heightMap, (targets[7]->getOriginPos().x) / 4000, (targets[7]->getOriginPos().z) / 4000), targets[7]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
-	}
-	if (stateChangeTimer6 != 0)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(targets[8]->getOriginPos().x, targets[8]->getOriginPos().y - stateChangeTimer6 + 350.f * ReadHeightMap(m_heightMap, (targets[8]->getOriginPos().x) / 4000, (targets[8]->getOriginPos().z) / 4000), targets[8]->getOriginPos().z);
-		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-		modelStack.Scale(40.f, 40.f, 40.f);
-		RenderMesh(meshList[GEO_BARREL], godlights);
-		modelStack.PopMatrix();
+		for (int i = 6; i < 9; i++)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(targets[i]->getOriginPos().x, targets[i]->getOriginPos().y - stateChangeTimer2 + 350.f * ReadHeightMap(m_heightMap, (targets[i]->getOriginPos().x) / 4000, (targets[i]->getOriginPos().z) / 4000), targets[i]->getOriginPos().z);
+			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+			modelStack.Scale(40.f, 40.f, 40.f);
+			RenderMesh(meshList[GEO_BARREL], godlights);
+			modelStack.PopMatrix();
+		}
 	}
 
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
@@ -1908,7 +1742,7 @@ void SceneRangeMoving::RenderWorld()
 	}
 }
 
-void SceneRangeMoving::RenderPassMain()
+void SceneRangeElemental::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -2035,7 +1869,7 @@ void SceneRangeMoving::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
 		std::ostringstream ss1;
 		ss1.precision(5);
-		ss1 << "Health: " << playerInfo->GetHealth();
+		ss1 << "Health: " << playerInfo->getPos();// playerInfo->GetHealth();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 		std::ostringstream ss2;
 		ss2.precision(5);
@@ -2053,7 +1887,7 @@ void SceneRangeMoving::RenderPassMain()
 	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
-void SceneRangeMoving::RenderPassGPass()
+void SceneRangeElemental::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();
