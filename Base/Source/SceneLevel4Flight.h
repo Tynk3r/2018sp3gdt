@@ -236,15 +236,23 @@ private:
 
 	CEntity* wall1;
 
-	CEntity* targets[4];
-	CEntity* targetsMoving[4];
+	//NORMAL BARRELS
+	CEntity* targets[8];
+	CEntity* targetsMoving[8];
 	TARGET_STATE targetState = T_STATIONARY;
 	int stateChangeTimer = 0;
 
+	//ICE/FIRE BARRELS
 	CEntity* targets1[3];
 	CEntity* targetsMoving1[3];
 	TARGET_STATE targetState1 = T_STATIONARY;
 	int stateChangeTimer1 = 0;
+
+	////MOVING BARRELS
+	CEntity* targets2[2];
+	CEntity* targetsMoving2[2];
+	TARGET_STATE targetState2 = T_MOVING;
+	int stateChangeTimer2 = 0;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;

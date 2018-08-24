@@ -415,7 +415,7 @@ void SceneLevel2::Init()
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 60;
+	totalTime = 70;
 	totalBarrelsDown = 0;
 	secondSetBarrel = false;
 }
