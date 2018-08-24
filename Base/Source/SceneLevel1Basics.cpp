@@ -257,7 +257,13 @@ void SceneLevel1::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -265,6 +271,33 @@ void SceneLevel1::Init()
 	meshList[GEO_GRASS_LIGHTGREEN]->textureArray[0] = LoadTGA("Image//grass_lightgreen.tga");
 	meshList[GEO_SPRITE_ANIMATION] =
 		MeshBuilder::GenerateSpriteAnimation("fire", 4, 4);
+
+	meshList[GEO_PILLAR] = MeshBuilder::GenerateOBJ("pillar", "OBJ//pillar.obj");
+	meshList[GEO_PILLAR]->textureArray[0] = LoadTGA("Image//pillar.tga");
+	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("water", Color(1, 1, 1), 10.f);
+	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//water.tga");
+	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
+	meshList[GEO_WATER]->textureArray[2] = LoadTGA("Image//water.tga");
+
+	for (int i = 0; i < 2; i++)
+	{
+		pillars[i] = new CEntity();
+		pillars[i]->Init();
+		pillars[i]->setType(CEntity::E_PILLAR);
+		pillars[i]->setPos(Vector3(1000 - i * 2000, 0.f, 700.f));
+		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
+		pillars[i]->setOriginPos(pillars[i]->getPos());
+	}
+	for (int i = 2; i < 4; i++)
+	{
+		pillars[i] = new CEntity();
+		pillars[i]->Init();
+		pillars[i]->setType(CEntity::E_PILLAR);
+		pillars[i]->setPos(Vector3(-1000 + i * 2000, 0.f, -700.f));
+		pillars[i]->setScale(Vector3(100.f, 100.f, 100.f));
+		pillars[i]->setOriginPos(pillars[i]->getPos());
+	}
+
 	//meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
@@ -400,7 +433,7 @@ void SceneLevel1::Init()
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 60;
+	totalTime = 180;
 	totalBarrelsDown = 0;
 }
 
@@ -1501,6 +1534,16 @@ void SceneLevel1::RenderWorld()
 				modelStack.PopMatrix();
 				break;
 			}
+			case CEntity::E_PILLAR:
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + (*it)->getScale().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Rotate(rotateAngle, 1, 1, 1);
+				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
+				RenderMesh(meshList[GEO_PILLAR], godlights);
+				modelStack.PopMatrix();
+				break;
+			}
 			case CEntity::E_NPC:
 				modelStack.PushMatrix();
 				modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
@@ -1834,6 +1877,17 @@ void SceneLevel1::RenderPassMain()
 	RenderWorld(); //casts shadow
 				   ////////////////////////////////	
 
+	float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, -50.f + 350.f * ReadHeightMap(m_heightMap, 0.f / 4000, 0.f / 4000), 0.f);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(4000, 4000, 4000);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.1f, timeElapsed * 0.1f);
+	RenderMesh(meshList[GEO_WATER], godlights);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	modelStack.PopMatrix();
+
 				   //Render particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1845,7 +1899,18 @@ void SceneLevel1::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER

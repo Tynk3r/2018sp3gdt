@@ -262,7 +262,13 @@ void SceneLevel2::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 
+	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
+	for (int i = 0; i < MAX_TEXTURES; ++i)
+		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -1772,7 +1778,18 @@ void SceneLevel2::RenderPassMain()
 	}
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+	float PHealth = playerInfo->GetHealth();
+	for (int i = 0; i < (PHealth *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_HEART], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.5f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 
+
+	float PMana = playerInfo->getMana();
+	for (int i = 0; i < (PMana *0.1); ++i)
+	{
+		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
+	}
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
