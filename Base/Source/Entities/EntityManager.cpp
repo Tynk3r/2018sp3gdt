@@ -285,6 +285,14 @@ bool EntityManager::CheckForCollision(float dt)
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
 							break;
+						case CEntity::E_TARGET_ICE:
+						case CEntity::E_TARGET_FIRE:
+							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+							if ((*it)->getType() == CEntity::E_TARGET_ICE)
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(0.1f, 0.1f, 1));
+							else
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it), Color(1, 0.1f, 0.1f));
+							break;
 						case CEntity::E_TARGET:
 							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
 							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
@@ -331,7 +339,17 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							bos->TakeDamage(proj);
+							int damagetaken = bos->TakeDamage(proj);
+							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
+								bos->SetBurnTime();
+							}
+							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+							{
+								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
+								bos->SetFreezeTime();
+							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						}

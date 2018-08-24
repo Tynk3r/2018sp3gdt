@@ -273,9 +273,9 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_BODY] = MeshBuilder::GenerateOBJ("octoBody", "OBJ//octoBody.obj");
 	meshList[GEO_OCTO_BODY]->textureArray[0] = LoadTGA("Image//octoBody.tga");
 	meshList[GEO_OCTO_HEAD_SHIELD] = MeshBuilder::GenerateOBJ("octoHeadShield", "OBJ//octoHead.obj");
-	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
+	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
 	meshList[GEO_OCTO_BODY_SHIELD] = MeshBuilder::GenerateOBJ("octoBodyShield", "OBJ//octoBody.obj");
-	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
+	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
 	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
 	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);

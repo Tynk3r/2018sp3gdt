@@ -1,5 +1,5 @@
 #include "ParticleManager.h"
-
+#include "../Entities/Boss.h"
 #include <iostream>
 using namespace std;
 
@@ -66,6 +66,16 @@ void ParticleManager::AddParticle(CEntity * entity)
 		case CEntity::E_TARGET_ICE:
 			newPar = new CParticle_2(CParticle_2::PTYPE_ICE, entity);
 			break;
+		case CEntity::E_BOSS:
+		{
+			CBoss* boss = static_cast<CBoss*>(entity);
+			if (boss->IsFrozen())
+				newPar = new CParticle_2(CParticle_2::PTYPE_ICE, entity);
+			else if(boss->IsOnFire())
+				newPar = new CParticle_2(CParticle_2::PTYPE_FIRE, entity);
+			break;
+		}
+			
 	}
 	if (newPar != NULL)
 		this->AddParticle(newPar);
