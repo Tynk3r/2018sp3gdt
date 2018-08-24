@@ -49,6 +49,8 @@
     <ClCompile Include="Source\SceneLevel4Flight.cpp" />
     <ClCompile Include="Source\SceneRangeMoving.cpp" />
     <ClCompile Include="Source\SceneRangeElemental.cpp" />
+    <ClCompile Include="Source\SceneInstructions.cpp" />
+    <ClCompile Include="Source\SceneInstructions1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -104,5 +106,7 @@
     <ClInclude Include="Source\SceneLevel4Flight.h" />
     <ClInclude Include="Source\SceneRangeMoving.h" />
     <ClInclude Include="Source\SceneRangeElemental.h" />
+    <ClInclude Include="Source\SceneInstructions.h" />
+    <ClInclude Include="Source\SceneInstructions1.h" />
   </ItemGroup>
 </Project>

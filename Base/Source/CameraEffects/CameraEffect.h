@@ -18,6 +18,7 @@ public:
 	CAMEFFECT_TYPE getCamEffectType() const;
 	Vector3 getOffset() const;
 	float getTransparency() const;
+	float getAnimFrame() const;
 	bool IsDone();
 	void SetFade(bool fading);
 private:

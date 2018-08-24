@@ -18,6 +18,8 @@
 #include "SceneInGameMenu.h"
 #include "SceneControls.h"
 #include "SceneControls1.h"
+#include "SceneInstructions.h"
+#include "SceneInstructions1.h"
 #include "SceneTerrain.h"
 #include "SceneRange.h"
 #include "SceneBoss.h"
@@ -222,6 +224,8 @@ void Application::Run()
 	Scene *scene11 = new SceneLevel2();
 	Scene *scene12 = new SceneLevel4();
 	Scene *scene13 = new SceneRangeElemental();
+	Scene *scene14 = new SceneInstructions();
+	Scene *scene15 = new SceneInstructions1();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -237,6 +241,8 @@ void Application::Run()
 	sceneManager->AddScene(scene11);
 	sceneManager->AddScene(scene12);
 	sceneManager->AddScene(scene13);
+	sceneManager->AddScene(scene14);
+	sceneManager->AddScene(scene15);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
@@ -250,6 +256,8 @@ void Application::Run()
 		case CSceneManager::SCENE_IN_GAME_MENU:
 		case CSceneManager::SCENE_CONTROLS:
 		case CSceneManager::SCENE_CONTROLS1:
+		case CSceneManager::SCENE_INSTRUCTIONS1:
+		case CSceneManager::SCENE_INSTRUCTIONS:
 				wrapAroundEnabled = false;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;

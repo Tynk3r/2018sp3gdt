@@ -312,6 +312,14 @@ void SceneInGameMenu::Update(double dt)
 				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_CONTROLS1);
 			}
 		}
+		if (Application::mouse_current_x >= 525 && Application::mouse_current_x <= 760)
+		{
+			if (Application::mouse_current_y >= 418 && Application::mouse_current_y <= 477)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_INSTRUCTIONS1);
+			}
+		}
 		if (Application::mouse_current_x >= 524 && Application::mouse_current_x <= 756)
 		{
 			if (Application::mouse_current_y >= 498 && Application::mouse_current_y <= 560)
