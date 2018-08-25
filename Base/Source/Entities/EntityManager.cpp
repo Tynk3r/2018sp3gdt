@@ -368,7 +368,10 @@ bool EntityManager::CheckForCollision(float dt)
 							break;
 						}
 						(*it)->setIsDone(true);
-						if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO) (*it2)->setIsDone(true);
+						if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
+						{
+							(*it2)->setIsDone(true);
+						}
 
 						if (proj->getProjType() == CProjectile::PTYPE_FIRE && proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 						{

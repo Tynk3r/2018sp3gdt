@@ -135,6 +135,10 @@ uniform float colorAlpha;
 uniform bool uvOffsetEnabled;
 uniform vec2 uvOffset;
 
+//For hourglass (time)
+uniform bool cutoffEnabled = false;
+uniform float cutoffTexCoordY = 0.0;
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -150,6 +154,13 @@ float getShadowEffect()
 	return max(0.25, visibility);
 }
 void main(){
+
+	if (cutoffEnabled)
+	{
+		if (cutoffTexCoordY >= 0) { if (texCoord.y >= cutoffTexCoordY) discard; }
+		else if (cutoffTexCoordY < 0) { if (texCoord.y <= -cutoffTexCoordY) discard; }
+	}
+
 	if(lightEnabled == true)
 	{
 		// Material properties

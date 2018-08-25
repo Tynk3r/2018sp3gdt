@@ -46,7 +46,7 @@ void SceneGameMenu::Init()
 	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
 	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
-	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
+	//m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
 	// Get a handle for our uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
@@ -96,21 +96,21 @@ void SceneGameMenu::Init()
 	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.type");
 	m_parameters[U_FOG_ENABLED] = glGetUniformLocation(m_programID, "fogParam.enabled");
 	// shadow shtuff
-	m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
-	m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
-	m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
+	//m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
+	//m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
+	//m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
 	
 	//paint uniform value parameters
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
@@ -533,25 +533,25 @@ void SceneGameMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, f
 void SceneGameMenu::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
-	if (m_renderPass == RENDER_PASS_PRE)
-	{
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
-		for (int i = 0; i < MAX_TEXTURES; ++i)
-		{
-			if (mesh->textureArray[i] > 0)
-			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
-				glActiveTexture(GL_TEXTURE0 + i);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
-			}
-			else
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-		mesh->Render();
-		return;
-	}
+	//if (m_renderPass == RENDER_PASS_PRE)
+	//{
+	//	Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+	//	glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
+	//	for (int i = 0; i < MAX_TEXTURES; ++i)
+	//	{
+	//		if (mesh->textureArray[i] > 0)
+	//		{
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
+	//			glActiveTexture(GL_TEXTURE0 + i);
+	//			glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
+	//		}
+	//		else
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
+	//	}
+	//	mesh->Render();
+	//	return;
+	//}
 
 	if (mesh->texturePaintID > 0)
 	{
@@ -649,7 +649,7 @@ void SceneGameMenu::Render()
 
 	
 	//******************************* PRE RENDER PASS*************************************
-		RenderPassGPass();
+		//RenderPassGPass();
 	//******************************* MAIN RENDER PASS************************************
 		RenderPassMain();
 }
@@ -669,7 +669,7 @@ void SceneGameMenu::Exit()
 		particleList.pop_back();
 	}
 	glDeleteProgram(m_programID);
-	glDeleteProgram(m_gPassShaderID);
+	//glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
@@ -857,7 +857,7 @@ void SceneGameMenu::RenderPassMain()
 
 	//pass light depth texture
 	m_lightDepthFBO.BindForReading(GL_TEXTURE8);
-	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
+	//glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
 	//perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);

@@ -127,7 +127,8 @@ void SceneLevel2::Init()
 	//uv offset uniform value paprameters
 	m_parameters[U_UV_OFFSET_ENABLED] = glGetUniformLocation(m_programID, "uvOffsetEnabled");
 	m_parameters[U_UV_OFFSET] = glGetUniformLocation(m_programID, "uvOffset");
-
+	m_parameters[U_CUTOFF_ENABLED] = glGetUniformLocation(m_programID, "cutoffEnabled");
+	m_parameters[U_CUTOFF_TEXCOORDY] = glGetUniformLocation(m_programID, "cutoffTexCoordY");
 	// Use our shader
 	glUseProgram(m_programID);
 
@@ -285,6 +286,16 @@ void SceneLevel2::Init()
 	}
 	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
 	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
+	meshList[GEO_HUD_HOURGLASS] = MeshBuilder::GenerateQuad("hourglass", Color());
+	meshList[GEO_HUD_HOURGLASS]->textureArray[0] = LoadTGA("Image//hourglass.tga");
+	meshList[GEO_HUD_HOURGLASSFLUID] = MeshBuilder::GenerateQuad("hourglassFluid", Color());
+	meshList[GEO_HUD_HOURGLASSFLUID]->textureArray[0] = LoadTGA("Image//hourglassFluid.tga");
+	meshList[GEO_HUD_SPELLMOD0] = MeshBuilder::GenerateQuad("spellmod0", Color());
+	meshList[GEO_HUD_SPELLMOD0]->textureArray[0] = LoadTGA("Image//spellmodNormal.tga");
+	meshList[GEO_HUD_SPELLMOD1] = MeshBuilder::GenerateQuad("spellmod1", Color());
+	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
+	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
+	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -1793,6 +1804,17 @@ void SceneLevel2::RenderPassMain()
 	{
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
+	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 70));
+	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, 15, -7, 0.5);
+	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
+	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 70));
+	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, -15, -7, 0.5);
+	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
+	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASS], false, 35, 35, -3, 0);
+	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD1], false, 35, 35, -2, 0);
+	RenderMeshIn2D(meshList[GEO_BARREL], false, 2, 2, -55, 12);
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -1843,16 +1865,16 @@ void SceneLevel2::RenderPassMain()
 	}
 	std::ostringstream ss3;
 	ss3.precision(2);
-	ss3 << "Targets Left: " << totalBarrelsDown;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 0, 16);
-	std::ostringstream ss4;
-	ss4.precision((int)floor(log10f(totalTime)) + 1);
-	ss4 << "Time: " << totalTime;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
-	std::ostringstream ss9;
-	ss9.precision(1);
-	ss9 << "SpellMod: Burst";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
+	ss3 << /*"Targets Left: " << */totalBarrelsDown;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 11, 46);
+	//std::ostringstream ss4;
+	//ss4.precision((int)floor(log10f(totalTime)) + 1);
+	//ss4 << "Time: " << totalTime;
+	//RenderTextOnScreen(meshList[GEO_TEXT], ss4.str(), Color(0, 1, 0.3), 6, 0, 18);
+	//std::ostringstream ss9;
+	//ss9.precision(1);
+	//ss9 << "SpellMod: Burst";
+	//RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
 void SceneLevel2::RenderPassGPass()
 {
