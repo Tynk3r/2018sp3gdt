@@ -251,7 +251,12 @@ void SceneRangeElemental::Init()
 
 	meshList[GEO_ROCKS] = MeshBuilder::GenerateOBJ("rocks", "OBJ//rocks.obj");
 	meshList[GEO_ROCKS]->textureArray[0] = LoadTGA("Image//rocks.tga");
-
+	meshList[GEO_HUD_SPELLMOD0] = MeshBuilder::GenerateQuad("spellmod0", Color());
+	meshList[GEO_HUD_SPELLMOD0]->textureArray[0] = LoadTGA("Image//spellmodNormal.tga");
+	meshList[GEO_HUD_SPELLMOD1] = MeshBuilder::GenerateQuad("spellmod1", Color());
+	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
+	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
+	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRangeElemental.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
@@ -423,7 +428,7 @@ void SceneRangeElemental::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
 	}
-
+	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -1895,6 +1900,7 @@ void SceneRangeElemental::RenderPassMain()
 	{
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
+	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0 + playerInfo->GetSpellMod()], false, 35, 35, -2, 0);
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -1943,10 +1949,10 @@ void SceneRangeElemental::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
-	std::ostringstream ss9;
-	ss9.precision(1);
-	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
+	//std::ostringstream ss9;
+	//ss9.precision(1);
+	//ss9 << "SpellMod: " << playerInfo->GetSpellMod();
+	//RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
 void SceneRangeElemental::RenderPassGPass()
 {

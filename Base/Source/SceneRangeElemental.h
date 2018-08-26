@@ -166,6 +166,11 @@ class SceneRangeElemental : public Scene
 		GEO_PILLAR,
 		GEO_WATER,
 		GEO_ROCKS,
+
+		GEO_HUD_SPELLMOD0,
+		GEO_HUD_SPELLMOD1,
+		GEO_HUD_SPELLMOD2,
+
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

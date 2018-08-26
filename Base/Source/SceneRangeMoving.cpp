@@ -274,6 +274,13 @@ void SceneRangeMoving::Init()
 	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
 	meshList[GEO_WATER]->textureArray[2] = LoadTGA("Image//water.tga");
 
+	meshList[GEO_HUD_SPELLMOD0] = MeshBuilder::GenerateQuad("spellmod0", Color());
+	meshList[GEO_HUD_SPELLMOD0]->textureArray[0] = LoadTGA("Image//spellmodNormal.tga");
+	meshList[GEO_HUD_SPELLMOD1] = MeshBuilder::GenerateQuad("spellmod1", Color());
+	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
+	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
+	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
+
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -456,7 +463,7 @@ void SceneRangeMoving::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 	}
-
+	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -2056,6 +2063,7 @@ void SceneRangeMoving::RenderPassMain()
 	{
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
+	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0 + playerInfo->GetSpellMod()], false, 35, 35, -2, 0);
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -2104,10 +2112,10 @@ void SceneRangeMoving::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
 #endif
 	}
-	std::ostringstream ss9;
-	ss9.precision(1);
-	ss9 << "SpellMod: " << playerInfo->GetSpellMod();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
+	//std::ostringstream ss9;
+	//ss9.precision(1);
+	//ss9 << "SpellMod: " << playerInfo->GetSpellMod();
+	//RenderTextOnScreen(meshList[GEO_TEXT], ss9.str(), Color(0, 1, 0), 4, 0, 25);
 }
 void SceneRangeMoving::RenderPassGPass()
 {

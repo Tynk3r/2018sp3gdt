@@ -458,7 +458,7 @@ void SceneLevel1::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
-
+	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -1972,12 +1972,12 @@ void SceneLevel1::RenderPassMain()
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
 		std::ostringstream ss1;
 		ss1.precision(5);
-		ss1 << "Health: " << playerInfo->GetHealth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
-		std::ostringstream ss2;
-		ss2.precision(5);
-		ss2 << "Mana: " << playerInfo->getMana();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+		//ss1 << "Health: " << playerInfo->GetHealth();
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+		//std::ostringstream ss2;
+		//ss2.precision(5);
+		//ss2 << "Mana: " << playerInfo->getMana();
+		//RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
 
 #ifdef SP3_DEBUG
 		ss1.str("");
