@@ -138,7 +138,7 @@ void CProjectile::Update(double dt)
 		}
 		break;
 	}
-	std::cout << getPos() << std::endl;
+	//std::cout << getPos() << std::endl;
 	if (projectileType == PTYPE_FIRE && spellModType == SMTYPE_BURST)
 	{
 		setTarget(getPos() - burstPivotRot);

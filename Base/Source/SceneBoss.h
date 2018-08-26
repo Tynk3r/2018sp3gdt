@@ -169,6 +169,7 @@ class SceneBoss : public Scene
 		GEO_QUAD_RED,
 		GEO_HEART,
 		GEO_MANA,
+		GEO_KILLERNADO,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

@@ -560,17 +560,53 @@ void SceneRangeMoving::Update(double dt)
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
-				aa = new CProjectile(CProjectile::PTYPE_ICE, CProjectile::SMTYPE_SPECIAL);
+				aa = new CProjectile(CProjectile::PTYPE_BEAM);
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec * 5, camtar + viewvec * 6);
+
+				//raycast check
+				Vector3 tempProj(9999, 9999, 9999);
+				std::list<CEntity*>::iterator it, it2, end;
+				end = EntityManager::GetInstance()->entityList.end();
+				for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+				{
+					if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_WALL || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE)
+					{
+						Vector3 tempView = (aa->getTarget() - aa->getPos()).Normalized() * 2000;
+						Vector3 tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, false);
+						if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+						{
+							tempProj = tempTempProj;
+						}
+						tempTempProj = EntityManager::GetInstance()->CheckForLineIntersection(aa->getPos(), (*it), tempView, true);
+						if (!(tempTempProj - Vector3(9999, 9999, 9999)).IsZero() && tempTempProj.Length() < tempProj.Length())
+						{
+							tempProj = tempTempProj;
+						}
+					}
+				}
+
+				if ((tempProj - Vector3(9999, 9999, 9999)).IsZero())
+				{
+					aa->setIsDone(true);
+					playerInfo->setMana(playerInfo->getMana() + playerInfo->getManaCost());
+				}
+				else
+				{
+					aa->setTarget(aa->getPos() + tempProj);
+					aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
+					CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+
+					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(1, 0, 1), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+				}
 			}
 
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 		}
-		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
+		if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_ICEBALL && playerInfo->GetSpellMod() != CProjectile::SMTYPE_SPECIAL) CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
 		playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
 		
 	}

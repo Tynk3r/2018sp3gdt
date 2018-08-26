@@ -367,6 +367,9 @@ float CBoss::TakeDamage(CEntity * ent)
 	{
 		switch (proj->getProjType())
 		{
+		case CProjectile::PTYPE_SPECIAL_KILLERNADO:
+			damagetodo = 30 * damageMultiplier;
+			break;
 		case CProjectile::PTYPE_BEAM:
 			damagetodo = 40 * damageMultiplier;
 			break;

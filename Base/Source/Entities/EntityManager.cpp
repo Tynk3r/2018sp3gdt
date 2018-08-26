@@ -334,9 +334,9 @@ bool EntityManager::CheckForCollision(float dt)
 						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
 						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 
-						break;
 					}
 				}
+				break;
 				case CEntity::E_TARGET:
 				case CEntity::E_MOVING_TARGET:
 				case CEntity::E_TARGET_FIRE:
@@ -423,37 +423,71 @@ bool EntityManager::CheckForCollision(float dt)
 			}
 			else
 			{
-				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE)
-					if ((*it2)->getType() == CEntity::E_PROJECTILE)
+				if ((*it)->getType() == CEntity::E_ENEMY || (*it)->getType() == CEntity::E_TARGET || (*it)->getType() == CEntity::E_MOVING_TARGET || (*it)->getType() == CEntity::E_TARGET_FIRE || (*it)->getType() == CEntity::E_TARGET_ICE || (*it)->getType() == CEntity::E_BOSS || (*it)->getType() == CEntity::E_PROJECTILE)
+				{
+					bool check = true;
+					if ((*it)->getType() == CEntity::E_PROJECTILE)
+					{
+						CProjectile* tempProjectile = (CProjectile*)*it;
+						if (tempProjectile->getSource())
+						{
+							if (tempProjectile->getSource()->getType() != CEntity::E_BOSS)
+							{
+								check = false;
+							}
+						}
+					}
+
+					if ((*it2)->getType() == CEntity::E_PROJECTILE && check)
 					{
 						CProjectile* tempProjectile = (CProjectile*)*it2;
 						if (tempProjectile->getProjType() == CProjectile::PTYPE_BEAM)
 						{
-							if(!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 0) - Vector3(9999, 9999, 9999)).IsZero() 
-								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 1) - Vector3(9999, 9999, 9999)).IsZero()
-								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.0, 2) - Vector3(9999, 9999, 9999)).IsZero())
+							if (!(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.1, 0) - Vector3(9999, 9999, 9999)).IsZero()
+								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.1, 1) - Vector3(9999, 9999, 9999)).IsZero()
+								|| !(CheckForLineIntersection(tempProjectile->getPos(), (*it), (tempProjectile->getTarget() - tempProjectile->getPos()).Normalized() * tempProjectile->getScale().z * 1.1, 2) - Vector3(9999, 9999, 9999)).IsZero())
 							{
-								(*it)->setIsDone(true);
+								//(*it)->setIsDone(true);
 								//(*it2)->setIsDone(true);
 								switch ((*it)->getType())
 								{
 								case CEntity::E_ENEMY:
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+									(*it)->setIsDone(true);
 									break;
 								case CEntity::E_MOVING_TARGET:
 								case CEntity::E_TARGET_ICE:
 								case CEntity::E_TARGET_FIRE:
+									(*it)->setIsDone(true);
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 									break;
 								case CEntity::E_TARGET:
+									(*it)->setIsDone(true);
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
 									break;
+								case CEntity::E_BOSS:
+								{
+									CBoss* bos = static_cast<CBoss*>(*it);
+									bos->TakeDamage(tempProjectile);
+									tempProjectile->setIsDone(true);
 								}
-								cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
+									break;
+								case CEntity::E_PROJECTILE:
+								{
+									CProjectile* bossProj = (CProjectile*)*it;
+									bossProj->bossDone = true;
+									(*it)->setIsDone(true);
+								}
+									break;
+								default:
+									break;
+								}
+								//cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 								break;
 							}
 						}
 					}
+				}
 			}
 		}
 	}
@@ -464,7 +498,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 	if (times == 2) return CheckForLineIntersectionZFace(pivot, ent, mousePoint);
 
 	Vector3 tempScale = ent->getMaxAABB() - ent->getMinAABB();
-	tempScale *= 0.5;
+	//tempScale *= 0.5;
 
 	Vector3 relativePos = ent->getPos() - pivot;
 	float tempAng = Math::DegreeToRadian(90);
