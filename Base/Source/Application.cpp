@@ -28,6 +28,7 @@
 
 #include "SceneLevel1Basics.h"
 #include "SceneLevel2Burst.h"
+#include "SceneLevel3Fog.h"
 #include "SceneLevel4Flight.h"
 
 GLFWwindow* m_window;
@@ -222,10 +223,11 @@ void Application::Run()
 	Scene *scene9 = new SceneRangeMoving();
 	Scene *scene10 = new SceneLevel1();
 	Scene *scene11 = new SceneLevel2();
-	Scene *scene12 = new SceneLevel4();
-	Scene *scene13 = new SceneRangeElemental();
-	Scene *scene14 = new SceneInstructions();
-	Scene *scene15 = new SceneInstructions1();
+	Scene *scene12 = new SceneLevel3();
+	Scene *scene13 = new SceneLevel4();
+	Scene *scene14 = new SceneRangeElemental();
+	Scene *scene15 = new SceneInstructions();
+	Scene *scene16 = new SceneInstructions1();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -243,6 +245,7 @@ void Application::Run()
 	sceneManager->AddScene(scene13);
 	sceneManager->AddScene(scene14);
 	sceneManager->AddScene(scene15);
+	sceneManager->AddScene(scene16);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame

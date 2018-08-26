@@ -316,6 +316,7 @@ void SceneRangeElemental::Init()
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
 	playerInfo->Init();
+	playerInfo->setPos(Vector3(-50, 0, 0));
 	playerInfo->climbHeight = 5.0;
 	camera.Init(playerInfo->getPos(), playerInfo->getTarget(), playerInfo->GetUp(), m_heightMap);
 	playerInfo->AttachCamera(&camera);

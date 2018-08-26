@@ -51,6 +51,7 @@
     <ClCompile Include="Source\SceneRangeElemental.cpp" />
     <ClCompile Include="Source\SceneInstructions.cpp" />
     <ClCompile Include="Source\SceneInstructions1.cpp" />
+    <ClCompile Include="Source\SceneLevel3Fog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -108,5 +109,6 @@
     <ClInclude Include="Source\SceneRangeElemental.h" />
     <ClInclude Include="Source\SceneInstructions.h" />
     <ClInclude Include="Source\SceneInstructions1.h" />
+    <ClInclude Include="Source\SceneLevel3Fog.h" />
   </ItemGroup>
 </Project>
