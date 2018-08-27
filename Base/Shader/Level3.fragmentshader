@@ -143,6 +143,11 @@ uniform float cutoffTexCoordY = 0.0;
 //to prevent some meshes from getting fogged
 uniform bool getFogged = true;
 
+uniform vec3 playerPos = vec3(0, 0, 0);
+uniform int otherPosEnabled[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+uniform vec3 otherPos[8];
+uniform float otherPosPower[8];
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -288,5 +293,75 @@ void main(){
 	//{
 	//color.a = 0.5;
 	//}
+
+	if (getFogged)
+	{
+		vec3 difference = worldPos - playerPos;
+		float distanceSQ = difference.x * difference.x + difference.y * difference.y + difference.z * difference.z;
+		if (distanceSQ > 50 * 50)
+		{
+			float myFogFactor = 1.0;
+
+			//DISTANCE-BASED FOG - REMOVES FOG
+			if (distanceSQ < 200 * 200) 
+			{
+				myFogFactor -= 1 - (sqrt(distanceSQ) - 50)/150;
+			}
+			
+			//VERTICAL FOG - ADDS FOG, DOES NOT REMOVE IT
+			if (worldPos.y < 20 + (playerPos.y - 240))
+			{
+				myFogFactor = 1;
+			}
+			else if (worldPos.y < 120 + (playerPos.y - 240)) 
+			{
+				myFogFactor += 1 - (worldPos.y - (20 + (playerPos.y - 240)) )/100;
+			}
+			
+			//DISTANCE-BASED FOG BY OTHERS - ADDS FOG
+			for (int i = 0; i < 8; ++i)
+			{
+				if (otherPosEnabled[i] == 2)
+				{
+					vec3 differenceOther = worldPos - otherPos[i];
+					float distanceSQOther = differenceOther.x * differenceOther.x + differenceOther.y * differenceOther.y + differenceOther.z * differenceOther.z;
+					if (distanceSQOther < 300 * 300) 
+					{
+						myFogFactor += otherPosPower[i] * (1 - sqrt(distanceSQOther)/300);
+					}
+				}
+			}
+
+			if (myFogFactor > 1.0) myFogFactor = 1.0;
+			else if (myFogFactor < 0) myFogFactor = 0;
+
+			//DISTANCE-BASED FOG BY OTHERS - REMOVES FOG
+			for (int i = 0; i < 8; ++i)
+			{
+				if (otherPosEnabled[i] == 1)
+				{
+					vec3 differenceOther = worldPos - otherPos[i];
+					float distanceSQOther = differenceOther.x * differenceOther.x + differenceOther.y * differenceOther.y + differenceOther.z * differenceOther.z;
+					if (distanceSQOther > 100 * 100)
+					{
+						if (distanceSQOther < 450 * 450) 
+						{
+							myFogFactor -= otherPosPower[i] * (1 - (sqrt(distanceSQOther) - 100)/350);
+						}
+					}
+					else
+					{
+						myFogFactor = 0;
+					}
+				}
+			}
+			
+			if (myFogFactor > 1.0) myFogFactor = 1.0;
+			else if (myFogFactor < 0) myFogFactor = 0;
+
+			color = mix(color, vec4(0.05, 0.05, 0.15, 1), myFogFactor);
+		}
+
+	}
 
 }

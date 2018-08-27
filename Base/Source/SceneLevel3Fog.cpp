@@ -132,6 +132,33 @@ void SceneLevel3::Init()
 	m_parameters[U_CUTOFF_TEXCOORDY] = glGetUniformLocation(m_programID, "cutoffTexCoordY");
 
 	m_parameters[U_GETFOGGED] = glGetUniformLocation(m_programID, "getFogged");
+	m_parameters[U_PLAYERPOS] = glGetUniformLocation(m_programID, "playerPos");
+
+	m_parameters[U_OTHERPOS_ENABLED_0] = glGetUniformLocation(m_programID, "otherPosEnabled[0]");
+	m_parameters[U_OTHERPOS_0] = glGetUniformLocation(m_programID, "otherPos[0]");
+	m_parameters[U_OTHERPOS_ENABLED_1] = glGetUniformLocation(m_programID, "otherPosEnabled[1]");
+	m_parameters[U_OTHERPOS_1] = glGetUniformLocation(m_programID, "otherPos[1]");
+	m_parameters[U_OTHERPOS_ENABLED_2] = glGetUniformLocation(m_programID, "otherPosEnabled[2]");
+	m_parameters[U_OTHERPOS_2] = glGetUniformLocation(m_programID, "otherPos[2]");
+	m_parameters[U_OTHERPOS_ENABLED_3] = glGetUniformLocation(m_programID, "otherPosEnabled[3]");
+	m_parameters[U_OTHERPOS_3] = glGetUniformLocation(m_programID, "otherPos[3]");
+	m_parameters[U_OTHERPOS_ENABLED_4] = glGetUniformLocation(m_programID, "otherPosEnabled[4]");
+	m_parameters[U_OTHERPOS_4] = glGetUniformLocation(m_programID, "otherPos[4]");
+	m_parameters[U_OTHERPOS_ENABLED_5] = glGetUniformLocation(m_programID, "otherPosEnabled[5]");
+	m_parameters[U_OTHERPOS_5] = glGetUniformLocation(m_programID, "otherPos[5]");
+	m_parameters[U_OTHERPOS_ENABLED_6] = glGetUniformLocation(m_programID, "otherPosEnabled[6]");
+	m_parameters[U_OTHERPOS_6] = glGetUniformLocation(m_programID, "otherPos[6]");
+	m_parameters[U_OTHERPOS_ENABLED_7] = glGetUniformLocation(m_programID, "otherPosEnabled[7]");
+	m_parameters[U_OTHERPOS_7] = glGetUniformLocation(m_programID, "otherPos[7]");
+	
+	m_parameters[U_OTHERPOS_POWER_0] = glGetUniformLocation(m_programID, "otherPosPower[0]");
+	m_parameters[U_OTHERPOS_POWER_1] = glGetUniformLocation(m_programID, "otherPosPower[1]");
+	m_parameters[U_OTHERPOS_POWER_2] = glGetUniformLocation(m_programID, "otherPosPower[2]");
+	m_parameters[U_OTHERPOS_POWER_3] = glGetUniformLocation(m_programID, "otherPosPower[3]");
+	m_parameters[U_OTHERPOS_POWER_4] = glGetUniformLocation(m_programID, "otherPosPower[4]");
+	m_parameters[U_OTHERPOS_POWER_5] = glGetUniformLocation(m_programID, "otherPosPower[5]");
+	m_parameters[U_OTHERPOS_POWER_6] = glGetUniformLocation(m_programID, "otherPosPower[6]");
+	m_parameters[U_OTHERPOS_POWER_7] = glGetUniformLocation(m_programID, "otherPosPower[7]");
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -300,6 +327,11 @@ void SceneLevel3::Init()
 	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
 	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
 	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
+
+	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("water", Color(1, 1, 1), 10.f, 16);
+	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//floor3.tga");
+	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
+
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -324,48 +356,36 @@ void SceneLevel3::Init()
 	//	);
 	//npc->setPlayerRef(playerInfo);
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		targets[i] = new CEntity();
 		targets[i]->Init();
 		targets[i]->setType(CEntity::E_TARGET);
 		if (i == 0)
 		{
-			targets[i]->setPos(Vector3(-900, 80, -1150));
+			targets[i]->setPos(Vector3(1100, 120, -300));
 		}
 		else if (i == 1)
 		{
-			targets[i]->setPos(Vector3(-750, 80, -1150));
+			targets[i]->setPos(Vector3(400, 120, -600));
 		}
 		else if (i == 2)
 		{
-			targets[i]->setPos(Vector3(-600, 80, -1150));
+			targets[i]->setPos(Vector3(-800, 150, 1150));
 		}
 		else if (i == 3)
 		{
-			targets[i]->setPos(Vector3(-1050, 80, -1150));
+			targets[i]->setPos(Vector3(-600, 150, -1250));
 		}
 		else if (i == 4)
 		{
-			targets[i]->setPos(Vector3(-450, 80, -1150));
-		}
-		else if (i == 5)
-		{
-			targets[i]->setPos(Vector3(-1300, 80, 500));
-		}
-		else if (i == 6)
-		{
-			targets[i]->setPos(Vector3(1000, 900, -300));
-		}
-		else if (i == 7)
-		{
-			targets[i]->setPos(Vector3(600, 800, 600));
+			targets[i]->setPos(Vector3(-800, 600, 500));
 		}
 		targets[i]->setOriginPos(targets[i]->getPos());
 		targets[i]->setScale(Vector3(30.f, 30.f, 30.f));
 		targets[i]->setTarget(Vector3(0.f, 0.f, 0.f));
 	}
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		targetsMoving[i] = new CEntity();
 		targetsMoving[i]->Init();
@@ -390,116 +410,9 @@ void SceneLevel3::Init()
 		{
 			targetsMoving[i]->setPos(Vector3(-500, 80, -1000));
 		}
-		else if (i == 5)
-		{
-			targetsMoving[i]->setPos(Vector3(-1300, 80, 500));
-		}
-		else if (i == 6)
-		{
-			targetsMoving[i]->setPos(Vector3(1000, 900, -300));
-		}
-		else if (i == 7)
-		{
-			targetsMoving[i]->setPos(Vector3(600, 800, 600));
-		}
 		targetsMoving[i]->setOriginPos(targetsMoving[i]->getPos());
 		targetsMoving[i]->setScale(Vector3(40.f, 40.f, 40.f));
 		targetsMoving[i]->setTarget(Vector3(0 + i * 500, 100.f, 1500.f));
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		targets1[i] = new CEntity();
-		targets1[i]->Init();
-		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-		if (i == 0)
-		{
-			targets1[i]->setPos(Vector3(100, 80, 0));
-			//targets1[i]->setTarget(Vector3(650, 50, 300));
-		}
-		else if (i == 1)
-		{
-			targets1[i]->setPos(Vector3(1100, 80, -1000));
-			//targets1[i]->setTarget(Vector3(800, 400, 500));
-		}
-		else if (i == 2)
-		{
-			targets1[i]->setPos(Vector3(1100, 80, -1100));
-			//targets1[i]->setTarget(Vector3(800, 400, 500));
-		}
-		targets1[i]->setOriginPos(targets1[i]->getPos());
-		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		targets1[i]->setTarget(targets1[i]->getPos() + Vector3(1, 0, 0));
-		targets1[i]->setOriginTarget(targets1[i]->getTarget());
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		targetsMoving1[i] = new CEntity();
-		targetsMoving1[i]->Init();
-		targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-		if (i == 0)
-		{
-			targetsMoving1[i]->setPos(Vector3(100, 80, 0));
-			//targetsMoving1[i]->setTarget(Vector3(850, 50, 500));
-		}
-		else if (i == 1)
-		{
-			targetsMoving1[i]->setPos(Vector3(1100, 80, -1000));
-			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
-		}
-		else if (i == 2)
-		{
-			targetsMoving1[i]->setPos(Vector3(1100, 80, -1100));
-			//targetsMoving1[i]->setTarget(Vector3(700, 400, 500));
-		}
-		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-		targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-		targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		targetsMoving1[i]->setTarget(targetsMoving1[i]->getPos() + Vector3(1, 0, 0));
-		targetsMoving1[i]->setOriginTarget(targetsMoving1[i]->getTarget());
-		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	}
-
-	for (int i = 0; i < 2; i++)
-	{
-		targets2[i] = new CEntity();
-		targets2[i]->Init();
-		targets2[i]->setType(CEntity::E_MOVING_TARGET);
-		if (i == 0)
-		{
-			targets2[i]->setPos(Vector3(-700, 800, -200));
-			targets2[i]->setTarget(Vector3(-700, 600, 800));
-		}
-		else if (i == 1)
-		{
-			targets2[i]->setPos(Vector3(-800, 700, -1200));
-			targets2[i]->setTarget(Vector3(800, 700, -1100));
-		}
-		targets2[i]->setOriginTarget(targets2[i]->getTarget());
-		targets2[i]->setOriginPos(targets2[i]->getPos());
-		targets2[i]->setScale(Vector3(20.f, 20.f, 20.f));
-	}
-	for (int i = 0; i < 2; i++)
-	{
-		targetsMoving2[i] = new CEntity();
-		targetsMoving2[i]->Init();
-		targetsMoving2[i]->setType(CEntity::E_MOVING_TARGET);
-		if (i == 0)
-		{
-			targetsMoving2[i]->setPos(Vector3(-700, 800, -200));
-			targetsMoving2[i]->setTarget(Vector3(-700, 600, 800));
-		}
-		else if (i == 1)
-		{
-			targetsMoving2[i]->setPos(Vector3(-800, 700, -1200));
-			targetsMoving2[i]->setTarget(Vector3(800, 700, -1100));
-		}
-		//targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-		targetsMoving2[i]->setOriginTarget(targetsMoving2[i]->getTarget());
-		targetsMoving2[i]->setOriginPos(targetsMoving2[i]->getPos());
-		targetsMoving2[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
 	// Hardware Abstraction
@@ -521,15 +434,16 @@ void SceneLevel3::Init()
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	///init sound
+	//init sound
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 180;
+	totalTime = 250;
 	totalBarrelsDown = 0;
-	secondSetBarrel = false;
+	dragonObtain = false;
+	tideHeight = 0;
 }
 
 void SceneLevel3::Update(double dt)
@@ -630,7 +544,7 @@ void SceneLevel3::Update(double dt)
 			playerInfo->SetOnFreeFall(true);
 			playerInfo->rocketMode = false;
 		}
-		else if (!playerInfo->rocketMode && playerInfo->getMana() >= 20)
+		else if (!playerInfo->rocketMode && playerInfo->getMana() >= 20 && dragonObtain)
 		{
 			playerInfo->rocketMode = true;
 			playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10 + 350 * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000), 0);
@@ -702,13 +616,13 @@ void SceneLevel3::Update(double dt)
 	switch (targetState)
 	{
 	case T_MOVING:
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			if (!targetsMoving[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
 		break;
 	case T_STATIONARY:
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			if (!targets[i]->isDone()) { shouldChange = false; ++totalBarrelsDown; }
 		}
@@ -728,7 +642,7 @@ void SceneLevel3::Update(double dt)
 			{
 			case T_MOVING:
 				targetState = T_STATIONARY;
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < 5; i++)
 				{
 					targets[i]->setIsDone(false);
 					targets[i]->setType(CEntity::E_TARGET);
@@ -740,7 +654,7 @@ void SceneLevel3::Update(double dt)
 				break;
 			case T_STATIONARY:
 				targetState = T_MOVING;
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < 5; i++)
 				{
 					targetsMoving[i]->setIsDone(false);
 					targetsMoving[i]->setType(CEntity::E_MOVING_TARGET);
@@ -759,14 +673,14 @@ void SceneLevel3::Update(double dt)
 	switch (targetState)
 	{
 	case T_MOVING:
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			targets[i]->setIsDone(true);
 			if (!targetsMoving[i]->isDone()) { targetsMoving[i]->setIsDone(false); }
 		}
 		break;
 	case T_STATIONARY:
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			if (!targets[i]->isDone()) { targets[i]->setIsDone(false); }
 			targetsMoving[i]->setIsDone(true);
@@ -776,154 +690,9 @@ void SceneLevel3::Update(double dt)
 		break;
 	}
 
-	bool shouldChange1 = true;
-	//check if shouldnt change (any targets still up)
-
-	switch (targetState1)
+	if (totalBarrelsDown <= 0 && playerInfo->rocketPosition.y > 800)
 	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (targetsMoving1[i]->getType() == CEntity::E_TARGET_ICE)
-			{
-				shouldChange1 = false;
-			}
-
-			if (!targetsMoving1[i]->isDone()) { shouldChange1 = false; ++totalBarrelsDown; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (targets1[i]->getType() == CEntity::E_TARGET_ICE)
-			{
-				shouldChange1 = false;
-			}
-
-			if (!targets1[i]->isDone()) {
-				shouldChange1 = false; ++totalBarrelsDown;
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
-	if (shouldChange1 && stateChangeTimer1 == 0) { secondSetBarrel = true; stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
-	//if should change switches state
-	if (shouldChange1)
-	{
-		if (stateChangeTimer1 == targets1[1]->getPos().y + targets1[1]->getScale().y + 10)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-			}
-		}
-
-		stateChangeTimer1--;
-		if (stateChangeTimer1 <= 0)
-		{
-			stateChangeTimer1 = 0;
-			switch (targetState1)
-			{
-				//case T_MOVING:
-				//	targetState1 = T_STATIONARY;
-				//	for (int i = 0; i < 3; i++)
-				//	{
-				//		targets1[i]->setIsDone(false);
-				//		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-				//		//targets1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-				//		//targets1[i]->setOriginPos(targets1[i]->getPos());
-				//		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-				//		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-				//	}
-				//	break;
-			case T_STATIONARY:
-				targetState1 = T_MOVING;
-				for (int i = 0; i < 3; i++)
-				{
-					targetsMoving1[i]->setIsDone(false);
-					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-					/*				targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
-					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-					//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-					//secondSetBarrel = true;
-				}
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState1)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 3; ++i)
-		{
-			targets1[i]->setIsDone(true);
-			if (!targetsMoving1[i]->isDone()) { targetsMoving1[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 3; ++i)
-		{
-			if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-			targetsMoving1[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
-
-
-	bool shouldChange2 = false;
-	//check if shouldnt change (any targets still up)
-	switch (targetState2)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 2; ++i)
-		{
-			if (!targetsMoving2[i]->isDone()) { shouldChange2 = false; ++totalBarrelsDown; }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 2; ++i)
-		{
-			if (!targets2[i]->isDone()) {
-				shouldChange2 = false; ++totalBarrelsDown;
-			}
-		}
-		break;
-	default:
-		break;
-	}
-	//updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	switch (targetState2)
-	{
-	case T_MOVING:
-		for (int i = 0; i < 2; ++i)
-		{
-			targets2[i]->setIsDone(true);
-			if (!targetsMoving2[i]->isDone()) { targetsMoving2[i]->setIsDone(false); }
-		}
-		break;
-	case T_STATIONARY:
-		for (int i = 0; i < 2; ++i)
-		{
-			if (!targets2[i]->isDone()) { targets2[i]->setIsDone(false); }
-			targetsMoving2[i]->setIsDone(true);
-		}
-		break;
-	default:
-		break;
-	}
-
-
-	if (totalBarrelsDown <= 0 && secondSetBarrel)
-	{
+		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
 	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
@@ -940,13 +709,77 @@ void SceneLevel3::Update(double dt)
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
+	if (!dragonObtain)
+	{
+		if (playerInfo->getPos().x < 50 && playerInfo->getPos().x > -50 && playerInfo->getPos().z < 50 && playerInfo->getPos().z > -50)
+		{
+			dragonObtain = true;
+			playerInfo->setScreenShakeTime(1.0);
+			playerInfo->setScreenShakeIntensity(10.5);
+		}
+	}
+	if (dragonObtain) tideHeight += 40 * dt;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		glUniform1i(m_parameters[U_OTHERPOS_ENABLED_0 + i], 0);
+	}
+	int totalEmitters = 0;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		if (totalEmitters >= 8) break;
+		if (afterEfTime[i] > 0.0)
+		{
+			glUniform1i(m_parameters[U_OTHERPOS_ENABLED_0 + totalEmitters], afterEfType[i]);
+			glUniform3fv(m_parameters[U_OTHERPOS_0 + totalEmitters], 1, &afterEfPos[i].x);
+			glUniform1f(m_parameters[U_OTHERPOS_POWER_0 + totalEmitters], afterEfTime[i]/4.0);
+			afterEfTime[i] -= dt;
+			if (afterEfTime[i] <= 0.0)
+			{
+				--afterEfCount;
+				afterEfTime[i] = 0.0;
+			}
+			++totalEmitters;
+		}
+	}
+
+	std::list<CEntity*>::iterator it, it2, end;
+	end = EntityManager::GetInstance()->entityList.end();
+	for (it = EntityManager::GetInstance()->entityList.begin(); it != end; ++it)
+	{
+		if (totalEmitters >= 8) break;
+		if ((*it)->getType() == CEntity::E_PROJECTILE)
+		{
+			CProjectile* tempProj = (CProjectile*)*it;
+			Vector3 tempPos = tempProj->getPos();
+			if (tempProj->getProjType() == CProjectile::PTYPE_FIRE)
+			{
+				glUniform1i(m_parameters[U_OTHERPOS_ENABLED_0 + totalEmitters], 1);
+				glUniform3fv(m_parameters[U_OTHERPOS_0 + totalEmitters], 1, &tempPos.x);
+				glUniform1f(m_parameters[U_OTHERPOS_POWER_0 + totalEmitters], 1);
+				++totalEmitters;
+			}
+			else if(tempProj->getProjType() == CProjectile::PTYPE_ICE)
+			{
+				glUniform1i(m_parameters[U_OTHERPOS_ENABLED_0 + totalEmitters], 2);
+				glUniform3fv(m_parameters[U_OTHERPOS_0 + totalEmitters], 1, &tempPos.x);
+				glUniform1f(m_parameters[U_OTHERPOS_POWER_0 + totalEmitters], 1);
+				++totalEmitters;
+			}
+		}
+
+	}
+
+	//glUniform1i(m_parameters[U_GETFOGGED], 0);
+
 	fps = (float)(1.f / dt);
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
-	if (totalTime <= 0 || Application::IsKeyPressed('E'))
+	if (totalTime <= 0 || Application::IsKeyPressed('E') || (dragonObtain && camera.position.y - 50 < tideHeight))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
 	}
@@ -1468,6 +1301,14 @@ void SceneLevel3::RenderWorld()
 								meshList[GEO_TERRAIN]->tgaLengthPaint,
 								PAINT_PATTERNS::PAINT_UNIQUE_FIRE);
 
+							if (afterEfCount < 8)
+							{
+								afterEfType[afterEfCount] = 1;
+								afterEfTime[afterEfCount] = 4.0;
+								afterEfPos[afterEfCount] = entPos/* + playerInfo->FirstHeight*/;
+								++afterEfCount;
+							}
+
 							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 							{
 								CProjectile* aa = new CProjectile(CProjectile::PTYPE_SPECIAL_KILLERNADO);
@@ -1490,6 +1331,14 @@ void SceneLevel3::RenderWorld()
 								1,
 								meshList[GEO_TERRAIN]->tgaLengthPaint,
 								PAINT_PATTERNS::PAINT_BURST);
+
+							if (afterEfCount < 8)
+							{
+								afterEfType[afterEfCount] = 2;
+								afterEfTime[afterEfCount] = 4.0;
+								afterEfPos[afterEfCount] = entPos/* + playerInfo->FirstHeight*/;
+								++afterEfCount;
+							}
 
 							if (proj->getSpellModType() == CProjectile::SMTYPE_SPECIAL)
 							{
@@ -1538,7 +1387,7 @@ void SceneLevel3::RenderWorld()
 			case CEntity::E_MOVING_TARGET:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y /*+ 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(rotateAngle, 1, 1, 1);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_BARREL], godlights);
@@ -1605,18 +1454,18 @@ void SceneLevel3::RenderWorld()
 			modelStack.PopMatrix();
 		}
 	}
-	if (stateChangeTimer1 > 0)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(targets1[i]->getPos().x, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), targets1[i]->getPos().z);
-			//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
-			modelStack.Scale(20.f, 20.f, 20.f);
-			RenderMesh(meshList[GEO_BARREL_ICE], godlights);
-			modelStack.PopMatrix();
-		}
-	}
+	//if (stateChangeTimer1 > 0)
+	//{
+	//	for (int i = 0; i < 3; i++)
+	//	{
+	//		modelStack.PushMatrix();
+	//		modelStack.Translate(targets1[i]->getPos().x, 75.f - stateChangeTimer1 + 350.f * ReadHeightMap(m_heightMap, (-500 + i * 500) / 4000, (1500.f) / 4000), targets1[i]->getPos().z);
+	//		//modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+	//		modelStack.Scale(20.f, 20.f, 20.f);
+	//		RenderMesh(meshList[GEO_BARREL_ICE], godlights);
+	//		modelStack.PopMatrix();
+	//	}
+	//}
 
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -1722,6 +1571,7 @@ void SceneLevel3::RenderWorld()
 		lArmRot = playerInfo->GetLeftArmRotation();
 		rArmRot = playerInfo->GetRightArmRotation();
 	}
+	glUniform1i(m_parameters[U_GETFOGGED], false);
 	modelStack.PushMatrix();
 	if (!playerInfo->rocketMode)
 	{
@@ -1837,6 +1687,7 @@ void SceneLevel3::RenderWorld()
 			camera.up.x, camera.up.y, camera.up.z
 			);
 	}
+	glUniform1i(m_parameters[U_GETFOGGED], true);
 }
 
 void SceneLevel3::RenderPassMain()
@@ -1866,6 +1717,7 @@ void SceneLevel3::RenderPassMain()
 		camera.target.x, camera.target.y, camera.target.z,
 		camera.up.x, camera.up.y, camera.up.z
 		);
+	glUniform3fv(m_parameters[U_PLAYERPOS], 1, &camera.position.x);
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
@@ -1908,6 +1760,17 @@ void SceneLevel3::RenderPassMain()
 	RenderWorld(); //casts shadow
 				   ////////////////////////////////	
 
+	float timeElapsed = TimeTrackerManager::GetInstance()->getElapsedTime();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, 20 + tideHeight, 0.f);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(4000, 4000, 4000);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 1);
+	glUniform2f(m_parameters[U_UV_OFFSET], timeElapsed * 0.002f, timeElapsed * 0.002f);
+	RenderMesh(meshList[GEO_WATER], godlights);
+	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
+	modelStack.PopMatrix();
+
 				   //Render particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -1932,11 +1795,11 @@ void SceneLevel3::RenderPassMain()
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 180));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 250));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, 15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 180));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 250));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, -15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASS], false, 35, 35, -3, 0);
