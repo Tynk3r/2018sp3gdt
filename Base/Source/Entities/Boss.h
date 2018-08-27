@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "../Rigs/RigInfo.h"
-#include "../Entities/Projectile.h"
+#include "Projectile.h"
 //#include <memory>
 
 class CBoss : public CEntity
