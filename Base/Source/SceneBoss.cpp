@@ -295,7 +295,8 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
 	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
-
+	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
+	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
 	meshList[GEO_QUAD_GREEN] = MeshBuilder::GenerateQuad("greenquad", Color(0, 1, 0));
 	meshList[GEO_QUAD_RED] = MeshBuilder::GenerateQuad("redquad", Color(1, 0, 0));
 
@@ -1238,10 +1239,13 @@ void SceneBoss::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
-				modelStack.Translate(0, 0, 2);
-				modelStack.Scale(0.25f, 0.25f, 0.25f);
-				RenderMesh(meshList[GEO_CUBE], godlights);
+				modelStack.Scale(5, 5, -5);
+				//modelStack.Scale(10, 10, 10);
+				RenderMesh(meshList[GEO_WITCH], godlights);
+				//RenderMesh(meshList[GEO_SPHERE], godlights);
+				//modelStack.Translate(0, 0, 2);
+				//modelStack.Scale(0.25f, 0.25f, 0.25f);
+				//RenderMesh(meshList[GEO_CUBE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
