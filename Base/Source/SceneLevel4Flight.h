@@ -166,7 +166,7 @@ class SceneLevel4 : public Scene
 		GEO_ICEBLOCK,
 		GEO_BARREL_ICE,
 		GEO_BARREL_FIRE,
-
+		GEO_WITCH,
 		GEO_HUD_HOURGLASS,
 		GEO_HUD_HOURGLASSFLUID,
 
@@ -276,6 +276,8 @@ private:
 	int totalBarrelsDown;
 
 	bool secondSetBarrel;
+
+	double spawnTime = 5.0;
 };
 
 #endif

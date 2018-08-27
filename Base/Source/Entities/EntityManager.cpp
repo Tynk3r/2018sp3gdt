@@ -298,13 +298,16 @@ bool EntityManager::CheckForCollision(float dt)
 					CProjectile* proj1 = dynamic_cast<CProjectile*>(*(it));
 					if ((*it2)->getType() == CEntity::E_PLAYER) 
 					{ 
-						if (proj1 && proj1->getType() == CEntity::E_PROJECTILE && proj1->getSource() != NULL && proj1->getSource() != nullptr && proj1->getSource()->getType() == CEntity::E_BOSS)
+						if (proj1 && proj1->getType() == CEntity::E_PROJECTILE && proj1->getSource() != NULL && proj1->getSource() != nullptr && (proj1->getSource()->getType() == CEntity::E_BOSS || proj1->getSource()->getType() == CEntity::E_ENEMY))
 						{
 							proj1->setIsDone(true);
 							proj1->EmitParticles(Math::RandIntMinMax(16, 32));
 							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj1->getScale().x*0.5f);
 							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj1->getScale().x*0.015f);
-							CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
+							
+							if (proj1->getSource()->getType() == CEntity::E_BOSS) CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
+							else if (proj1->getSource()->getType() == CEntity::E_ENEMY) CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 10);
+
 							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
 								CSoundEngine::GetInstance()->PlayASound("floorImpact");
 							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)

@@ -8,6 +8,8 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadHmap.h"
+#include "Entities/Witch.h"
+#include "Entities/FlyingWitch.h"
 #include <sstream>
 #define SP3_DEBUG
 
@@ -297,6 +299,8 @@ void SceneLevel4::Init()
 	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
 	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
 	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
+	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
+	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -499,6 +503,22 @@ void SceneLevel4::Init()
 		//targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
 	}
 
+	CEnemy* enemy = new CFlyingWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(50, 500, 0));
+	enemy->setPlayerRef(playerInfo);
+	enemy = new CFlyingWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(-500, 600, -400));
+	enemy->setPlayerRef(playerInfo);
+	enemy = new CFlyingWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(500, 500, 300));
+	enemy->setPlayerRef(playerInfo);
+
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
 	theKeyboard->Create(playerInfo);
@@ -524,7 +544,7 @@ void SceneLevel4::Init()
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 110;
+	totalTime = 150;
 	totalBarrelsDown = 0;
 	secondSetBarrel = false;
 }
@@ -1025,6 +1045,18 @@ void SceneLevel4::Update(double dt)
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
+	spawnTime -= dt;
+	if (spawnTime < 0.0)
+	{
+		CEnemy* enemy = new CFlyingWitch();
+		enemy->Init();
+		enemy->setScale(Vector3(15, 15, 15));
+		enemy->setPos(Vector3(0, 600, -500));
+		enemy->setPlayerRef(playerInfo);
+
+		spawnTime = 10;
+	}
+
 	fps = (float)(1.f / dt);
 	rotateAngle++;
 	//UpdateParticles(dt);
@@ -1483,7 +1515,8 @@ void SceneLevel4::RenderWorld()
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Scale(2, 2, -2);
+				RenderMesh(meshList[GEO_WITCH], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -2012,11 +2045,11 @@ void SceneLevel4::RenderPassMain()
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 110));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 150));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, 15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 110));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 150));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, -15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASS], false, 35, 35, -3, 0);
