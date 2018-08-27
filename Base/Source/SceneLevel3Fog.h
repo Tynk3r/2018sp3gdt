@@ -108,6 +108,32 @@ class SceneLevel3 : public Scene
 		U_CUTOFF_TEXCOORDY,
 
 		U_GETFOGGED,
+		U_PLAYERPOS,
+
+		U_OTHERPOS_ENABLED_0,
+		U_OTHERPOS_ENABLED_1,
+		U_OTHERPOS_ENABLED_2,
+		U_OTHERPOS_ENABLED_3,
+		U_OTHERPOS_ENABLED_4,
+		U_OTHERPOS_ENABLED_5,
+		U_OTHERPOS_ENABLED_6,
+		U_OTHERPOS_ENABLED_7,
+		U_OTHERPOS_POWER_0,
+		U_OTHERPOS_POWER_1,
+		U_OTHERPOS_POWER_2,
+		U_OTHERPOS_POWER_3,
+		U_OTHERPOS_POWER_4,
+		U_OTHERPOS_POWER_5,
+		U_OTHERPOS_POWER_6,
+		U_OTHERPOS_POWER_7,
+		U_OTHERPOS_0,
+		U_OTHERPOS_1,
+		U_OTHERPOS_2,
+		U_OTHERPOS_3,
+		U_OTHERPOS_4,
+		U_OTHERPOS_5,
+		U_OTHERPOS_6,
+		U_OTHERPOS_7,
 
 		U_TOTAL,
 	};
@@ -176,6 +202,8 @@ class SceneLevel3 : public Scene
 		GEO_HUD_SPELLMOD0,
 		GEO_HUD_SPELLMOD1,
 		GEO_HUD_SPELLMOD2,
+		
+		GEO_WATER,
 
 		NUM_GEOMETRY,
 	};
@@ -258,17 +286,17 @@ private:
 	TARGET_STATE targetState = T_STATIONARY;
 	int stateChangeTimer = 0;
 
-	//ICE/FIRE BARRELS
-	CEntity* targets1[3];
-	CEntity* targetsMoving1[3];
-	TARGET_STATE targetState1 = T_STATIONARY;
-	int stateChangeTimer1 = 0;
+	////ICE/FIRE BARRELS
+	//CEntity* targets1[3];
+	//CEntity* targetsMoving1[3];
+	//TARGET_STATE targetState1 = T_STATIONARY;
+	//int stateChangeTimer1 = 0;
 
-	////MOVING BARRELS
-	CEntity* targets2[2];
-	CEntity* targetsMoving2[2];
-	TARGET_STATE targetState2 = T_MOVING;
-	int stateChangeTimer2 = 0;
+	//////MOVING BARRELS
+	//CEntity* targets2[2];
+	//CEntity* targetsMoving2[2];
+	//TARGET_STATE targetState2 = T_MOVING;
+	//int stateChangeTimer2 = 0;
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
@@ -278,7 +306,13 @@ private:
 	double totalTime;
 	int totalBarrelsDown;
 
-	bool secondSetBarrel;
+	bool dragonObtain;
+	float tideHeight;
+
+	int afterEfCount = 0;
+	int afterEfType[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	double afterEfTime[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	Vector3 afterEfPos[8] = { Vector3(), Vector3(), Vector3(), Vector3(), Vector3(), Vector3(), Vector3(), Vector3() };
 };
 
 #endif
