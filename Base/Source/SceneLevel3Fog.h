@@ -135,6 +135,11 @@ class SceneLevel3 : public Scene
 		U_OTHERPOS_6,
 		U_OTHERPOS_7,
 
+		U_FOGMINRAD,
+		U_FOGMAXRAD,
+		U_FOGVERTMIN,
+		U_FOGVERTMAX,
+
 		U_TOTAL,
 	};
 	enum GEOMETRY_TYPE
