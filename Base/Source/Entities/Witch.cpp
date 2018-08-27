@@ -42,6 +42,7 @@ void CWitch::Update(double dt)
 		witchCooldown += (float)dt;
 		this->witchProjectile->setPos(this->getPos() + Vector3(0, (this->getScale().y + this->witchProjectile->getScale().y)*3.5f, 0));
 		this->witchProjectile->setScale(Vector3(1, 1, 1).lerped(Vector3(25, 25, 25), this->witchCooldown*0.2f));
+		this->setTarget(Vector3(this->playerRef->getPos().x, this->getPos().y, this->playerRef->getPos().z));
 		if (witchProjectile->bossDone)
 		{
 			this->witchProjectile = NULL;
@@ -63,6 +64,7 @@ void CWitch::Update(double dt)
 		break;
 	case WS_FIRED:
 		witchCooldown += (float)dt;
+		this->setTarget(Vector3(this->playerRef->getPos().x, this->getPos().y, this->playerRef->getPos().z));
 		if (witchCooldown > 1.5f)
 		{
 			this->witchCooldown = Math::RandIntMinMax(3, 5);

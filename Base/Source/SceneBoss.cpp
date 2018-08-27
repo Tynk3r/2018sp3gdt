@@ -1235,6 +1235,9 @@ void SceneBoss::RenderWorld()
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Translate(0, 0, 2);
+				modelStack.Scale(0.25f, 0.25f, 0.25f);
+				RenderMesh(meshList[GEO_CUBE], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
