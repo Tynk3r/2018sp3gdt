@@ -290,10 +290,10 @@ bool EntityManager::CheckForCollision(float dt)
 					}
 				case CEntity::E_PROJECTILE:
 				{
-					CProjectile* proj1 = static_cast<CProjectile*>(*(it));
+					CProjectile* proj1 = dynamic_cast<CProjectile*>(*(it));
 					if ((*it2)->getType() == CEntity::E_PLAYER) 
 					{ 
-						if (proj1->getSource() != NULL && proj1->getSource() != nullptr && proj1->getSource()->getType() == CEntity::E_BOSS)
+						if (proj1 && proj1->getType() == CEntity::E_PROJECTILE && proj1->getSource() != NULL && proj1->getSource() != nullptr && proj1->getSource()->getType() == CEntity::E_BOSS)
 						{
 							proj1->setIsDone(true);
 							proj1->EmitParticles(Math::RandIntMinMax(16, 32));

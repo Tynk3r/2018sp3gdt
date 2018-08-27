@@ -352,6 +352,11 @@ void SceneBoss::Init()
 	theMouse = new CMouse();
 	theMouse->Create(playerInfo);
 
+	CWitch* enemy = new CWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(10, 10, 10));
+	enemy->setPos(Vector3(0, enemy->getScale().y, 0));
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
