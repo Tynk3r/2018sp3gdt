@@ -34,6 +34,7 @@ public:
 	Vector3 GetBurstPivRot() { return burstPivotRot; }
 	void EmitParticles(int amt = 1);
 	CEntity* getSource();
+	CEntity::TYPE getSourceType();
 	void setSource(CEntity* source);
 	bool bossDone;
 private:
@@ -46,6 +47,7 @@ private:
 	float particleRate;
 	float projRot;//just a float for all-axis rotatin i guess???
 	CEntity* source;
+	CEntity::TYPE sourceType;
 	float burstPivotRotOffset;
 	Vector3 burstPivotRot;
 };

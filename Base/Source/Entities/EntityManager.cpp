@@ -267,14 +267,13 @@ bool EntityManager::CheckForCollision(float dt)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						if (proj->getSource() != (*it))
+						if (proj->getSourceType() != (*it)->getType() || (proj->getSource() == NULL) || proj->getSource() == CPlayerInfo::GetInstance())
 						{
 							(*it)->setIsDone(true);
 							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 							CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
 							CSoundEngine::GetInstance()->PlayASound("barrelbreak");
-
 							switch ((*it)->getType())
 							{
 							case CEntity::E_ENEMY:
@@ -320,13 +319,13 @@ bool EntityManager::CheckForCollision(float dt)
 					{
 						if ((proj1->getSource() != NULL || proj1->getSource() != nullptr) && proj1->getSource()->getType() == CEntity::E_BOSS)//if proj1 beglons to boss
 						{
-							proj1->bossDone = true;
-							proj2->setIsDone(true);
+							//proj1->bossDone = true;
+							proj2->setIsDone(true); proj1->setIsDone(true);
 						}
 						else if ((proj2->getSource() || proj2->getSource() != nullptr) != NULL && proj2->getSource()->getType() == CEntity::E_BOSS)
 						{
-							proj2->bossDone = true;
-							proj1->setIsDone(true);
+							//proj2->bossDone = true;
+							proj1->setIsDone(true); proj2->setIsDone(true);
 						}
 						else if ((proj1->getSource() != proj2->getSource()))
 						{

@@ -17,6 +17,7 @@ public:
 	enum ENEMY_AI {
 		AI_SHORTRANGE,
 		AI_LONGRANGE,
+		AI_FLYING,
 
 		AI_TOTAL
 	};

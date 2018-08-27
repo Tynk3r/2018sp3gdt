@@ -352,10 +352,14 @@ void SceneBoss::Init()
 	theMouse = new CMouse();
 	theMouse->Create(playerInfo);
 
-	CWitch* enemy = new CWitch();
+	CEnemy* enemy = new CWitch();
 	enemy->Init();
 	enemy->setScale(Vector3(10, 10, 10));
 	enemy->setPos(Vector3(0, enemy->getScale().y, 0));
+	enemy = new CFlyingWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(50, 50, 0));
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;

@@ -13,7 +13,8 @@ CProjectile::CProjectile(PROJECTILE_TYPE projectileType, SPELLMOD_TYPE spellModT
 	burstPivotRotOffset(0),
 	burstPivotRot(Vector3(0, 0, 0)),
 	originDir(Vector3(0, 0, 0)),
-	bossDone(false)
+	bossDone(false),
+	sourceType(CEntity::E_TOTAL)
 {
 	this->setType(CEntity::E_PROJECTILE);
 }
@@ -105,6 +106,10 @@ void CProjectile::Init(Vector3 pos, Vector3 targ, CEntity* source)
 	this->setTarget(targ);
 	this->originPosition = pos;
 	this->source = source;
+	if (this->source != NULL)
+	{
+		this->sourceType = this->source->getType();
+	}
 	
 	// Add to EntityManager
 	EntityManager::GetInstance()->AddEntity(this);
@@ -208,6 +213,11 @@ void CProjectile::EmitParticles(int amt)
 CEntity * CProjectile::getSource()
 {
 	return this->source;
+}
+
+CEntity::TYPE CProjectile::getSourceType()
+{
+	return this->sourceType;
 }
 
 void CProjectile::setSource(CEntity * source)

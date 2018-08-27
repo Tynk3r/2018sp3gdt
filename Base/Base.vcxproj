@@ -23,6 +23,7 @@
     <ClCompile Include="Source\Entities\Enemy.cpp" />
     <ClCompile Include="Source\Entities\Entity.cpp" />
     <ClCompile Include="Source\Entities\EntityManager.cpp" />
+    <ClCompile Include="Source\Entities\FlyingWitch.cpp" />
     <ClCompile Include="Source\Entities\NPC.cpp" />
     <ClCompile Include="Source\Entities\Projectile.cpp" />
     <ClCompile Include="Source\Entities\Witch.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Source\Entities\Enemy.h" />
     <ClInclude Include="Source\Entities\Entity.h" />
     <ClInclude Include="Source\Entities\EntityManager.h" />
+    <ClInclude Include="Source\Entities\FlyingWitch.h" />
     <ClInclude Include="Source\Entities\NPC.h" />
     <ClInclude Include="Source\Entities\Projectile.h" />
     <ClInclude Include="Source\Entities\Witch.h" />
