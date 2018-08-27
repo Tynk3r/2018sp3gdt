@@ -316,6 +316,8 @@ void SceneBoss::Init()
 	}
 	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
 	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW] = MeshBuilder::GenerateQuad("timeslow", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW]->textureArray[0] = LoadTGA("Image//time_slow_texture.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -1237,9 +1239,9 @@ void SceneBoss::RenderWorld()
 			{
 				modelStack.PushMatrix();
 				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
+				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)) + 180, 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				modelStack.Scale(5, 5, -5);
+				//modelStack.Scale(5, 5, -5);
 				//modelStack.Scale(10, 10, 10);
 				RenderMesh(meshList[GEO_WITCH], godlights);
 				//RenderMesh(meshList[GEO_SPHERE], godlights);
@@ -1878,6 +1880,7 @@ void SceneBoss::RenderPassMain()
 		for (it = CameraEffectManager::GetInstance()->camEfflist.begin(); it != end; ++it)
 		{
 			CameraEffect* camEff = *it;
+			glDepthFunc(GL_ALWAYS);
 			switch (camEff->getCamEffectType())
 			{
 			case CameraEffect::CE_TYPE_ACTIONLINE_WHITE:
@@ -1885,7 +1888,13 @@ void SceneBoss::RenderPassMain()
 				RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
+			case CameraEffect::CE_TYPE_TIME_SLOW:
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW], false, Application::GetWindowHeight()*0.2f, Application::GetWindowHeight()*0.2f);//height only
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+				break;
 			}
+			glDepthFunc(GL_LESS);
 		}
 	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
 
