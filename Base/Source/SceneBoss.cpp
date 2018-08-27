@@ -318,6 +318,8 @@ void SceneBoss::Init()
 	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
 	meshList[GEO_SPRITEANIM_TIME_SLOW] = MeshBuilder::GenerateQuad("timeslow", Color());
 	meshList[GEO_SPRITEANIM_TIME_SLOW]->textureArray[0] = LoadTGA("Image//time_slow_texture.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND] = MeshBuilder::GenerateQuad("timeslowhand", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND]->textureArray[0] = LoadTGA("Image//time_slow_hand_texture.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -871,7 +873,7 @@ void SceneBoss::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, fl
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneBoss::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneBoss::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y, float rotation)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -881,6 +883,7 @@ void SceneBoss::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float
 			viewStack.LoadIdentity();
 			modelStack.PushMatrix();
 				modelStack.LoadIdentity();
+				modelStack.Rotate(rotation, 0, 0, 1);
 				modelStack.Scale(size_x, size_y, 1);
 				modelStack.Translate(x, y, 0);
        
@@ -934,7 +937,6 @@ void SceneBoss::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float
 			modelStack.PopMatrix();
 		viewStack.PopMatrix();
 	projectionStack.PopMatrix();
-
 }
 
 void SceneBoss::RenderMesh(Mesh *mesh, bool enableLight)
@@ -1889,10 +1891,23 @@ void SceneBoss::RenderPassMain()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
 			case CameraEffect::CE_TYPE_TIME_SLOW:
+			{
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				float rot1 = Quad::easeOut((camEff->getAnimFrame() / camEff->getDuration()), 0, 1, 1) * -360 * 6.230752f;
+				float rot2 = rot1 * (1.f / 30.f) * 2.5f;
 				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW], false, Application::GetWindowHeight()*0.2f, Application::GetWindowHeight()*0.2f);//height only
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.005f, Application::GetWindowHeight()*0.12f,
+					0,
+					0.175f,
+					rot1);
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.0075f, Application::GetWindowHeight()*0.075f,
+					0,
+					0.175f,
+					rot2);
+				//RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND],false,A)
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
+			}
 			}
 			glDepthFunc(GL_LESS);
 		}

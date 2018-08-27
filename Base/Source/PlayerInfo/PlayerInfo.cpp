@@ -4,6 +4,8 @@
 #include "MouseController.h"
 #include "KeyboardController.h"
 #include "Mtx44.h"
+#include "../TimeTrackerManager.h"
+#include "EasingStyles\QuadEase.h"
 
 // Allocating and initializing CPlayerInfo's static data member.  
 // The pointer is allocated but not the object's constructor.
@@ -35,6 +37,9 @@ CPlayerInfo::CPlayerInfo(void)
 	, screenShakeIntensity(3)
 	, screenShakeDuration(0)
 	, screenShakeElapsedTime(0)
+	, timeslowDuration(0)
+	, doSlowTime(false)
+	, speedingUpTime(false)
 {
 }
 
@@ -90,7 +95,10 @@ void CPlayerInfo::Init(void)
 	setCollider(true);
 	currentAnimState = PLR_ANIM_IDLE;
 	animFrame = 0;
+	timeslowDuration = 0;
 	currentNPC = NULL;
+	doSlowTime = false;
+	speedingUpTime = false;
 
 	rocketPosition.Set(0, 0, 0);
 	rocketTarget.Set(0, 0, 1);
@@ -293,6 +301,40 @@ Vector3 CPlayerInfo::GetCameraSway() const
  ********************************************************************************/
 void CPlayerInfo::Update(double dt)
 {
+	if (doSlowTime)
+	{
+		if (speedingUpTime)
+		{
+			timeslowDuration += ((float)dt*3.f) / TimeTrackerManager::GetInstance()->getSpeed();
+			TimeTrackerManager::GetInstance()->setSpeed(Math::lerp(0.25f, 1.f, Quad::easeOut(timeslowDuration / 3.f, 0, 1, 1)));
+			if (this->timeslowDuration >= 3.f)
+			{
+				doSlowTime = false;
+				this->timeslowDuration = 0;
+				TimeTrackerManager::GetInstance()->setSpeed(1);
+			}
+		}
+		else
+		{
+			timeslowDuration += ((float)dt*3.f) / TimeTrackerManager::GetInstance()->getSpeed();
+			TimeTrackerManager::GetInstance()->setSpeed(Math::lerp(1.f, 0.25f, Quad::easeOut(timeslowDuration / 3.f, 0, 1, 1)));
+			if (this->timeslowDuration >= 3.f)
+			{
+				doSlowTime = false;
+				TimeTrackerManager::GetInstance()->setSpeed(0.25f);
+			}
+		}
+		
+	}
+	else if (timeslowDuration > 0)
+	{
+		this->timeslowDuration -= ((float)dt) / TimeTrackerManager::GetInstance()->getSpeed();
+		if (this->timeslowDuration <= 0)
+		{
+			doSlowTime = true;
+			speedingUpTime = true;
+		}
+	}
 	if (m_dMana < 100) { m_dMana += 0.05; }
 	if (m_dMana >= 100) { m_dMana = 100; }
 	if (screenShakeOn)

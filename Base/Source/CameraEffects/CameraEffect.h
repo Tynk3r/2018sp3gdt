@@ -19,6 +19,7 @@ public:
 	Vector3 getOffset() const;
 	float getTransparency() const;
 	float getAnimFrame() const;
+	float getDuration() const;
 	bool IsDone();
 	void SetFade(bool fading);
 private:

@@ -1,6 +1,7 @@
 #include "CameraEffect.h"
 #include "EasingStyles\QuadEase.h"
-
+#include "EasingStyles\BackEase.h"
+#include "../TimeTrackerManager.h"
 
 
 CameraEffect::CameraEffect(CAMEFFECT_TYPE camEffectType) :
@@ -44,7 +45,7 @@ void CameraEffect::Init()
 		this->animFrame = 0;
 		break;
 	case CE_TYPE_TIME_SLOW:
-		this->fadeDuration = 1.f;
+		this->fadeDuration = 2.f;
 		this->transparency = 1.f;
 		this->canFade = true;
 		this->animFrame = 0;
@@ -79,16 +80,21 @@ void CameraEffect::Update(double dt)
 	case CE_TYPE_TIME_SLOW:
 		if (this->canFade)
 		{
-			this->animFrame += (float)dt;
-			if (this->animFrame < 0.2f)
+			this->animFrame += ((float)dt) / TimeTrackerManager::GetInstance()->getSpeed();
+			if (this->animFrame/this->fadeDuration < 0.25f)
 			{
-				float alpha = this->animFrame / this->fadeDuration*0.2f;
-				this->transparency = Math::lerp(1.f, 0.35f, Quad::easeOut(alpha, 0, 1, 1));
+				float alpha = (this->animFrame/this->fadeDuration) / 0.25f;
+				this->transparency = Math::lerp(1.f, 0.1f, Back::easeOut(alpha, 0, 1, 1));
+			}
+			else if (this->animFrame / this->fadeDuration < 0.75f)
+			{
+				float alpha = ((this->animFrame / this->fadeDuration) - 0.25f) / 0.5f;
+				this->transparency = Math::lerp(0.1f, 0.3f, alpha);
 			}
 			else
 			{
-				float alpha = this->animFrame + this->fadeDuration*0.2f / this->fadeDuration*0.8f;
-				this->transparency = Math::lerp(0.35f, 1.f, Quad::easeIn(alpha, 0, 1, 1));
+				float alpha = ((this->animFrame / this->fadeDuration) - 0.75f) / 0.25f;
+				this->transparency = Math::lerp(0.3f, 1.f, Quad::easeIn(alpha, 0, 1, 1));
 			}
 		}
 		break;
@@ -113,6 +119,11 @@ float CameraEffect::getTransparency() const
 float CameraEffect::getAnimFrame() const
 {
 	return this->animFrame;
+}
+
+float CameraEffect::getDuration() const
+{
+	return this->fadeDuration;
 }
 
 bool CameraEffect::IsDone()

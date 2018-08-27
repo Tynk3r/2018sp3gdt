@@ -47,6 +47,9 @@
     <ClCompile Include="Source\EasingStyles\BackEase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\EasingStyles\QuintEase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\MatrixStack.h">
@@ -89,6 +92,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\EasingStyles\BackEase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EasingStyles\QuintEase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -88,7 +88,8 @@ int CKeyboard::Read(const float deltaTime)
 	
 	if (KeyboardController::GetInstance()->IsKeyPressed('T'))
 	{
-
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_TIME_SLOW);
+		thePlayerInfo->SetSlowTime(true);
 	}
 
 	TimeTrackerManager* tTracker = TimeTrackerManager::GetInstance();

@@ -172,6 +172,7 @@ public:
 	void setMana(float m) { m_dMana = m; }
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
+	void SetSlowTime(bool slowtime) { if (slowtime && this->timeslowDuration == 0) { this->doSlowTime = true; this->speedingUpTime = false; } /*else { this->doSlowTime = true; this->speedingUpTime = true; }*/ }
 
 	SPELLMOD_TYPE GetSpellMod() { return spellMod; }
 	void SetSpellMod(SPELLMOD_TYPE spellMod) { this->spellMod = spellMod; }
@@ -261,6 +262,10 @@ private:
 	float screenShakeIntensity;
 	float screenShakeDuration;
 	float screenShakeElapsedTime;
+
+	float timeslowDuration;
+	bool doSlowTime;
+	bool speedingUpTime;
 public:
 	// Camera Sway
 	float m_fCameraSwayAngle;

@@ -14,6 +14,7 @@
     <ClCompile Include="Source\EasingStyles\BackEase.cpp" />
     <ClCompile Include="Source\EasingStyles\ElasticEase.cpp" />
     <ClCompile Include="Source\EasingStyles\QuadEase.cpp" />
+    <ClCompile Include="Source\EasingStyles\QuintEase.cpp" />
     <ClCompile Include="Source\JoystickController.cpp" />
     <ClCompile Include="Source\KeyboardController.cpp" />
     <ClCompile Include="Source\MathUtility.cpp" />
@@ -28,6 +29,7 @@
     <ClInclude Include="Source\EasingStyles\BackEase.h" />
     <ClInclude Include="Source\EasingStyles\ElasticEase.h" />
     <ClInclude Include="Source\EasingStyles\QuadEase.h" />
+    <ClInclude Include="Source\EasingStyles\QuintEase.h" />
     <ClInclude Include="Source\JoystickController.h" />
     <ClInclude Include="Source\KeyboardController.h" />
     <ClInclude Include="Source\MathUtility.h" />
