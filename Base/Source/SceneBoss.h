@@ -23,6 +23,7 @@
 #include "Entities/Drone.h"
 #include "Entities/NPC.h"
 #include "Entities/Boss.h"
+#include "Entities/Witch.h"
 #include "PlayerInfo\PlayerInfo.h"
 #include "HardwareAbstraction\Keyboard.h"
 #include "HardwareAbstraction\Mouse.h"

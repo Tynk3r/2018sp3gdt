@@ -10,21 +10,33 @@ public:
 		F_ATTACK,
 		F_IDLE,
 		F_ROAM,
+
+		F_RETREAT,
 		F_TOTAL
 	};
+	enum ENEMY_AI {
+		AI_SHORTRANGE,
+		AI_LONGRANGE,
 
-	CEnemy();
+		AI_TOTAL
+	};
+
+	CEnemy(ENEMY_AI ai =  AI_SHORTRANGE);
 	~CEnemy();
 
-	void Init();
-	void Update(double dt);
+	virtual void Init();
+	virtual void Update(double dt);
 
 	FSM getState(void) { return state; }
 	void setState(FSM s) { state = s; }
 	void tempMoveBack(float dt);
 	void setPlayerRef(CPlayerInfo* playerRef);
-private:
+	void setAI(ENEMY_AI ai);
+protected:
 	FSM state;
 	CPlayerInfo* playerRef;
+	ENEMY_AI enemyAI;
+private:
+
 };
 
