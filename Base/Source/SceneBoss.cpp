@@ -463,7 +463,7 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -473,10 +473,10 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
-				aa2->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
+				aa2->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 				aa2->SetBurstPivRotOff(120);
-				aa3->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa3->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 				aa3->SetBurstPivRotOff(240);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
@@ -485,7 +485,7 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 			}
 
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
@@ -499,7 +499,7 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -509,14 +509,14 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
 				Mtx44 rotation;
 				Vector3 tempUp(0, 1, 0);
 				if (playerInfo->rocketMode) tempUp = playerInfo->rocketUp;
 				rotation.SetToRotation(30, tempUp.x, tempUp.y, tempUp.z);
-				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f, playerInfo);
 				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
-				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f, playerInfo);
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
@@ -525,7 +525,7 @@ void SceneBoss::Update(double dt)
 				Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
-				aa->Init(campos + viewvec * 5, camtar + viewvec * 6);
+				aa->Init(campos + viewvec * 5, camtar + viewvec * 6, playerInfo);
 
 				//raycast check
 				Vector3 tempProj(9999, 9999, 9999);

@@ -28,7 +28,6 @@ void CWitch::Update(double dt)
 			witchCooldown -= (float)dt;
 			if (witchCooldown < 0)
 			{
-
 				witchState = WS_CHARGING;
 				this->setSpeed(0);
 				witchCooldown = 0;//used as anim frame now muhahahaha
@@ -43,7 +42,13 @@ void CWitch::Update(double dt)
 		witchCooldown += (float)dt;
 		this->witchProjectile->setPos(this->getPos() + Vector3(0, (this->getScale().y + this->witchProjectile->getScale().y)*3.5f, 0));
 		this->witchProjectile->setScale(Vector3(1, 1, 1).lerped(Vector3(25, 25, 25), this->witchCooldown*0.2f));
-		if (witchCooldown > 5.f)
+		if (witchProjectile->bossDone)
+		{
+			this->witchProjectile = NULL;
+			this->witchCooldown = 0;
+			this->witchState = WS_SURPRISED;
+		}
+		else if (witchCooldown > 5.f)
 		{
 			float dist = 1;
 			if (!(this->playerRef->getPos() - this->witchProjectile->getPos()).IsZero())
@@ -60,7 +65,16 @@ void CWitch::Update(double dt)
 		witchCooldown += (float)dt;
 		if (witchCooldown > 1.5f)
 		{
-			this->witchCooldown = Math::RandIntMinMax(4, 8);
+			this->witchCooldown = Math::RandIntMinMax(3, 5);
+			this->witchState = WS_IDLE;
+			this->setSpeed(100);
+		}
+		break;
+	case WS_SURPRISED:
+		witchCooldown += (float)dt;
+		if (witchCooldown > 1.5f)
+		{
+			this->witchCooldown = Math::RandIntMinMax(3, 5);
 			this->witchState = WS_IDLE;
 			this->setSpeed(100);
 		}

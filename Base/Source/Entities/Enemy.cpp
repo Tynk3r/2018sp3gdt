@@ -63,12 +63,12 @@ void CEnemy::Update(double dt)
 				this->state = F_RETREAT;
 				this->setTarget(this->getPos() + enemytoplayer.Normalized()*-10.05f);//move AWAY from player
 			}
-			else if (lengthSQ < 500 * 500)//player is not too close and not too far
+			else if (lengthSQ < 600 * 600)//player is not too close and not too far
 			{
 				this->state = F_IDLE; //close enough to attack so no need to move i guess
 				this->setTarget(this->getPos() + enemytoplayer.Normalized()*0.05f);
 			}
-			else if (lengthSQ < 700 * 700)//player is too far, getting close
+			else if (lengthSQ < 900 * 900)//player is too far, getting close
 			{
 				this->state = F_ATTACK; //chase player until it gets close enuf
 				Vector3 targ = Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z);

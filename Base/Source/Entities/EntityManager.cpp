@@ -238,25 +238,28 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							int damagetaken = bos->TakeDamage(proj);
-							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
-							{
-								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
-								bos->SetBurnTime();
-								CSoundEngine::GetInstance()->PlayASound("floorImpact");
-							}
-							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
-							{
-								ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
-								bos->SetFreezeTime();
-								CSoundEngine::GetInstance()->PlayASound("IceImpact");
-							}
 							proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
 							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
 							//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
 							//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+							if (proj->getSource() == CPlayerInfo::GetInstance() || proj->getSource() == NULL)
+							{
+								int damagetaken = bos->TakeDamage(proj);
+								if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+								{
+									ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(1, 0.1f, 0.1f));
+									bos->SetBurnTime();
+									CSoundEngine::GetInstance()->PlayASound("floorImpact");
+								}
+								else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+								{
+									ParticleManager::GetInstance()->AddParticle(std::to_string(damagetaken) + " Damage!", (*it2), Color(0.1f, 0.1f, 1.f));
+									bos->SetFreezeTime();
+									CSoundEngine::GetInstance()->PlayASound("IceImpact");
+								}
+							}
 						}
 					}
 					break;
@@ -264,28 +267,31 @@ bool EntityManager::CheckForCollision(float dt)
 					if ((*it2)->getType() == CEntity::E_PROJECTILE)
 					{
 						CProjectile* proj = static_cast<CProjectile*>((*it2));
-						(*it)->setIsDone(true);
-						if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
-						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
-						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
-
-						switch ((*it)->getType())
+						if (proj->getSource() != (*it))
 						{
-						case CEntity::E_ENEMY:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
-							ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f,1,0.1f));
-							break;
-						case CEntity::E_MOVING_TARGET:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
-							ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
-							break;
-						case CEntity::E_TARGET:
-							CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
-							ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
-							break;
+							(*it)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
+							proj->EmitParticles(Math::RandIntMinMax(16, 32));
+							CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+							CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+
+							switch ((*it)->getType())
+							{
+							case CEntity::E_ENEMY:
+								CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
+								ParticleManager::GetInstance()->AddParticle("+5 Points", (*it2), Color(0.1f, 1, 0.1f));
+								break;
+							case CEntity::E_MOVING_TARGET:
+								CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
+								break;
+							case CEntity::E_TARGET:
+								CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+								ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
+								break;
+							}
+							cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						}
-						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						break;
 					}
 				case CEntity::E_PROJECTILE:
