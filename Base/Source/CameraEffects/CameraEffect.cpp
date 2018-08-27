@@ -1,5 +1,5 @@
 #include "CameraEffect.h"
-
+#include "EasingStyles\QuadEase.h"
 
 
 
@@ -45,7 +45,7 @@ void CameraEffect::Init()
 		break;
 	case CE_TYPE_TIME_SLOW:
 		this->fadeDuration = 1.f;
-		this->transparency = 0.35f;
+		this->transparency = 1.f;
 		this->canFade = true;
 		this->animFrame = 0;
 		break;
@@ -80,9 +80,16 @@ void CameraEffect::Update(double dt)
 		if (this->canFade)
 		{
 			this->animFrame += (float)dt;
-			float alpha = this->animFrame / this->fadeDuration;
-			this->transparency = Math::lerp(0.35f, 1.f, alpha);
-
+			if (this->animFrame < 0.2f)
+			{
+				float alpha = this->animFrame / this->fadeDuration*0.2f;
+				this->transparency = Math::lerp(1.f, 0.35f, Quad::easeOut(alpha, 0, 1, 1));
+			}
+			else
+			{
+				float alpha = this->animFrame + this->fadeDuration*0.2f / this->fadeDuration*0.8f;
+				this->transparency = Math::lerp(0.35f, 1.f, Quad::easeIn(alpha, 0, 1, 1));
+			}
 		}
 		break;
 	}
