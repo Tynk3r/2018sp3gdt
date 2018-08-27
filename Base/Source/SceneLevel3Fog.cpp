@@ -160,6 +160,11 @@ void SceneLevel3::Init()
 	m_parameters[U_OTHERPOS_POWER_6] = glGetUniformLocation(m_programID, "otherPosPower[6]");
 	m_parameters[U_OTHERPOS_POWER_7] = glGetUniformLocation(m_programID, "otherPosPower[7]");
 
+	m_parameters[U_FOGMINRAD] = glGetUniformLocation(m_programID, "NormFogMinRad");
+	m_parameters[U_FOGMAXRAD] = glGetUniformLocation(m_programID, "NormFogMaxRad");
+	m_parameters[U_FOGVERTMIN] = glGetUniformLocation(m_programID, "VertFogMin");
+	m_parameters[U_FOGVERTMAX] = glGetUniformLocation(m_programID, "VertFogMax");
+
 	// Use our shader
 	glUseProgram(m_programID);
 
@@ -375,7 +380,7 @@ void SceneLevel3::Init()
 		}
 		else if (i == 3)
 		{
-			targets[i]->setPos(Vector3(-600, 150, -1250));
+			targets[i]->setPos(Vector3(-600, 140, -1250));
 		}
 		else if (i == 4)
 		{
@@ -718,7 +723,25 @@ void SceneLevel3::Update(double dt)
 			playerInfo->setScreenShakeIntensity(10.5);
 		}
 	}
-	if (dragonObtain) tideHeight += 40 * dt;
+	if (dragonObtain)
+	{
+		tideHeight += 40 * dt;
+
+		if (tideHeight > 160)
+		{
+			glUniform1f(m_parameters[U_FOGMAXRAD], 300 + 1120);
+			glUniform1f(m_parameters[U_FOGMINRAD], 100 + 640);
+			glUniform1f(m_parameters[U_FOGVERTMAX], 120 - 360);
+			glUniform1f(m_parameters[U_FOGVERTMIN], 20 - 360);
+		}
+		else
+		{
+			glUniform1f(m_parameters[U_FOGMAXRAD], 300 + tideHeight * 7);
+			glUniform1f(m_parameters[U_FOGMINRAD], 100 + tideHeight * 4);
+			glUniform1f(m_parameters[U_FOGVERTMAX], 120 - tideHeight * 2);
+			glUniform1f(m_parameters[U_FOGVERTMIN], 20 - tideHeight * 2);
+		}
+	}
 
 	for (int i = 0; i < 8; ++i)
 	{

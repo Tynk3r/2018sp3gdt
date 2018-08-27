@@ -148,6 +148,11 @@ uniform int otherPosEnabled[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 uniform vec3 otherPos[8];
 uniform float otherPosPower[8];
 
+uniform float VertFogMax = 120;
+uniform float VertFogMin = 20;
+uniform float NormFogMinRad = 100;
+uniform float NormFogMaxRad = 300;
+
 float getShadowEffect()
 {
 	float visibility = 1.0;
@@ -298,24 +303,24 @@ void main(){
 	{
 		vec3 difference = worldPos - playerPos;
 		float distanceSQ = difference.x * difference.x + difference.y * difference.y + difference.z * difference.z;
-		if (distanceSQ > 50 * 50)
+		if (distanceSQ > NormFogMinRad * NormFogMinRad)
 		{
 			float myFogFactor = 1.0;
 
 			//DISTANCE-BASED FOG - REMOVES FOG
-			if (distanceSQ < 200 * 200) 
+			if (distanceSQ < NormFogMaxRad * NormFogMaxRad) 
 			{
-				myFogFactor -= 1 - (sqrt(distanceSQ) - 50)/150;
+				myFogFactor -= 1 - (sqrt(distanceSQ) - NormFogMinRad)/(NormFogMaxRad - NormFogMinRad);
 			}
 			
 			//VERTICAL FOG - ADDS FOG, DOES NOT REMOVE IT
-			if (worldPos.y < 20 + (playerPos.y - 240))
+			if (worldPos.y < VertFogMin + (playerPos.y - 240))
 			{
 				myFogFactor = 1;
 			}
-			else if (worldPos.y < 120 + (playerPos.y - 240)) 
+			else if (worldPos.y < VertFogMax + (playerPos.y - 240)) 
 			{
-				myFogFactor += 1 - (worldPos.y - (20 + (playerPos.y - 240)) )/100;
+				myFogFactor += 1 - (worldPos.y - (VertFogMin + (playerPos.y - 240)) )/(VertFogMax - VertFogMin);
 			}
 			
 			//DISTANCE-BASED FOG BY OTHERS - ADDS FOG
@@ -351,7 +356,7 @@ void main(){
 					}
 					else
 					{
-						myFogFactor = 0;
+						myFogFactor -= 1.0 * otherPosPower[i];
 					}
 				}
 			}
