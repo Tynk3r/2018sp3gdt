@@ -707,6 +707,10 @@ void SceneBoss::Update(double dt)
 	}
 	if (JoystickController::GetInstance()->IsButtonPressed(JoystickController::BUTTON_1))	
 		cout << "joystick X button was pressed" << endl;
+	if (Application::IsKeyPressed('V'))
+	{
+		EntityManager::GetInstance()->KillAllEnemies();
+	}
 #endif // SP3_DEBUG
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('U'))
@@ -1561,6 +1565,16 @@ void SceneBoss::RenderWorld()
 			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
 			switch (par->getParType())
 			{
+			case CParticle_2::PTYPE_ENEMYAPPEAR:
+				modelStack.PushMatrix();
+				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);
+				modelStack.Scale(parSca.x, parSca.y, parSca.z);
+				modelStack.Scale(4.5f, 4.5f, 4.5f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
+				RenderMesh(meshList[GEO_SPHERE], false);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
+				modelStack.PopMatrix();
+				break;
 			case CParticle_2::PTYPE_FIRE:
 				modelStack.PushMatrix();
 				modelStack.Translate(parPos.x, parPos.y + playerInfo->FirstHeight, parPos.z);

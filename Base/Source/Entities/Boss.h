@@ -13,6 +13,7 @@ public:
 		F_NORMAL,
 		F_ATTACK_FIREBALL,
 		F_ATTACK_ICEBALL,
+		F_SUMMON_ENEMY,
 		F_SURPRISED,
 		F_VULNERABLE,
 		F_DEAD,
@@ -49,6 +50,8 @@ private:
 	float maxHealth;
 	float freezeTime;
 	float burnTime;
+
+	bool bossSummonDebounce;
 	
 	void TakeDamage(float damage);//raw damage
 };

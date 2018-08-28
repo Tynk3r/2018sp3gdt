@@ -689,3 +689,27 @@ Vector3 EntityManager::CheckForLineIntersectionZFace(Vector3 pivot, CEntity *ent
 
 	return pointOutput;
 }
+
+int EntityManager::AmountOfEnemies()
+{
+	int toret = 0;
+	std::list<CEntity*>::iterator it, end;
+	end = entityList.end();
+	for (it = entityList.begin(); it != end; ++it)
+	{
+		if (!(*it)->isDone() && (*it)->getType() == CEntity::E_ENEMY)
+			toret++;
+	}
+	return toret;
+}
+
+void EntityManager::KillAllEnemies()
+{
+	std::list<CEntity*>::iterator it, end;
+	end = entityList.end();
+	for (it = entityList.begin(); it != end; ++it)
+	{
+		if ((*it)->getType() == CEntity::E_ENEMY)
+			(*it)->setIsDone(true);
+	}
+}
