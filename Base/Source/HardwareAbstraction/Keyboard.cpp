@@ -88,6 +88,7 @@ int CKeyboard::Read(const float deltaTime)
 	
 	if (KeyboardController::GetInstance()->IsKeyPressed('T') && thePlayerInfo->getMana() > 15)
 	{
+		thePlayerInfo->setMana(thePlayerInfo->getMana() - 15);
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_TIME_SLOW);
 		thePlayerInfo->SetSlowTime(true);
 	}

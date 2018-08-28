@@ -169,7 +169,7 @@ public:
 	int GetHealth(void) const;
 	void setHealth(int h) { m_dHealth = h; }
 	float getMana(void) const { return m_dMana; }
-	void setMana(float m) { m_dMana = m; }
+	void setMana(float m) { m_dMana = m; m_dManaRegen = 1; }
 	int GetScore(void) const;
 	void SetScore(int s) { m_dScore = s; }
 	void SetSlowTime(bool slowtime) { if (slowtime && this->timeslowDuration == 0) { this->doSlowTime = true; this->speedingUpTime = false; } /*else { this->doSlowTime = true; this->speedingUpTime = true; }*/ }
@@ -237,6 +237,7 @@ private:
 	SPELLMOD_TYPE spellModLimit = SMTYPE_TOTAL;
 	int m_dHealth;
 	float m_dMana;
+	float m_dManaRegen;
 	int m_dScore;
 	double m_dSpeed;
 	double m_dAcceleration;
