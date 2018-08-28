@@ -304,6 +304,10 @@ void Application::Run()
 	delete scene11;
 	delete scene12;
 	delete scene13;
+	delete scene14;
+	delete scene15;
+	delete scene16;
+
 }
 
 void Application::Exit()

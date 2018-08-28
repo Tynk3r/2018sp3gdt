@@ -464,7 +464,7 @@ void SceneRangeMoving::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
-	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	if (playerInfo->GetScore() >= 30 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 	}
