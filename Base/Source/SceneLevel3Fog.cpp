@@ -807,7 +807,7 @@ void SceneLevel3::Update(double dt)
 
 	}
 
-	glUniform1i(m_parameters[U_GETFOGGED], 0);
+	//glUniform1i(m_parameters[U_GETFOGGED], 0);
 
 	fps = (float)(1.f / dt);
 	rotateAngle++;
