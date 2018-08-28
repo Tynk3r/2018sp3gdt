@@ -76,8 +76,15 @@ void CSceneManager::Update(StopWatch* m_timer) {
 void CSceneManager::ChangeScene() {
 	if (nextSceneID != currentSceneID)
 	{
-		if(nextSceneID != SCENE_IN_GAME_MENU)
+		if (nextSceneID != SCENE_IN_GAME_MENU)
+		{
 			sceneList[currentSceneID]->Exit();
+			if (currentLevelID != SCENE_TOTAL && nextSceneID == SCENE_START_MENU && currentSceneID != SCENE_GAME_MENU)
+			{
+				sceneList[currentLevelID]->Exit();
+				currentLevelID = SCENE_TOTAL;
+			}
+		}
 		currentSceneID = nextSceneID;
 		if (currentSceneID != currentLevelID)
 			InitScene();

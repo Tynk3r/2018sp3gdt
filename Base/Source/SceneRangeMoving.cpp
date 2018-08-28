@@ -31,6 +31,14 @@ SceneRangeMoving::~SceneRangeMoving()
 
 void SceneRangeMoving::Init()
 {
+	stateChangeTimer = 0;
+	stateChangeTimer1 = 0;
+	stateChangeTimer2 = 0;
+	stateChangeTimer3 = 0;
+	stateChangeTimer4 = 0;
+	stateChangeTimer5 = 0;
+	stateChangeTimer6 = 0;
+
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test
