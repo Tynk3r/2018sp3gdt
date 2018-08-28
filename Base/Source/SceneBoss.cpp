@@ -407,7 +407,7 @@ void SceneBoss::Update(double dt)
 	}
 	if (playerInfo && playerInfo->GetHealth() <= 0)
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
