@@ -204,6 +204,8 @@ class SceneLevel3 : public Scene
 		GEO_BARREL_ICE,
 		GEO_BARREL_FIRE,
 
+		GEO_WITCH,
+
 		GEO_HUD_HOURGLASS,
 		GEO_HUD_HOURGLASSFLUID,
 
@@ -287,6 +289,8 @@ private:
 	CPlayerInfo* playerInfo;
 
 	CEntity* wall1;
+
+	CEnemy* enemy;
 
 	//NORMAL BARRELS
 	CEntity* targets[8];

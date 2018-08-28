@@ -1,5 +1,7 @@
 #include "Entity.h"
+#include "../LoadHmap.h"
 #include "../Particles/ParticleManager.h"
+#include "../PlayerInfo/PlayerInfo.h"
 
 CEntity::CEntity():
 	position(Vector3(0.f,0.f,0.f)),
@@ -39,9 +41,23 @@ void CEntity::Update(double dt)
 		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
 		break;
 	case E_ENEMY:
+	{
 		if ((getTarget() - getPos()).LengthSquared() < 1.f) { viewVector.SetZero(); }
-		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
-		setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		Vector3 tempPos2 = (getPos() + viewVector * getSpeed() * (float)dt);
+		if (canbeWalled)
+		{
+			if (abs(getPos().y - 350.f * ReadHeightMap(CPlayerInfo::GetInstance()->getHeightMap(), tempPos2.x / 4000, tempPos2.z / 4000)) < 10)
+			{
+				setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+				setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+			}
+		}
+		else
+		{
+			setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+			setAABB(Vector3(position.x + scale.x, position.y + scale.y, position.z + scale.z), Vector3(position.x - scale.x, position.y - scale.y, position.z - scale.z));
+		}
+	}
 		break;
 	case E_DRONE:
 		setPos(getPos() + (viewVector * getSpeed() * (float)dt));

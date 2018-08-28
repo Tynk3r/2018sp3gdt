@@ -7,6 +7,7 @@
 #include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
+#include "Entities/Witch.h"
 #include "LoadHmap.h"
 #include <sstream>
 #define SP3_DEBUG
@@ -341,6 +342,9 @@ void SceneLevel3::Init()
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//floor3.tga");
 	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
 
+	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
+	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
+
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -364,6 +368,13 @@ void SceneLevel3::Init()
 	//	Vector3(0, 0, 80.f)
 	//	);
 	//npc->setPlayerRef(playerInfo);
+
+	enemy = new CWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(50, 400, 0));
+	enemy->setPlayerRef(playerInfo);
+	enemy->setCanBeWalled(true);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -617,6 +628,8 @@ void SceneLevel3::Update(double dt)
 	//camera.Update(dt);
 
 	playerInfo->SetNotMoving();
+
+	enemy->setPos(Vector3(enemy->getPos().x, 350.f * ReadHeightMap(m_heightMap, enemy->getPos().x / 4000, enemy->getPos().z / 4000), enemy->getPos().z));
 
 	//bool shouldChange = true;
 	bool shouldChange = false;
@@ -1261,10 +1274,11 @@ void SceneLevel3::RenderWorld()
 			case CEntity::E_ENEMY:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Scale(4, 4, -4);
+				RenderMesh(meshList[GEO_WITCH], godlights);
 				modelStack.PopMatrix();
 				break;
 			}

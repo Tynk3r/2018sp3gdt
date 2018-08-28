@@ -62,6 +62,8 @@ public:
 	virtual void setGrav(Vector3 _grav) { gravVel = _grav; }
 	virtual Vector3 getGrav() const { return gravVel; }
 
+	virtual void setCanBeWalled(bool _canbewalled) { canbeWalled = _canbewalled; }
+
 	// Check if this entity has a collider class parent
 	virtual bool hasCollider(void) const;
 	// Set the flag to indicate if this entity has a collider class parent
@@ -74,6 +76,7 @@ private:
 	float speed;
 	TYPE type;
 	bool done = false;
+	bool canbeWalled = false;
 
 	// Vector3 variables to store coordinates of the AABB bounding box of an object
 	Vector3 maxAABB;
