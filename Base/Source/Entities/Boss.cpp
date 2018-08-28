@@ -5,6 +5,8 @@
 #include "../SoundEngine.h"
 #include "Mtx44.h"
 #include "../Particles/ParticleManager.h"
+#include "Witch.h"
+#include "FlyingWitch.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
@@ -13,7 +15,7 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	animFrame(0),
 	rig(CRigInfo::RIG_BOSS),
 	holdingProjectile(NULL),
-	maxHealth(400),
+	maxHealth(500),
 	freezeTime(0),
 	burnTime(0)
 {
@@ -172,7 +174,7 @@ void CBoss::Update(double dt)
 			break;
 		case F_ATTACK_ICEBALL:
 			//std::cout << this->elapsedTime << std::endl;
-			this->setSpeed(70);
+			this->setSpeed(0);
 			if (this->elapsedTime < 0.7f)
 			{
 				this->setTarget(Vector3(plr->getPos().x, this->getPos().y, plr->getPos().z));
@@ -269,6 +271,57 @@ void CBoss::Update(double dt)
 				//this->rig.Animate(1);
 			}
 			break;
+		case F_SUMMON_ENEMY:
+			this->setSpeed(0);
+			if (this->elapsedTime < 0.75f)
+			{
+				alpha = this->elapsedTime / 0.75f;
+				bossSummonDebounce = false;
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_SUMMON_ENEMY_1);
+				this->rig.Animate(Quad::easeOut(alpha, 0, 1, 1));
+			}
+			else if (this->elapsedTime < 1.5f)
+			{
+				alpha = (this->elapsedTime-0.75f) / 0.75f;
+				if (!bossSummonDebounce)
+				{
+					bossSummonDebounce = true;
+					Mtx44 mat;
+					mat.SetToIdentity();
+					mat.SetToRotation(Math::RadianToDegree(atan2(this->getTarget().x - this->getPos().x, this->getTarget().z - this->getPos().z)), 0, 1, 0);
+					Vector3 offset = (this->getPos() + Vector3(0, this->getScale().y*2.f, 0));
+					for (int i = -3; i <= 1; i += 2)
+					{
+						if (i == -3)
+						{
+							CEnemy* enemy = new CFlyingWitch();
+							enemy->Init();
+							enemy->setScale(Vector3(10, 10, 10));
+							enemy->setPos(offset);
+							enemy->EmitParticles(1);
+							enemy->setPlayerRef(this->playerRef);
+						}
+						else
+						{
+							offset = Vector3(this->getPos().x, 0, this->getPos().z) + (mat * Vector3(i*-5.f*this->originalScale.x, 0, -5 * this->originalScale.z));
+							CEnemy* enemy = new CWitch();
+							enemy->Init();
+							enemy->setScale(Vector3(10, 10, 10));
+							enemy->setPos(Vector3(0, enemy->getScale().y, 0) + offset);
+							enemy->EmitParticles(1);
+							enemy->setPlayerRef(this->playerRef);
+						}
+					}
+				}
+				this->rig.MoveToKeyframe(CJointInfo::KEYFRAME_OCTO_SUMMON_ENEMY_2);
+				this->rig.Animate(Back::easeOut(alpha, 0, 1, 1));
+			}
+			else
+			{
+				this->state = F_NORMAL;
+				this->elapsedTime = this->animFrame = 0;
+			}
+			break;
 		case F_SURPRISED:
 			this->setSpeed(0);
 			if (this->elapsedTime < 0.4f)
@@ -317,7 +370,13 @@ void CBoss::Update(double dt)
 			}
 			if (this->elapsedTime > 3.f)
 			{
-				this->state = Math::RandFloatMinMax(0, 10000) > 5000 ? F_ATTACK_FIREBALL : F_ATTACK_ICEBALL;
+				float randnum = Math::RandFloatMinMax(0, 10000);
+				if (randnum < 10000 * 0.3f && EntityManager::GetInstance()->AmountOfEnemies() < 2)
+					this->state = F_SUMMON_ENEMY;
+				else if (randnum < 10000 * 0.6f)
+					this->state = F_ATTACK_FIREBALL;
+				else
+					this->state = F_ATTACK_ICEBALL;
 				this->elapsedTime = this->animFrame = 0;
 			}
 			break;

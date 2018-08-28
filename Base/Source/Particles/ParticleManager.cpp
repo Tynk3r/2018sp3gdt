@@ -75,6 +75,9 @@ void ParticleManager::AddParticle(CEntity * entity)
 				newPar = new CParticle_2(CParticle_2::PTYPE_FIRE, entity);
 			break;
 		}
+		case CEntity::E_ENEMY://for now it makes "appear enemy" particles
+			newPar = new CParticle_2(CParticle_2::PTYPE_ENEMYAPPEAR, entity);
+			break;
 			
 	}
 	if (newPar != NULL)
