@@ -305,7 +305,7 @@ void SceneGameOver::Update(double dt)
 				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
 			}
 		}
-		if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
+		/*if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
 		{
 			if (Application::mouse_current_y >= 343 && Application::mouse_current_y <= 397)
 			{
@@ -320,7 +320,7 @@ void SceneGameOver::Update(double dt)
 				CSoundEngine::GetInstance()->PlayASound("Click");
 				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_INSTRUCTIONS);
 			}
-		}
+		}*/
 		if (Application::mouse_current_x >= 524 && Application::mouse_current_x <= 756)
 		{
 			if (Application::mouse_current_y >= 498 && Application::mouse_current_y <= 560)
