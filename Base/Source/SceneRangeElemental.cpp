@@ -31,6 +31,9 @@ SceneRangeElemental::~SceneRangeElemental()
 
 void SceneRangeElemental::Init()
 {
+	stateChangeTimer = 0;
+	stateChangeTimer1 = 0;
+	stateChangeTimer2 = 0;
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test
@@ -329,11 +332,11 @@ void SceneRangeElemental::Init()
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	drone1 = new CDrone();
-	drone1->Init();
-	drone1->setPos(Vector3(0, 20.f, 0));
-	drone1->setScale(Vector3(10.f, 10.f, 10.f));
-	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+	//drone1 = new CDrone();
+	//drone1->Init();
+	//drone1->setPos(Vector3(0, 20.f, 0));
+	//drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	//drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
 	//lonk range
 	for (int i = 0; i < 3; i++)
@@ -383,16 +386,16 @@ void SceneRangeElemental::Init()
 		pillars[i]->setOriginPos(pillars[i]->getPos());
 	}
 	
-	//rocks tht r randomerino
-	for (int i = 0; i < 10; i++)
-	{
-		rocks[i] = new CEntity();
-		rocks[i]->Init();
-		rocks[i]->setType(CEntity::E_ROCKS);
-		rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
-		rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
-		rocks[i]->setOriginPos(rocks[i]->getPos());
-	}
+	////rocks tht r randomerino
+	//for (int i = 0; i < 10; i++)
+	//{
+	//	rocks[i] = new CEntity();
+	//	rocks[i]->Init();
+	//	rocks[i]->setType(CEntity::E_ROCKS);
+	//	rocks[i]->setPos(Vector3(Math::RandFloatMinMax(-675.f, 675.f), 0.f, Math::RandFloatMinMax(-50.f, 550.f)));
+	//	rocks[i]->setScale(Vector3(20.f, 20.f, 20.f));
+	//	rocks[i]->setOriginPos(rocks[i]->getPos());
+	//}
 
 	// Hardware Abstraction
 	theKeyboard = new CKeyboard();
@@ -877,9 +880,9 @@ void SceneRangeElemental::Update(double dt)
 
 	testvar += 0.05 * dt;
 
-	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 

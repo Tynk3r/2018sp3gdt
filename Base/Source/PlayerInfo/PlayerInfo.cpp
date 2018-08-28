@@ -31,6 +31,7 @@ CPlayerInfo::CPlayerInfo(void)
 	, m_bCameraSwayDirection(false)
 	, m_dHealth(5)
 	, m_dMana(50)
+	, m_dManaRegen(1)
 	, m_dScore(0)
 	, climbHeight(10)
 	, spellMod(SMTYPE_NORMAL)
@@ -57,6 +58,7 @@ void CPlayerInfo::Init(void)
 
 	m_dHealth = 100;
 	m_dMana = 100;
+	m_dManaRegen = 1;
 	m_dScore = 0;
 	climbHeight = 10;
 	setType(E_PLAYER);
@@ -335,7 +337,8 @@ void CPlayerInfo::Update(double dt)
 			speedingUpTime = true;
 		}
 	}
-	if (m_dMana < 100) { m_dMana += 0.05; }
+	m_dManaRegen = Math::Min(m_dManaRegen + (float)dt*0.325f, 3.5f);
+	if (m_dMana < 100) { m_dMana += 0.05*m_dManaRegen; }
 	if (m_dMana >= 100) { m_dMana = 100; }
 	if (screenShakeOn)
 		screenShakeElapsedTime = Math::Min(screenShakeDuration, screenShakeElapsedTime + (float)dt);

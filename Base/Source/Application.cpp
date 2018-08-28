@@ -25,6 +25,7 @@
 #include "SceneBoss.h"
 #include "SceneRangeMoving.h"
 #include "SceneRangeElemental.h"
+#include "SceneGameOver.h"
 
 #include "SceneLevel1Basics.h"
 #include "SceneLevel2Burst.h"
@@ -228,6 +229,7 @@ void Application::Run()
 	Scene *scene14 = new SceneRangeElemental();
 	Scene *scene15 = new SceneInstructions();
 	Scene *scene16 = new SceneInstructions1();
+	Scene *scene17 = new SceneGameOver();
 
 	CSceneManager* sceneManager = CSceneManager::Instance();
 	sceneManager->AddScene(scene1);
@@ -246,6 +248,7 @@ void Application::Run()
 	sceneManager->AddScene(scene14);
 	sceneManager->AddScene(scene15);
 	sceneManager->AddScene(scene16);
+	sceneManager->AddScene(scene17);
 	sceneManager->GoToScene(CSceneManager::SCENE_START_MENU);
 	sceneManager->InitScene();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
@@ -261,6 +264,7 @@ void Application::Run()
 		case CSceneManager::SCENE_CONTROLS1:
 		case CSceneManager::SCENE_INSTRUCTIONS1:
 		case CSceneManager::SCENE_INSTRUCTIONS:
+		case CSceneManager::SCENE_GAME_OVER:
 				wrapAroundEnabled = false;
 				glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				break;
@@ -307,6 +311,7 @@ void Application::Run()
 	delete scene14;
 	delete scene15;
 	delete scene16;
+	delete scene17;
 
 }
 

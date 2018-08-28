@@ -32,6 +32,7 @@ SceneLevel3::~SceneLevel3()
 
 void SceneLevel3::Init()
 {
+	stateChangeTimer = 0;
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test

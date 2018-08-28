@@ -1,4 +1,4 @@
-#include "SceneStartMenu.h"
+#include "SceneGameOver.h"
 #include "GL\glew.h"
 
 #include "shader.hpp"
@@ -12,16 +12,16 @@
 #include "SoundEngine.h"
 #define SP3_DEBUG
 
-SceneStartMenu::SceneStartMenu()
+SceneGameOver::SceneGameOver()
 {
 }
 
-SceneStartMenu::~SceneStartMenu()
+SceneGameOver::~SceneGameOver()
 {
 	
 }
 
-void SceneStartMenu::Init()
+void SceneGameOver::Init()
 {
 
 	// Black background
@@ -46,7 +46,7 @@ void SceneStartMenu::Init()
 	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
 	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
-	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
+	//m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
 	// Get a handle for our uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
@@ -96,21 +96,21 @@ void SceneStartMenu::Init()
 	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.type");
 	m_parameters[U_FOG_ENABLED] = glGetUniformLocation(m_programID, "fogParam.enabled");
 	// shadow shtuff
-	m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
-	m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
-	m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
+	//m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
+	//m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
+	//m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
 	
 	//paint uniform value parameters
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
@@ -189,7 +189,7 @@ void SceneStartMenu::Init()
 	{
 		meshList[i] = NULL;
 	}
-	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
+	//meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
@@ -244,9 +244,9 @@ void SceneStartMenu::Init()
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	//LOAD MAIN MENU
-	meshList[GEO_MAINMENU] = MeshBuilder::GenerateQuad("Menu",1.f);
+	meshList[GEO_SceneGameOver] = MeshBuilder::GenerateQuad("GameMenu",1.f);
 	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_MAINMENU]->textureArray[i] = LoadTGA("Image//menu.tga");
+		meshList[GEO_SceneGameOver]->textureArray[i] = LoadTGA("Image//gameover.tga");
 
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
@@ -281,33 +281,53 @@ void SceneStartMenu::Init()
 
 	// Sound
 
-	SEngine = CSoundEngine::GetInstance();
-	SEngine->playMenu();
+	SEngine = CSoundEngine::GetInstance(); 
+	
 }
 
-void SceneStartMenu::Update(double dt)
+void SceneGameOver::Update(double dt)
 {
+
 	static bool bLButtonState = false;
 	if (Application::IsKeyPressed(MK_LBUTTON) && !bLButtonState)
 	{
 		// if at how to play menu 
 		bLButtonState = true;
-		if (Application::mouse_current_x >= 485 && Application::mouse_current_x <= 793)
+
+		if (Application::mouse_current_x >= 513 && Application::mouse_current_x <= 779)
 		{
 			// If CLick Anywhere
-			if (Application::mouse_current_y >= 288 && Application::mouse_current_y <= 372)
+			if (Application::mouse_current_y >= 239 && Application::mouse_current_y <= 312)
 			{
-				SEngine->PlayASound("Click");
-				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				SEngine->stopMenu();
+				SEngine->playGame();
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
 			}
 		}
-		if (Application::mouse_current_x >= 485 && Application::mouse_current_x <= 788) 
-		{ 
-			if (Application::mouse_current_y >= 439 && Application::mouse_current_y <= 523) 
-			{ 
+		/*if (Application::mouse_current_x >= 526 && Application::mouse_current_x <= 764)
+		{
+			if (Application::mouse_current_y >= 343 && Application::mouse_current_y <= 397)
+			{
 				CSoundEngine::GetInstance()->PlayASound("Click");
-				Application::GetInstance().setCont(false);
-			} 
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_CONTROLS);
+			}
+		}
+		if (Application::mouse_current_x >= 525 && Application::mouse_current_x <= 760)
+		{
+			if (Application::mouse_current_y >= 418 && Application::mouse_current_y <= 477)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_INSTRUCTIONS);
+			}
+		}*/
+		if (Application::mouse_current_x >= 524 && Application::mouse_current_x <= 756)
+		{
+			if (Application::mouse_current_y >= 498 && Application::mouse_current_y <= 560)
+			{
+				CSoundEngine::GetInstance()->PlayASound("Click");
+				CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
+			}
 		}
 	}
 	else if (!Application::IsKeyPressed(MK_LBUTTON) && bLButtonState)
@@ -376,9 +396,11 @@ void SceneStartMenu::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
+
+	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
-void SceneStartMenu::RenderText(Mesh* mesh, std::string text, Color color)
+void SceneGameOver::RenderText(Mesh* mesh, std::string text, Color color)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -405,7 +427,7 @@ void SceneStartMenu::RenderText(Mesh* mesh, std::string text, Color color)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneStartMenu::RenderTerrain() {
+void SceneGameOver::RenderTerrain() {
 	modelStack.PushMatrix();
 	modelStack.Scale(4000, 350.f, 4000); // values varies.
 	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
@@ -414,7 +436,7 @@ void SceneStartMenu::RenderTerrain() {
 	modelStack.PopMatrix();
 }
 
-void SceneStartMenu::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
+void SceneGameOver::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
 	if(!mesh || mesh->textureID <= 0)
 		return;
@@ -454,7 +476,7 @@ void SceneStartMenu::RenderTextOnScreen(Mesh* mesh, std::string text, Color colo
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneStartMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneGameOver::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -10, 10);
@@ -508,28 +530,28 @@ void SceneStartMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, 
 
 }
 
-void SceneStartMenu::RenderMesh(Mesh *mesh, bool enableLight)
+void SceneGameOver::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
-	if (m_renderPass == RENDER_PASS_PRE)
-	{
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
-		for (int i = 0; i < MAX_TEXTURES; ++i)
-		{
-			if (mesh->textureArray[i] > 0)
-			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
-				glActiveTexture(GL_TEXTURE0 + i);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
-			}
-			else
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-		mesh->Render();
-		return;
-	}
+	//if (m_renderPass == RENDER_PASS_PRE)
+	//{
+	//	Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+	//	glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
+	//	for (int i = 0; i < MAX_TEXTURES; ++i)
+	//	{
+	//		if (mesh->textureArray[i] > 0)
+	//		{
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
+	//			glActiveTexture(GL_TEXTURE0 + i);
+	//			glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
+	//		}
+	//		else
+	//			glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
+	//	}
+	//	mesh->Render();
+	//	return;
+	//}
 
 	if (mesh->texturePaintID > 0)
 	{
@@ -598,7 +620,7 @@ void SceneStartMenu::RenderMesh(Mesh *mesh, bool enableLight)
 
 }
 
-void SceneStartMenu::RenderGround()
+void SceneGameOver::RenderGround()
 {
 	modelStack.PushMatrix();
 	modelStack.Rotate(-90, 1, 0, 0);
@@ -622,17 +644,17 @@ void SceneStartMenu::RenderGround()
 	modelStack.PopMatrix();
 }
 
-void SceneStartMenu::Render()
+void SceneGameOver::Render()
 {
 
 	
 	//******************************* PRE RENDER PASS*************************************
-		RenderPassGPass();
+		//RenderPassGPass();
 	//******************************* MAIN RENDER PASS************************************
 		RenderPassMain();
 }
 
-void SceneStartMenu::Exit()
+void SceneGameOver::Exit()
 {
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
@@ -647,11 +669,11 @@ void SceneStartMenu::Exit()
 		particleList.pop_back();
 	}
 	glDeleteProgram(m_programID);
-	glDeleteProgram(m_gPassShaderID);
+	//glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
-void SceneStartMenu::RenderTrees() 
+void SceneGameOver::RenderTrees() 
 {
 	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
 	Pos.Set(20.0f, 0, -100.0f);
@@ -666,7 +688,7 @@ void SceneStartMenu::RenderTrees()
 }
 
 // Week 11: Particles
-ParticleObject* SceneStartMenu::GetParticle(void)
+ParticleObject* SceneGameOver::GetParticle(void)
 {
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 	{
@@ -690,7 +712,7 @@ ParticleObject* SceneStartMenu::GetParticle(void)
 }
 
 // Week 11: Update Particles
-void SceneStartMenu::UpdateParticles(double dt)
+void SceneGameOver::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -754,7 +776,7 @@ void SceneStartMenu::UpdateParticles(double dt)
 	}
 }
 
-void SceneStartMenu::RenderParticles(ParticleObject *particle)
+void SceneGameOver::RenderParticles(ParticleObject *particle)
 {
 	switch (particle->type)
 	{
@@ -779,7 +801,7 @@ void SceneStartMenu::RenderParticles(ParticleObject *particle)
 	}
 }
 
-void SceneStartMenu::RenderWorld()
+void SceneGameOver::RenderWorld()
 {
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
@@ -822,7 +844,7 @@ void SceneStartMenu::RenderWorld()
 
 }
 
-void SceneStartMenu::RenderPassMain()
+void SceneGameOver::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -835,7 +857,7 @@ void SceneStartMenu::RenderPassMain()
 
 	//pass light depth texture
 	m_lightDepthFBO.BindForReading(GL_TEXTURE8);
-	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
+	//glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
 	//perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
@@ -894,7 +916,7 @@ void SceneStartMenu::RenderPassMain()
 	//RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f);
 	modelStack.PushMatrix();
 	modelStack.Scale(100.f, 70.f, 5.f);
-	RenderMeshIn2D(meshList[GEO_MAINMENU], false, 255.f, 143.3f);
+	RenderMeshIn2D(meshList[GEO_SceneGameOver], false, 255.f, 143.3f);
 	modelStack.PopMatrix();
 
 
@@ -910,7 +932,7 @@ void SceneStartMenu::RenderPassMain()
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
 }
-void SceneStartMenu::RenderPassGPass()
+void SceneGameOver::RenderPassGPass()
 {
 	m_renderPass = RENDER_PASS_PRE;
 	m_lightDepthFBO.BindForWriting();

@@ -259,7 +259,7 @@ void SceneBoss::Init()
 	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
 
 	// For Ter Rain
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapRange.raw", m_heightMap);
+	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapBoss.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
@@ -408,7 +408,7 @@ void SceneBoss::Update(double dt)
 	}
 	if (playerInfo && playerInfo->GetHealth() <= 0)
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_MENU);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -611,7 +611,6 @@ void SceneBoss::Update(double dt)
 #ifdef SP3_DEBUG
 	if (KeyboardController::GetInstance()->IsKeyPressed('H'))
 	{
-		cout << "key H was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_FIRE);
 		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
@@ -621,7 +620,6 @@ void SceneBoss::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('J'))
 	{
-		cout << "key J was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_ICE);
 		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
@@ -631,7 +629,6 @@ void SceneBoss::Update(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyPressed('K'))
 	{
-		cout << "key K was pressed" << endl;
 		CProjectile* aa = new CProjectile(CProjectile::PTYPE_BEAM);
 		Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
 		Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
