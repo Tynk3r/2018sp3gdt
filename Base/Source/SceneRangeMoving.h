@@ -167,7 +167,7 @@ class SceneRangeMoving : public Scene
 		GEO_PILLAR,
 		GEO_WATER,
 		GEO_ROCKS,
-
+		GEO_STAR,
 		GEO_HUD_SPELLMOD0,
 		GEO_HUD_SPELLMOD1,
 		GEO_HUD_SPELLMOD2,

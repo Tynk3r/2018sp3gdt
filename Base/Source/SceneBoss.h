@@ -179,7 +179,7 @@ class SceneBoss : public Scene
 		GEO_HUD_SPELLMOD0,
 		GEO_HUD_SPELLMOD1,
 		GEO_HUD_SPELLMOD2,
-
+		GEO_STAR,
 		NUM_GEOMETRY,
 	};
 	enum RENDER_PASS

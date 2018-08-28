@@ -266,7 +266,8 @@ void SceneRangeElemental::Init()
 
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 1.f);
-
+	meshList[GEO_STAR] = MeshBuilder::GenerateQuad("star", 1.f);
+	meshList[GEO_STAR]->textureArray[0] = LoadTGA("Image//star.tga");
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("fireball", "OBJ//ball.obj");
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
@@ -1906,6 +1907,38 @@ void SceneRangeElemental::RenderPassMain()
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0 + playerInfo->GetSpellMod()], false, 35, 35, -2, 0);
+
+	viewStack.LoadIdentity();
+	viewStack.LookAt(
+		0, 0, 0,
+		0, 0, -1,
+		0, 1, 0
+		);
+	modelStack.PushMatrix();
+	modelStack.Translate(0.045f, 0.038f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.040f, 0.035f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.050f, 0.035f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	viewStack.LoadIdentity();
+	viewStack.LookAt(
+		camera.position.x, camera.position.y, camera.position.z,
+		camera.target.x, camera.target.y, camera.target.z,
+		camera.up.x, camera.up.y, camera.up.z
+		);
+
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -1955,25 +1988,9 @@ void SceneRangeElemental::RenderPassMain()
 		ss << npc->getCurrentLine();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
 	}
-	else
-	{
-		ss << "Score: " << playerInfo->GetScore();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
-		std::ostringstream ss1;
-		ss1.precision(5);
-		ss1 << "Health: " << playerInfo->getPos();// playerInfo->GetHealth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
-		std::ostringstream ss2;
-		ss2.precision(5);
-		ss2 << "Mana: " << playerInfo->getMana();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
-
-#ifdef SP3_DEBUG
-		ss1.str("");
-		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
-#endif
-	}
+	std::ostringstream ss7;
+	ss7 << playerInfo->GetScore();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss7.str(), Color(0, 1, 0), 4, 115, 65);
 	//std::ostringstream ss9;
 	//ss9.precision(1);
 	//ss9 << "SpellMod: " << playerInfo->GetSpellMod();

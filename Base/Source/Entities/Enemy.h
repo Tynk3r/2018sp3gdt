@@ -19,6 +19,8 @@ public:
 		AI_LONGRANGE,
 		AI_FLYING,
 
+		AI_LONGRANGEFOG,
+
 		AI_TOTAL
 	};
 
@@ -33,6 +35,7 @@ public:
 	void tempMoveBack(float dt);
 	void setPlayerRef(CPlayerInfo* playerRef);
 	void setAI(ENEMY_AI ai);
+	ENEMY_AI getAI() { return enemyAI; }
 protected:
 	FSM state;
 	CPlayerInfo* playerRef;

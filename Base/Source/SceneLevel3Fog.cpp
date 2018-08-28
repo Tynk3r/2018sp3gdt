@@ -301,12 +301,15 @@ void SceneLevel3::Init()
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
 	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
+	//for (int i = 0; i < MAX_TEXTURES; ++i)
 		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 
 	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
+	//for (int i = 0; i < MAX_TEXTURES; ++i)
 		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+	
+	meshList[GEO_STAR] = MeshBuilder::GenerateQuad("star", 1.f);
+	meshList[GEO_STAR]->textureArray[0] = LoadTGA("Image//star.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -1892,6 +1895,40 @@ void SceneLevel3::RenderPassMain()
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASS], false, 35, 35, -3, 0);
 	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0], false, 35, 35, -2, 0);
 	RenderMeshIn2D(meshList[GEO_BARREL], false, 2, 2, -55, 12);
+
+	glUniform1i(m_parameters[U_GETFOGGED], false);
+	viewStack.LoadIdentity();
+	viewStack.LookAt(
+		0, 0, 0,
+		0, 0, -1,
+		0, 1, 0
+		);
+	modelStack.PushMatrix();
+	modelStack.Translate(0.045f, 0.038f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.040f, 0.035f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	modelStack.PushMatrix();
+	modelStack.Translate(0.050f, 0.035f, -0.1f);
+	modelStack.Rotate(-timeElapsed * 360, 0, 0, 1);
+	modelStack.Scale(0.005, 0.005, 0.005);
+	RenderMesh(meshList[GEO_STAR], godlights);
+	modelStack.PopMatrix();
+	viewStack.LoadIdentity();
+	viewStack.LookAt(
+		camera.position.x, camera.position.y, camera.position.z,
+		camera.target.x, camera.target.y, camera.target.z,
+		camera.up.x, camera.up.y, camera.up.z
+		);
+	glUniform1i(m_parameters[U_GETFOGGED], true);
+
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f, 12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -1941,29 +1978,30 @@ void SceneLevel3::RenderPassMain()
 		ss << npc->getCurrentLine();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
 	}
-	else
-	{
-		ss << "Score: " << playerInfo->GetScore();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
-		std::ostringstream ss1;
-		ss1.precision(5);
-		//ss1 << "Health: " << playerInfo->GetHealth();
-		//RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
-		//std::ostringstream ss2;
-		//ss2.precision(5);
-		//ss2 << "Mana: " << playerInfo->getMana();
-		//RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
-
-#ifdef SP3_DEBUG
-		ss1.str("");
-		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
-#endif
-	}
+//	else
+//	{
+//		std::ostringstream ss1;
+//		ss1.precision(5);
+//		//ss1 << "Health: " << playerInfo->GetHealth();
+//		//RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
+//		//std::ostringstream ss2;
+//		//ss2.precision(5);
+//		//ss2 << "Mana: " << playerInfo->getMana();
+//		//RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
+//
+//#ifdef SP3_DEBUG
+//		ss1.str("");
+//		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();
+//		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 12);
+//#endif
+//	}
 	std::ostringstream ss3;
 	ss3.precision(2);
 	ss3 << /*"Targets Left: " << */totalBarrelsDown;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 4, 11, 46);
+	std::ostringstream ss7;
+	ss7 << playerInfo->GetScore();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss7.str(), Color(0, 1, 0), 4, 115, 65);
 	//std::ostringstream ss4;
 	//ss4.precision((int)floor(log10f(totalTime)) + 1);
 	//ss4 << "Time: " << totalTime;

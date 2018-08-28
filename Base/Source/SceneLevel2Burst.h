@@ -171,7 +171,7 @@ class SceneLevel2 : public Scene
 		GEO_BARREL_FIRE,
 
 		GEO_WITCH,
-
+		GEO_STAR,
 		GEO_HUD_HOURGLASS,
 		GEO_HUD_HOURGLASSFLUID,
 

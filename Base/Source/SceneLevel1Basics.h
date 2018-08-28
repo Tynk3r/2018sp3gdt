@@ -169,7 +169,7 @@ class SceneLevel1 : public Scene
 		GEO_ICEBLOCK,
 		GEO_PILLAR,
 		GEO_WATER,
-
+		GEO_STAR,
 		GEO_HUD_HOURGLASS,
 		GEO_HUD_HOURGLASSFLUID,
 

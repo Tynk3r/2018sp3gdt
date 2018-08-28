@@ -215,6 +215,8 @@ class SceneLevel3 : public Scene
 		
 		GEO_SIGN,
 
+		GEO_STAR,
+
 		GEO_WATER,
 		GEO_NEST,
 

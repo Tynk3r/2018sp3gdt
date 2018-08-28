@@ -63,8 +63,8 @@ void CNPC::Init()
 	case NPC_WIZARDLEVEL3:
 		this->dialogues.push_back("Oh boy, this haze is thick!");
 		this->dialogues.push_back("Use fire to see the way!");
-		this->dialogues.push_back("Ice will create more haze.. ");
-		this->dialogues.push_back("..use it to obscure Octowitches!");
+		this->dialogues.push_back("Ice will create more haze!");
+		this->dialogues.push_back("Octowitches here are invincible!");
 		this->dialogues.push_back("Follow the signs to not get lost.");
 		this->dialogues.push_back("Spells can leave ground markers..");
 		this->dialogues.push_back("Use all that you have to succeed!");

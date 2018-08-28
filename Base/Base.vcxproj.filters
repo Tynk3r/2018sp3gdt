@@ -54,6 +54,7 @@
     <ClCompile Include="Source\SceneLevel3Fog.cpp" />
     <ClCompile Include="Source\Entities\Witch.cpp" />
     <ClCompile Include="Source\Entities\FlyingWitch.cpp" />
+    <ClCompile Include="Source\Entities\WitchFog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
@@ -114,5 +115,6 @@
     <ClInclude Include="Source\SceneLevel3Fog.h" />
     <ClInclude Include="Source\Entities\Witch.h" />
     <ClInclude Include="Source\Entities\FlyingWitch.h" />
+    <ClInclude Include="Source\Entities\WitchFog.h" />
   </ItemGroup>
 </Project>
