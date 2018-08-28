@@ -321,6 +321,8 @@ void SceneBoss::Init()
 	meshList[GEO_SPRITEANIM_TIME_SLOW]->textureArray[0] = LoadTGA("Image//time_slow_texture.tga");
 	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND] = MeshBuilder::GenerateQuad("timeslowhand", Color());
 	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND]->textureArray[0] = LoadTGA("Image//time_slow_hand_texture.tga");
+	meshList[GEO_SPRITEANIM_PLR_DAMAGE] = MeshBuilder::GenerateQuad("plrdamage", Color());
+	meshList[GEO_SPRITEANIM_PLR_DAMAGE]->textureArray[0] = LoadTGA("Image//plr_damage_effect.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -1964,7 +1966,9 @@ void SceneBoss::RenderPassMain()
 			glDepthFunc(GL_LESS);
 		}
 	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
-
+	//glDepthFunc(GL_ALWAYS);
+	//RenderMeshIn2D(meshList[GEO_SPRITEANIM_PLR_DAMAGE], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
+	//glDepthFunc(GL_LESS);
 	//On screen text
 	std::ostringstream ss;
 	ss.precision(5);
