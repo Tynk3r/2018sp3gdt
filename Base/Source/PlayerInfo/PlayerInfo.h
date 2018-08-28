@@ -220,7 +220,7 @@ public:
 		}
 		return 10;
 	}
-
+	std::vector<unsigned char> getHeightMap() { return attachedCamera->m_heightMap; };
 	void setScreenShakeTime(float time);
 	void setScreenShakeIntensity(float amt) { this->screenShakeIntensity = amt; }
 private:
