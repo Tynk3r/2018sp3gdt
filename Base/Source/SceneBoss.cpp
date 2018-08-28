@@ -334,6 +334,13 @@ void SceneBoss::Init()
 	playerInfo->AttachCamera(&camera);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
+	CNPC* npc = new CNPC(CNPC::NPC_WIZARDBOSS,
+		Vector3(100, 0, 100),
+		Vector3(4, 12, 4),
+		Vector3(100, 0, 100 + 1)
+		);
+	npc->setPlayerRef(playerInfo);
+
 	//CNPC* npc = new CNPC(
 	//	Vector3(0, 0, 80),
 	//	Vector3(4, 12, 4),

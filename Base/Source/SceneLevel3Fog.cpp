@@ -337,9 +337,12 @@ void SceneLevel3::Init()
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("water", Color(1, 1, 1), 10.f, 16);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//floor3.tga");
 	meshList[GEO_WATER]->textureArray[1] = LoadTGA("Image//blank256.tga");
-
+	meshList[GEO_NEST] = MeshBuilder::GenerateOBJ("nest", "OBJ//nest.obj");
+	meshList[GEO_NEST]->textureArray[0] = LoadTGA("Image//nest.tga");
 	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
 	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
+	meshList[GEO_SIGN] = MeshBuilder::GenerateOBJ("sign", "OBJ//sign.obj");
+	meshList[GEO_SIGN]->textureArray[0] = LoadTGA("Image//sign.tga");
 
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
@@ -358,12 +361,12 @@ void SceneLevel3::Init()
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_NORMAL);
 
-	//CNPC* npc = new CNPC(
-	//	Vector3(0, 0, 80),
-	//	Vector3(4, 12, 4),
-	//	Vector3(0, 0, 80.f)
-	//	);
-	//npc->setPlayerRef(playerInfo);
+	CNPC* npc = new CNPC(CNPC::NPC_WIZARDLEVEL3,
+		Vector3(-100, 0, 900),
+		Vector3(4, 12, 4),
+		Vector3(-100, 0, 900 + 1)
+		);
+	npc->setPlayerRef(playerInfo);
 
 	enemy = new CWitch();
 	enemy->Init();
@@ -807,7 +810,7 @@ void SceneLevel3::Update(double dt)
 
 	}
 
-	//glUniform1i(m_parameters[U_GETFOGGED], 0);
+	glUniform1i(m_parameters[U_GETFOGGED], 0);
 
 	fps = (float)(1.f / dt);
 	rotateAngle++;
@@ -1504,6 +1507,12 @@ void SceneLevel3::RenderWorld()
 	//	}
 	//}
 
+	modelStack.PushMatrix();
+	modelStack.Translate(0.f, 350, 0.f);
+	modelStack.Scale(60, 60, 60);
+	RenderMesh(meshList[GEO_NEST], godlights);
+	modelStack.PopMatrix();
+
 	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
 	{
 
@@ -1598,6 +1607,41 @@ void SceneLevel3::RenderWorld()
 					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
 					//RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
 					//modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(200, 160, 1150);
+	modelStack.Rotate(90, 0, 1, 0);
+	modelStack.Scale(30, 50, 30);
+	RenderMesh(meshList[GEO_SIGN], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(1400, 160, -200);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Scale(30, 50, 30);
+	RenderMesh(meshList[GEO_SIGN], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(150, 230, -200);
+	modelStack.Rotate(0, 0, 1, 0);
+	modelStack.Scale(40, 80, 40);
+	RenderMesh(meshList[GEO_SIGN], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-1020, 160, 700);
+	modelStack.Rotate(0, 0, 1, 0);
+	modelStack.Scale(30, 50, 30);
+	RenderMesh(meshList[GEO_SIGN], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-500, 160, -1100);
+	modelStack.Rotate(-90, 0, 1, 0);
+	modelStack.Scale(30, 50, 30);
+	RenderMesh(meshList[GEO_SIGN], false);
+	modelStack.PopMatrix();
 
 	Vector3 tempDir = (camera.target - camera.position).Normalized();
 	Vector3 lArmOffset, rArmOffset, lArmRot, rArmRot;
@@ -1807,6 +1851,7 @@ void SceneLevel3::RenderPassMain()
 	RenderMesh(meshList[GEO_WATER], godlights);
 	glUniform1i(m_parameters[U_UV_OFFSET_ENABLED], 0);
 	modelStack.PopMatrix();
+
 
 				   //Render particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)

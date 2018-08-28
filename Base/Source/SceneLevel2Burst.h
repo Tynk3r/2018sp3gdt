@@ -167,6 +167,8 @@ class SceneLevel2 : public Scene
 		GEO_BARREL_ICE,
 		GEO_BARREL_FIRE,
 
+		GEO_WITCH,
+
 		GEO_HUD_HOURGLASS,
 		GEO_HUD_HOURGLASSFLUID,
 
@@ -248,6 +250,8 @@ private:
 	CPlayerInfo* playerInfo;
 
 	CEntity* wall1;
+
+	CEnemy* enemy, *enemy2;
 
 	CEntity* targets[4];
 	CEntity* targetsMoving[4];

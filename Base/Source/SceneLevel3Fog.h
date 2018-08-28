@@ -210,7 +210,10 @@ class SceneLevel3 : public Scene
 		GEO_HUD_SPELLMOD1,
 		GEO_HUD_SPELLMOD2,
 		
+		GEO_SIGN,
+
 		GEO_WATER,
+		GEO_NEST,
 
 		NUM_GEOMETRY,
 	};
