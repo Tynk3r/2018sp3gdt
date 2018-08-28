@@ -45,9 +45,51 @@ void CNPC::Init()
 		this->dialogues.push_back("shoot the ice barrels with fire");
 		break;
 	case NPC_WIZARDBASIC:
-		this->dialogues.push_back("Your adventure has just begun!");
-		this->dialogues.push_back("Face these perilous trials");
-		this->dialogues.push_back("and you'll probably find treasure");
+		this->dialogues.push_back("Your training has just begun!");
+		this->dialogues.push_back("Destroy all these targets!");
+		this->dialogues.push_back("You'll have some restrictions..");
+		this->dialogues.push_back("Don't let your Time-gic run out!");
+		break;
+	case NPC_WIZARDLEVEL2:
+		this->dialogues.push_back("Emergency! Octowitches spotted!");
+		this->dialogues.push_back("These grounds are under attack!");
+		this->dialogues.push_back("Defeat them with your magic!");
+		this->dialogues.push_back("They can be stunned if you..");
+		this->dialogues.push_back("..interrupt their attack..");
+		this->dialogues.push_back("..by attacking it with..");
+		this->dialogues.push_back("..the opposite element!");
+		this->dialogues.push_back("Remember to destroy all targets.");
+		break;
+	case NPC_WIZARDLEVEL3:
+		this->dialogues.push_back("Oh boy, this haze is thick!");
+		this->dialogues.push_back("Use fire to see the way!");
+		this->dialogues.push_back("Ice will create more haze.. ");
+		this->dialogues.push_back("..use it to obscure Octowitches!");
+		this->dialogues.push_back("Follow the signs to not get lost.");
+		this->dialogues.push_back("Spells can leave ground markers..");
+		this->dialogues.push_back("Use all that you have to succeed!");
+		this->dialogues.push_back("You must head to the central nest.");
+		this->dialogues.push_back("You will obtain your dragon there.");
+		this->dialogues.push_back("However, it angers the Blood Sea.");
+		this->dialogues.push_back("Be prepared to fly high to flee!");
+		this->dialogues.push_back("There are 4 land targets...and");
+		this->dialogues.push_back("1 air target, remember!");
+		this->dialogues.push_back("Summon Dragon with 20 mana..");
+		this->dialogues.push_back("..using the 'U' button");
+		this->dialogues.push_back("Afterwards, fly into the sky!");
+		this->dialogues.push_back("I believe in you!!");
+		break;
+	case NPC_WIZARDBOSS:
+		this->dialogues.push_back("The time has come!");
+		this->dialogues.push_back("Its the Inker of Worlds..");
+		this->dialogues.push_back("..The Octopus God!!");
+		this->dialogues.push_back("Stun him by interrupting his");
+		this->dialogues.push_back("attacks, then go all out!!");
+		break;
+	default:
+		this->dialogues.push_back("hello i am a wizardz!!!");
+		this->dialogues.push_back("shoot the fire barrels with ice");
+		this->dialogues.push_back("shoot the ice barrels with fire");
 		break;
 	}
 	// Add to EntityManager
@@ -66,7 +108,7 @@ void CNPC::Update(double dt)
 			float lengthSQ = npctoplayer.LengthSquared();
 			if (lengthSQ < 100 * 100)//curernt hardcoded sphere "area" detection
 			{
-				if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB) && plr->GetCurrentNPC() == NULL)
+				if (MouseController::GetInstance()->IsButtonDown(MouseController::MMB) && plr->GetCurrentNPC() == NULL)
 				{
 					plr->SetCurrentNPC(this);
 				}

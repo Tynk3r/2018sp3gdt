@@ -49,7 +49,7 @@ int CMouse::Read(const float deltaTime)
 	{
 		CNPC* npc = static_cast<CNPC*>(thePlayerInfo->GetCurrentNPC());
 		npc->UpdateDialogue(deltaTime);
-		if (MouseController::GetInstance()->IsButtonDown(MouseController::LMB) && npc->isDoneWithLine())
+		if (MouseController::GetInstance()->IsButtonDown(MouseController::MMB) && npc->isDoneWithLine())
 		{
 			if (npc->finishedDialogue())
 			{

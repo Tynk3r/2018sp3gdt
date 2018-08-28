@@ -10,6 +10,9 @@ public:
 	enum NPC_TYPE {
 		NPC_WIZARD,
 		NPC_WIZARDBASIC,
+		NPC_WIZARDLEVEL2,
+		NPC_WIZARDLEVEL3,
+		NPC_WIZARDBOSS
 	};
 
 	CNPC(Vector3 pos = Vector3(0, 0, 0), Vector3 scale = Vector3(1, 1, 1), Vector3 target = Vector3(0, 0, 1));

@@ -7,6 +7,7 @@
 #include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
+#include "Entities\Witch.h"
 #include "LoadHmap.h"
 #include <sstream>
 #define SP3_DEBUG
@@ -263,6 +264,8 @@ void SceneLevel2::Init()
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
 	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
 	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
+	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
 	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
 	for (int i = 0; i < MAX_TEXTURES; ++i)
 		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
@@ -316,6 +319,27 @@ void SceneLevel2::Init()
 	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_BURST);
+
+	CNPC* npc = new CNPC(CNPC::NPC_WIZARDLEVEL2,
+		Vector3(150, 0, 700),
+		Vector3(4, 12, 4),
+		Vector3(150, 0, 700 + 1)
+		);
+	npc->setPlayerRef(playerInfo);
+
+	enemy = new CWitch();
+	enemy->Init();
+	enemy->setScale(Vector3(15, 15, 15));
+	enemy->setPos(Vector3(-700, 400, 650));
+	enemy->setPlayerRef(playerInfo);
+	enemy->setCanBeWalled(true);
+
+	enemy2 = new CWitch();
+	enemy2->Init();
+	enemy2->setScale(Vector3(15, 15, 15));
+	enemy2->setPos(Vector3(700, 400, 650));
+	enemy2->setPlayerRef(playerInfo);
+	enemy2->setCanBeWalled(true);
 
 	//CNPC* npc = new CNPC(
 	//	Vector3(0, 0, 80),
@@ -439,7 +463,7 @@ void SceneLevel2::Init()
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 
-	totalTime = 70;
+	totalTime = 120;
 	totalBarrelsDown = 0;
 	secondSetBarrel = false;
 }
@@ -620,6 +644,9 @@ void SceneLevel2::Update(double dt)
 	//camera.Update(dt);
 
 	playerInfo->SetNotMoving();
+
+	enemy->setPos(Vector3(enemy->getPos().x, 350.f * ReadHeightMap(m_heightMap, enemy->getPos().x / 4000, enemy->getPos().z / 4000), enemy->getPos().z));
+	enemy2->setPos(Vector3(enemy2->getPos().x, 350.f * ReadHeightMap(m_heightMap, enemy2->getPos().x / 4000, enemy2->getPos().z / 4000), enemy2->getPos().z));
 
 	//bool shouldChange = true;
 	bool shouldChange = false;
@@ -1277,10 +1304,11 @@ void SceneLevel2::RenderWorld()
 			case CEntity::E_ENEMY:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y/* + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000)*/, (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)), 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_SPHERE], godlights);
+				modelStack.Scale(4, 4, -4);
+				RenderMesh(meshList[GEO_WITCH], godlights);
 				modelStack.PopMatrix();
 				break;
 			}
@@ -1809,11 +1837,11 @@ void SceneLevel2::RenderPassMain()
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 70));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY],/* 0.6 + 0.3 **/ (totalTime / 120));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, 15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 1);
-	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 70));
+	glUniform1f(m_parameters[U_CUTOFF_TEXCOORDY], /*0.6 + 0.3 **/ -(totalTime / 120));
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASSFLUID], false, 15, -15, -7, 0.5);
 	glUniform1i(m_parameters[U_CUTOFF_ENABLED], 0);
 	RenderMeshIn2D(meshList[GEO_HUD_HOURGLASS], false, 35, 35, -3, 0);
@@ -1864,9 +1892,9 @@ void SceneLevel2::RenderPassMain()
 	ss.precision(5);
 	if (playerInfo->GetCurrentNPC() != NULL)
 	{
-		//CNPC* npc = static_cast<CNPC*>(playerInfo->GetCurrentNPC());
-		//ss << npc->getCurrentLine();
-		//RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
+		CNPC* npc = static_cast<CNPC*>(playerInfo->GetCurrentNPC());
+		ss << npc->getCurrentLine();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 4);
 	}
 	else
 	{
