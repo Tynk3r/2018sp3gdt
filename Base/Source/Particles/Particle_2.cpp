@@ -144,6 +144,19 @@ void CParticle_2::Init()
 			this->endScale = Vector3(6, 6, 6)*Math::RandFloatMinMax(5.f, 8.15f);
 		}
 		break;
+	case PTYPE_ENEMYAPPEAR:
+		this->acc.SetZero();
+		this->setSpeed(0);
+		this->lifeSpan = Math::RandFloatMinMax(0.1f, 0.15f);
+		if (this->parent != NULL)
+		{
+			this->setPos(this->parent->getPos());
+			this->originPosition = this->getPos();
+			this->setScale(this->parent->getScale());
+			this->startScale = this->getScale();
+			this->endScale = this->startScale*Math::RandFloatMinMax(0.f, 0.05f);
+		}
+		break;
 	}
 }
 

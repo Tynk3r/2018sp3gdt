@@ -298,6 +298,10 @@ void SceneRangeElemental::Init()
 	}
 	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
 	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW] = MeshBuilder::GenerateQuad("timeslow", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW]->textureArray[0] = LoadTGA("Image//time_slow_texture.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND] = MeshBuilder::GenerateQuad("timeslowhand", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND]->textureArray[0] = LoadTGA("Image//time_slow_hand_texture.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -425,7 +429,7 @@ void SceneRangeElemental::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
 
-	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	if (playerInfo->GetScore() >= 30 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
 	}
@@ -959,7 +963,7 @@ void SceneRangeElemental::RenderTextOnScreen(Mesh* mesh, std::string text, Color
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y, float rotation)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
@@ -969,6 +973,7 @@ void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float siz
 			viewStack.LoadIdentity();
 			modelStack.PushMatrix();
 				modelStack.LoadIdentity();
+				modelStack.Rotate(rotation, 0, 0, 1);
 				modelStack.Scale(size_x, size_y, 1);
 				modelStack.Translate(x, y, 0);
        
@@ -1022,7 +1027,6 @@ void SceneRangeElemental::RenderMeshIn2D(Mesh *mesh, bool enableLight, float siz
 			modelStack.PopMatrix();
 		viewStack.PopMatrix();
 	projectionStack.PopMatrix();
-
 }
 
 void SceneRangeElemental::RenderMesh(Mesh *mesh, bool enableLight)
@@ -1911,6 +1915,7 @@ void SceneRangeElemental::RenderPassMain()
 		for (it = CameraEffectManager::GetInstance()->camEfflist.begin(); it != end; ++it)
 		{
 			CameraEffect* camEff = *it;
+			glDepthFunc(GL_ALWAYS);
 			switch (camEff->getCamEffectType())
 			{
 			case CameraEffect::CE_TYPE_ACTIONLINE_WHITE:
@@ -1918,7 +1923,26 @@ void SceneRangeElemental::RenderPassMain()
 				RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
+			case CameraEffect::CE_TYPE_TIME_SLOW:
+			{
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				float rot1 = Quad::easeOut((camEff->getAnimFrame() / camEff->getDuration()), 0, 1, 1) * -360 * 6.230752f;
+				float rot2 = rot1 * (1.f / 30.f) * 2.5f;
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW], false, Application::GetWindowHeight()*0.2f, Application::GetWindowHeight()*0.2f);//height only
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.005f, Application::GetWindowHeight()*0.12f,
+					0,
+					0.175f,
+					rot1);
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.0075f, Application::GetWindowHeight()*0.075f,
+					0,
+					0.175f,
+					rot2);
+				//RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND],false,A)
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+				break;
 			}
+			}
+			glDepthFunc(GL_LESS);
 		}
 	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
 

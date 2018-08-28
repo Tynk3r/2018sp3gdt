@@ -33,7 +33,8 @@ public:
 	//Check for line intersection across an AABB box, all boxes are assumed to be non-rotated (wall collision is 2 sided so must be done twice)
 	Vector3 CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, int times);
 	Vector3 CheckForLineIntersectionZFace(Vector3 pivot, CEntity *ent, Vector3 mousePoint);
-
+	int AmountOfEnemies();
+	void KillAllEnemies();
 };
 
 #endif // ENTITY_MANAGER_H

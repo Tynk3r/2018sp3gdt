@@ -28,6 +28,7 @@
 #include "Entities/Projectile.h"
 #include "CameraEffects\CameraEffectManager.h"
 #include "TimeTrackerManager.h"
+#include "EasingStyles\QuadEase.h"
 
 using namespace std;
 
@@ -190,6 +191,8 @@ class SceneLevel3 : public Scene
 		GEO_PARTICLE_FIRE,
 		GEO_PARTICLE_ICE,
 		GEO_SPRITEANIM_ACTIONLINES,
+		GEO_SPRITEANIM_TIME_SLOW,
+		GEO_SPRITEANIM_TIME_SLOW_HAND,
 		GEO_FIREBALL,
 		GEO_ICEBALL,
 		GEO_BOLT,
@@ -238,7 +241,7 @@ public:
 
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string Terrain, Color color, float size, float x, float y);
-	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x = 1.0f, float size_y = 1.0f, float x = 0.0f, float y = 0.0f);
+	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x = 1.0f, float size_y = 1.0f, float x = 0.0f, float y = 0.0f, float rotation = 0.f);
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderGround();
 	void RenderSkybox();

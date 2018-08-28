@@ -464,7 +464,7 @@ void SceneRangeMoving::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
-	if (playerInfo->GetScore() >= 50 || Application::IsKeyPressed('E'))
+	if (playerInfo->GetScore() >= 30 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 	}
@@ -2063,12 +2063,14 @@ void SceneRangeMoving::RenderPassMain()
 	}
 
 
+
 	float PMana = playerInfo->getMana();
 	for (int i = 0; i < (PMana *0.1); ++i)
 	{
 		RenderMeshIn2D(meshList[GEO_MANA], false, 5, 5, (Application::GetWindowWidth() * 0.01 * -1.9f) + 1.25f*i, (Application::GetWindowHeight() * 0.01 * 1.3f) + 1.25f);//(Application::GetWindowWidth() * 0.1 * -0.45f) + 3 * i
 	}
 	RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0 + playerInfo->GetSpellMod()], false, 35, 35, -2, 0);
+	//RenderMeshIn2D(meshList[GEO_HUD_SPELLMOD0 + playerInfo->GetSpellMod()], false, 20, 17, -5.5, 2);
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
@@ -2123,14 +2125,14 @@ void SceneRangeMoving::RenderPassMain()
 		ss << "Score: " << playerInfo->GetScore();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 4, 0, 0);
 		std::ostringstream ss1;
-		ss1.precision(5);
+	/*	ss1.precision(5);
 		ss1 << "Health: " << playerInfo->GetHealth();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 4, 0, 4);
 		std::ostringstream ss2;
 		ss2.precision(5);
 		ss2 << "Mana: " << playerInfo->getMana();
 		RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 4, 0, 8);
-
+*/
 #ifdef SP3_DEBUG
 		ss1.str("");
 		ss1 << "TimeTracker Speed: " << TimeTrackerManager::GetInstance()->getSpeed();

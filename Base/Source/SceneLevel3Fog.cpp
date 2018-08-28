@@ -323,6 +323,10 @@ void SceneLevel3::Init()
 	}
 	meshList[GEO_SPRITEANIM_ACTIONLINES] = MeshBuilder::GenerateSpriteAnimation("actionlines", 2, 2);
 	meshList[GEO_SPRITEANIM_ACTIONLINES]->textureArray[0] = LoadTGA("Image//action_lines.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW] = MeshBuilder::GenerateQuad("timeslow", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW]->textureArray[0] = LoadTGA("Image//time_slow_texture.tga");
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND] = MeshBuilder::GenerateQuad("timeslowhand", Color());
+	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND]->textureArray[0] = LoadTGA("Image//time_slow_hand_texture.tga");
 	meshList[GEO_HUD_HOURGLASS] = MeshBuilder::GenerateQuad("hourglass", Color());
 	meshList[GEO_HUD_HOURGLASS]->textureArray[0] = LoadTGA("Image//hourglass.tga");
 	meshList[GEO_HUD_HOURGLASSFLUID] = MeshBuilder::GenerateQuad("hourglassFluid", Color());
@@ -902,69 +906,70 @@ void SceneLevel3::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, 
 	glUniform1i(m_parameters[U_GETFOGGED], true);
 }
 
-void SceneLevel3::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y)
+void SceneLevel3::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, float size_y, float x, float y, float rotation)
 {
 	glUniform1i(m_parameters[U_GETFOGGED], false);
 	Mtx44 ortho;
 	ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
 	projectionStack.PushMatrix();
-	projectionStack.LoadMatrix(ortho);
-	viewStack.PushMatrix();
-	viewStack.LoadIdentity();
-	modelStack.PushMatrix();
-	modelStack.LoadIdentity();
-	modelStack.Scale(size_x, size_y, 1);
-	modelStack.Translate(x, y, 0);
+		projectionStack.LoadMatrix(ortho);
+		viewStack.PushMatrix();
+			viewStack.LoadIdentity();
+			modelStack.PushMatrix();
+				modelStack.LoadIdentity();
+				modelStack.Rotate(rotation, 0, 0, 1);
+				modelStack.Scale(size_x, size_y, 1);
+				modelStack.Translate(x, y, 0);
+       
+				Mtx44 MVP, modelView, modelView_inverse_transpose;
+				
+				MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+				modelView = viewStack.Top() * modelStack.Top(); // Week 6
+				glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+				if (enableLight && bLightEnabled)
+				{
+					glUniform1i(m_parameters[U_LIGHTENABLED], 1);
+					modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
+					//modelView = viewStack.Top() * modelStack.Top();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
+					//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
+					//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
 
-	Mtx44 MVP, modelView, modelView_inverse_transpose;
+					Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+					glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
 
-	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
-	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
-	modelView = viewStack.Top() * modelStack.Top(); // Week 6
-	glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-	if (enableLight && bLightEnabled)
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 1);
-		modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-		glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView_inverse_transpose.a[0]);
-		//modelView = viewStack.Top() * modelStack.Top();
-		//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
-		//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
-		//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
+					//load material
+					glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
+					glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
+					glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
+					glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
+				}
+				else
+				{
+					glUniform1i(m_parameters[U_LIGHTENABLED], 0);
+				}
+				for (int i = 0; i < MAX_TEXTURES; ++i) {
+					if (mesh->textureArray[i] > 0) {
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
+						glActiveTexture(GL_TEXTURE0 + i);
+						glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
+						glUniform1i(m_parameters[U_COLOR_TEXTURE + i], i);
+					}
+					else {
 
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
-
-		//load material
-		glUniform3fv(m_parameters[U_MATERIAL_AMBIENT], 1, &mesh->material.kAmbient.r);
-		glUniform3fv(m_parameters[U_MATERIAL_DIFFUSE], 1, &mesh->material.kDiffuse.r);
-		glUniform3fv(m_parameters[U_MATERIAL_SPECULAR], 1, &mesh->material.kSpecular.r);
-		glUniform1f(m_parameters[U_MATERIAL_SHININESS], mesh->material.kShininess);
-	}
-	else
-	{
-		glUniform1i(m_parameters[U_LIGHTENABLED], 0);
-	}
-	for (int i = 0; i < MAX_TEXTURES; ++i) {
-		if (mesh->textureArray[i] > 0) {
-			glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 1);
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-			glUniform1i(m_parameters[U_COLOR_TEXTURE + i], i);
-		}
-		else {
-
-			glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-	}
-	mesh->Render();
-	if (mesh->textureID > 0)
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	modelStack.PopMatrix();
-	viewStack.PopMatrix();
+						glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED + i], 0);
+					}
+				}
+				mesh->Render();
+				if(mesh->textureID > 0)
+				{
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+       
+			modelStack.PopMatrix();
+		viewStack.PopMatrix();
 	projectionStack.PopMatrix();
 	glUniform1i(m_parameters[U_GETFOGGED], true);
 }
@@ -1896,6 +1901,7 @@ void SceneLevel3::RenderPassMain()
 		for (it = CameraEffectManager::GetInstance()->camEfflist.begin(); it != end; ++it)
 		{
 			CameraEffect* camEff = *it;
+			glDepthFunc(GL_ALWAYS);
 			switch (camEff->getCamEffectType())
 			{
 			case CameraEffect::CE_TYPE_ACTIONLINE_WHITE:
@@ -1903,7 +1909,26 @@ void SceneLevel3::RenderPassMain()
 				RenderMeshIn2D(meshList[GEO_SPRITEANIM_ACTIONLINES], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
+			case CameraEffect::CE_TYPE_TIME_SLOW:
+			{
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				float rot1 = Quad::easeOut((camEff->getAnimFrame() / camEff->getDuration()), 0, 1, 1) * -360 * 6.230752f;
+				float rot2 = rot1 * (1.f / 30.f) * 2.5f;
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW], false, Application::GetWindowHeight()*0.2f, Application::GetWindowHeight()*0.2f);//height only
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.005f, Application::GetWindowHeight()*0.12f,
+					0,
+					0.175f,
+					rot1);
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND], false, Application::GetWindowHeight()*0.0075f, Application::GetWindowHeight()*0.075f,
+					0,
+					0.175f,
+					rot2);
+				//RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND],false,A)
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+				break;
 			}
+			}
+			glDepthFunc(GL_LESS);
 		}
 	}															//RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER <<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>
 

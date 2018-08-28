@@ -43,7 +43,7 @@ void CWitch::Update(double dt)
 		this->witchProjectile->setPos(this->getPos() + Vector3(0, (this->getScale().y + this->witchProjectile->getScale().y)*3.5f, 0));
 		this->witchProjectile->setScale(Vector3(1, 1, 1).lerped(Vector3(25, 25, 25), this->witchCooldown*0.2f));
 		this->setTarget(Vector3(this->playerRef->getPos().x, this->getPos().y, this->playerRef->getPos().z));
-		if (witchProjectile->bossDone)
+		if (witchProjectile == NULL || witchProjectile->bossDone)
 		{
 			this->witchProjectile = NULL;
 			this->witchCooldown = 0;

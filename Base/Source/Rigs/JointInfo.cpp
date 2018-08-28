@@ -155,6 +155,15 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(0, 0, 0));
 				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_1:
+				jKeyframes.push_back(Vector3(1.f, 0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(4, 2, 0));
+				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_2:
+				jKeyframes.push_back(Vector3(1.f, -0.1f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(5, -1, 0));
 			case KEYFRAME_OCTO_VULNERABLE:
 				jKeyframes.push_back(Vector3(1.f, 0.25f, 0));
 				jKeyframes.push_back(Vector3());
@@ -191,6 +200,14 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(0, 1, 2));
 				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_1:
+				jKeyframes.push_back(Vector3(-2.5f, 3.5f, 3));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, 2, -2));
+			case KEYFRAME_OCTO_SUMMON_ENEMY_2:
+				jKeyframes.push_back(Vector3(6, 1.25f, 1));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-2, 3, -3));
 			case KEYFRAME_OCTO_SURPRISED:
 				jKeyframes.push_back(Vector3(3, 6, 0));
 				jKeyframes.push_back(Vector3());
@@ -232,6 +249,15 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(-1, 1, 0));
 				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_1:
+				jKeyframes.push_back(Vector3(-1.f, 0.15f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-4, 2, 0));
+				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_2:
+				jKeyframes.push_back(Vector3(-1.f, -0.1f, 0));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(-5, -1, 0));
 			case KEYFRAME_OCTO_SURPRISED:
 				jKeyframes.push_back(Vector3(-1.f, 0.15f, 0));
 				jKeyframes.push_back(Vector3());
@@ -273,6 +299,14 @@ std::vector<Vector3> CJointInfo::GenerateJointInfo(JOINT_TYPE jType, JOINT_KEYFR
 				jKeyframes.push_back(Vector3());
 				jKeyframes.push_back(Vector3(0, 1, 2));
 				break;
+			case KEYFRAME_OCTO_SUMMON_ENEMY_1:
+				jKeyframes.push_back(Vector3(2.5f, 3.5f, 3));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(0, 2, -2));
+			case KEYFRAME_OCTO_SUMMON_ENEMY_2:
+				jKeyframes.push_back(Vector3(-6, 1.25f, 1));
+				jKeyframes.push_back(Vector3());
+				jKeyframes.push_back(Vector3(2, 3, -3));
 			case KEYFRAME_OCTO_SURPRISED:
 				jKeyframes.push_back(Vector3(-3, 6, 0));
 				jKeyframes.push_back(Vector3());

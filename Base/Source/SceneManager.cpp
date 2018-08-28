@@ -49,13 +49,13 @@ void CSceneManager::GoToScene(Scenes SceneID) {
 void CSceneManager::Update(StopWatch* m_timer) {
 	switch (currentSceneID) {
 	case SCENE_RANGE:
-	case SCENE_BOSS:
 	case SCENE_RANGE_MOVING:
+	case SCENE_RANGE_ELEMENTAL:
 	case SCENE_LEVEL1:
 	case SCENE_LEVEL2:
 	case SCENE_LEVEL4:
-	case SCENE_RANGE_ELEMENTAL:
 	case SCENE_TERRAIN:
+	case SCENE_BOSS:
 		currentLevelID = currentSceneID;
 	default:
 		break;
@@ -82,7 +82,6 @@ void CSceneManager::ChangeScene() {
 		if (currentSceneID != currentLevelID)
 			InitScene();
 	}
-	
 }
 
 int CSceneManager::GetCurrentSceneID() {

@@ -135,7 +135,7 @@ void CProjectile::Update(double dt)
 		}
 		break;
 	default:
-		setPos(getPos() + (viewVector * getSpeed() * (float)dt));
+		//setPos(getPos() + (viewVector * getSpeed() * (float)dt));
 		if (this->elapsedTime > this->particleRate)
 		{
 			ParticleManager::GetInstance()->AddParticle(this);

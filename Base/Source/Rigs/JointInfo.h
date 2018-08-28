@@ -30,6 +30,8 @@ public:
 		KEYFRAME_OCTO_FIREBALL_2,//kinda does a throwing motion with his right arm
 		KEYFRAME_OCTO_ICEBALL_1,//raising his left arm 
 		KEYFRAME_OCTO_ICEBALL_2,//kinda does a throwing motion with his left arm
+		KEYFRAME_OCTO_SUMMON_ENEMY_1,//kinda crossing his arms or somethin
+		KEYFRAME_OCTO_SUMMON_ENEMY_2,//spreads his arms out or osmethin
 		KEYFRAME_OCTO_SURPRISED,//like hes very surprised so he puts his tentacles up i guess
 		KEYFRAME_OCTO_VULNERABLE,//octo is vulnerabl!!!!
 		KEYFRAME_OCTO_DEAD,//octo dead
