@@ -18,16 +18,6 @@ SceneLevel3::SceneLevel3()
 
 SceneLevel3::~SceneLevel3()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneLevel3::Init()
@@ -1134,6 +1124,16 @@ void SceneLevel3::Exit()
 	{
 		delete CameraEffectManager::GetInstance()->camEfflist.back();
 		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 

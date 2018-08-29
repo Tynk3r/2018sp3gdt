@@ -17,16 +17,6 @@ SceneRangeElemental::SceneRangeElemental()
 
 SceneRangeElemental::~SceneRangeElemental()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneRangeElemental::Init()
@@ -1187,6 +1177,16 @@ void SceneRangeElemental::Exit()
 	{
 		delete CameraEffectManager::GetInstance()->camEfflist.back();
 		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 

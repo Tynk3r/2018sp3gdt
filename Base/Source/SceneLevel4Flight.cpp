@@ -19,16 +19,6 @@ SceneLevel4::SceneLevel4()
 
 SceneLevel4::~SceneLevel4()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneLevel4::Init()
@@ -1373,6 +1363,16 @@ void SceneLevel4::Exit()
 	{
 		delete CameraEffectManager::GetInstance()->camEfflist.back();
 		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 

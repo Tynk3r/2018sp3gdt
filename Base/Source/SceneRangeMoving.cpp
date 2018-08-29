@@ -17,16 +17,6 @@ SceneRangeMoving::SceneRangeMoving()
 
 SceneRangeMoving::~SceneRangeMoving()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneRangeMoving::Init()
@@ -318,12 +308,10 @@ void SceneRangeMoving::Init()
 	}
 
 	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
+	meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 
 	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+	meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 
 	// Create the playerinfo instance, which manages all information about the player
 	playerInfo = CPlayerInfo::GetInstance();
@@ -335,11 +323,11 @@ void SceneRangeMoving::Init()
 	playerInfo->terrainHeight = 350.f * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	drone1 = new CDrone();
-	drone1->Init();
-	drone1->setPos(Vector3(0, 20.f, 0));
-	drone1->setScale(Vector3(10.f, 10.f, 10.f));
-	drone1->setTarget(Vector3(0.f, 0.f, 0.f));
+	//drone1 = new CDrone();
+	//drone1->Init();
+	//drone1->setPos(Vector3(0, 20.f, 0));
+	//drone1->setScale(Vector3(10.f, 10.f, 10.f));
+	//drone1->setTarget(Vector3(0.f, 0.f, 0.f));
 
 	//slow ez one
 	for (int i = 0; i < 3; i++)
@@ -1269,6 +1257,16 @@ void SceneRangeMoving::Exit()
 	{
 		delete CameraEffectManager::GetInstance()->camEfflist.back();
 		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 
