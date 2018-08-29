@@ -6,6 +6,7 @@
 #include "../SoundEngine.h"
 #include "../Particles/ParticleManager.h"
 #include "Boss.h"
+#include "../CameraEffects/CameraEffectManager.h"
 using namespace std;
 
 // Update all entities
@@ -321,7 +322,7 @@ bool EntityManager::CheckForCollision(float dt)
 							
 							if (proj1->getSource()->getType() == CEntity::E_BOSS) CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 20);
 							else if (proj1->getSource()->getType() == CEntity::E_ENEMY) CPlayerInfo::GetInstance()->setHealth(CPlayerInfo::GetInstance()->GetHealth() - 10);
-
+							CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_BLOODSCREEN);
 							if (proj1->getProjType()==CProjectile::PTYPE_FIRE)
 								CSoundEngine::GetInstance()->PlayASound("floorImpact");
 							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)

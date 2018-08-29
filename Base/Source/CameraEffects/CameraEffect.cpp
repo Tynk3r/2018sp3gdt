@@ -44,6 +44,12 @@ void CameraEffect::Init()
 		this->canFade = true;
 		this->animFrame = 0;
 		break;
+	case CE_TYPE_BLOODSCREEN:
+		this->fadeDuration = 0.85f;
+		this->transparency = 0.1;
+		this->canFade = true;
+		this->animFrame = 0;
+		break;
 	case CE_TYPE_TIME_SLOW:
 		this->fadeDuration = 2.f;
 		this->transparency = 1.f;
@@ -77,6 +83,13 @@ void CameraEffect::Update(double dt)
 			
 		}
 		break;
+	case CE_TYPE_BLOODSCREEN:
+		if (this->canFade)
+		{
+			this->animFrame += (float)dt;
+			float alpha = this->animFrame / this->fadeDuration;
+			this->transparency = Math::lerp(0.f, 1.f, alpha);
+		}
 	case CE_TYPE_TIME_SLOW:
 		if (this->canFade)
 		{

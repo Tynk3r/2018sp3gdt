@@ -1928,6 +1928,11 @@ void SceneBoss::RenderPassMain()
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 				break;
 			}
+			case CameraEffect::CE_TYPE_BLOODSCREEN:
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_PLR_DAMAGE], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+				break;
 			}
 			glDepthFunc(GL_LESS);
 		}
