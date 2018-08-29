@@ -407,10 +407,12 @@ void SceneBoss::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+		playerInfo->rocketMode = false;
 	}
 	if (playerInfo && playerInfo->GetHealth() <= 0)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
+		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);

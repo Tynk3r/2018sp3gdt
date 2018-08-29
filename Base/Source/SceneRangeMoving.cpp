@@ -472,47 +472,49 @@ void SceneRangeMoving::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+		playerInfo->rocketMode = false;
 	}
 	if (playerInfo->GetScore() >= 30 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
+		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
-	if(Application::IsKeyPressed('1'))
-		glEnable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('2'))
-		glDisable(GL_CULL_FACE);
-	if(Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if(Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
-	if(Application::IsKeyPressed('5'))
-	{
-		lights[0].type = Light::LIGHT_POINT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if(Application::IsKeyPressed('6'))
-	{
-		lights[0].type = Light::LIGHT_DIRECTIONAL;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if(Application::IsKeyPressed('7'))
-	{
-		lights[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if(Application::IsKeyPressed('8'))
-	{
-		bLightEnabled = true;
-	}
-	else if(Application::IsKeyPressed('9'))
-	{
-		bLightEnabled = false;
-	}
+	//if(Application::IsKeyPressed('1'))
+	//	glEnable(GL_CULL_FACE);
+	//if(Application::IsKeyPressed('2'))
+	//	glDisable(GL_CULL_FACE);
+	//if(Application::IsKeyPressed('3'))
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//if(Application::IsKeyPressed('4'))
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//
+	//if(Application::IsKeyPressed('5'))
+	//{
+	//	lights[0].type = Light::LIGHT_POINT;
+	//	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+	//}
+	//else if(Application::IsKeyPressed('6'))
+	//{
+	//	lights[0].type = Light::LIGHT_DIRECTIONAL;
+	//	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+	//}
+	//else if(Application::IsKeyPressed('7'))
+	//{
+	//	lights[0].type = Light::LIGHT_SPOT;
+	//	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
+	//}
+	//else if(Application::IsKeyPressed('8'))
+	//{
+	//	bLightEnabled = true;
+	//}
+	//else if(Application::IsKeyPressed('9'))
+	//{
+	//	bLightEnabled = false;
+	//}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa;
@@ -739,6 +741,7 @@ void SceneRangeMoving::Update(double dt)
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		playerInfo->rocketMode = false;
 	}
 #endif // SP3_DEBUG
 
@@ -939,91 +942,26 @@ void SceneRangeMoving::Update(double dt)
 		}
 	}
 
-	//bool shouldChange1 = true;
-	////check if shouldnt change (any targets still up)
-	//switch (targetState1)
-	//{
-	//case T_MOVING:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if(!targetsMoving1[i]->isDone()){ shouldChange1 = false; }
-	//	}
-	//	break;
-	//case T_STATIONARY:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if (!targets1[i]->isDone()) { 
-	//			shouldChange1 = false; 
-	//		}
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
-	//if (shouldChange1 && stateChangeTimer1 == 0) { stateChangeTimer1 = targets1[1]->getPos().y + targets1[1]->getScale().y + 10; }
-	////if should change switches state
-	//if (shouldChange1)
-	//{
-	//	stateChangeTimer1--;
-	//	if (stateChangeTimer1 <= 0)
-	//	{
-	//		stateChangeTimer1 = 0;
-	//		switch (targetState1)
-	//		{
-	//		case T_MOVING:
-	//			targetState1 = T_STATIONARY;
-	//			for (int i = 0; i < 3; i++)
-	//			{
-	//				targets1[i]->setIsDone(false);
-	//				targets1[i]->setType(CEntity::E_TARGET_FIRE);
-	//				targets1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-	//				targets1[i]->setOriginPos(targets1[i]->getPos());
-	//				targets1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-	//				targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-	//			}
-	//			break;
-	//		case T_STATIONARY:
-	//			targetState1 = T_MOVING;
-	//			for (int i = 0; i < 3; i++)
-	//			{
-	//				targetsMoving1[i]->setIsDone(false);
-	//				targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-	//				targetsMoving1[i]->setPos(Vector3(-500 + i * 500, 100.f, -1500.f));
-	//				targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());
-	//				targetsMoving1[i]->setScale(Vector3(40.f, 40.f, 40.f));
-	//				targetsMoving1[i]->setTarget(Vector3(0 + i * 500, 100.f, -1500.f));
-	//			}
-	//			break;
-	//		default:
-	//			break;
-	//		}
-	//	}
-	//}
-	////updating based on state (turns off all the other state ones and keeps the current state ones on if they still on
-	//switch (targetState1)
-	//{
-	//case T_MOVING:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		targets1[i]->setIsDone(true);
-	//		if(!targetsMoving1[i]->isDone()){ targetsMoving1[i]->setIsDone(false); }
-	//	}
-	//	break;
-	//case T_STATIONARY:
-	//	for (int i = 0; i < 3; ++i)
-	//	{
-	//		if (!targets1[i]->isDone()) { targets1[i]->setIsDone(false); }
-	//		targetsMoving1[i]->setIsDone(true);
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
-	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
-	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
-	//TGA Length Modifier : (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90 ))   , this must be multiplied with the area that you want it to hit
-	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
-	//meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
+	if (KeyboardController::GetInstance()->IsKeyPressed('1'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		playerInfo->rocketMode = false;
+	}
+	else if (KeyboardController::GetInstance()->IsKeyPressed('2'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
+		playerInfo->rocketMode = false;
+	}
+	else if (KeyboardController::GetInstance()->IsKeyPressed('3'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL3);
+		playerInfo->rocketMode = false;
+	}
+	else if (KeyboardController::GetInstance()->IsKeyPressed('4'))
+	{
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
+		playerInfo->rocketMode = false;
+	}
 
 	testvar += 0.05 * dt;
 

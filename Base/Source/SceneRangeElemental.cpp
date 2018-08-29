@@ -431,11 +431,13 @@ void SceneRangeElemental::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+		playerInfo->rocketMode = false;
 	}
 
 	if (playerInfo->GetScore() >= 30 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL1);
+		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -699,6 +701,7 @@ void SceneRangeElemental::Update(double dt)
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		playerInfo->rocketMode = false;
 	}
 #endif // SP3_DEBUG
 

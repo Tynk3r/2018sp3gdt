@@ -477,6 +477,7 @@ void SceneLevel3::Update(double dt)
 {
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
+		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
 	if (dt > 1.0) return;
@@ -554,6 +555,7 @@ void SceneLevel3::Update(double dt)
 		cout << "joystick X button was pressed" << endl;
 	if (Application::IsKeyPressed('B'))
 	{
+		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
 	}
 	//if (playerInfo->GetScore() >= 10)
@@ -828,6 +830,7 @@ void SceneLevel3::Update(double dt)
 	totalTime -= dt;
 	if (totalTime <= 0 || Application::IsKeyPressed('E') || (dragonObtain && camera.position.y - 50 < tideHeight))
 	{
+		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
 	}
 

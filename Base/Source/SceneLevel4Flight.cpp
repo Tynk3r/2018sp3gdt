@@ -561,6 +561,7 @@ void SceneLevel4::Update(double dt)
 	if (Application::IsKeyPressed(VK_ESCAPE))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
+		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
@@ -726,6 +727,7 @@ void SceneLevel4::Update(double dt)
 	if (Application::IsKeyPressed('B'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		playerInfo->rocketMode = false;
 	}
 	//if (playerInfo->GetScore() >= 10)
 	//{
@@ -1037,6 +1039,7 @@ void SceneLevel4::Update(double dt)
 	if (totalBarrelsDown <= 0 && secondSetBarrel)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
+		playerInfo->rocketMode = false;
 	}
 	//NOTE : FUTURE REFERENCE FOR PLACING PAINT AT SPECIFIC LOCATIONS (when you're working on projectile collision)
 	//PaintTGA documentation is in LoadTGA.h, the following 2 sentences are additional information regarding placement
@@ -1073,6 +1076,7 @@ void SceneLevel4::Update(double dt)
 	if (totalTime <= 0 || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
+		playerInfo->rocketMode = false;
 	}
 
 }
