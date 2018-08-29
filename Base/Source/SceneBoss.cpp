@@ -310,6 +310,8 @@ void SceneBoss::Init()
 	meshList[GEO_SPRITEANIM_TIME_SLOW_HAND]->textureArray[0] = LoadTGA("Image//time_slow_hand_texture.tga");
 	meshList[GEO_SPRITEANIM_PLR_DAMAGE] = MeshBuilder::GenerateQuad("plrdamage", Color());
 	meshList[GEO_SPRITEANIM_PLR_DAMAGE]->textureArray[0] = LoadTGA("Image//plr_damage_effect.tga");
+	meshList[GEO_SPRITEANIM_CONFETTI] = MeshBuilder::GenerateQuad("confetti", Color());
+	meshList[GEO_SPRITEANIM_CONFETTI]->textureArray[0] = LoadTGA("Image//confetti_texture.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -367,6 +369,7 @@ void SceneBoss::Init()
 	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
 	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 	playerInfo->screenShakeOn = true;
+	timeAfterBoss = 0;
 }
 
 void SceneBoss::Update(double dt)
@@ -379,12 +382,20 @@ void SceneBoss::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 		playerInfo->rocketMode = false;
 	}
-	if (playerInfo && playerInfo->GetHealth() <= 0)
+	if (playerInfo && boss->getCurrHealth() > 0 && playerInfo->GetHealth() <= 0)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
+	if (boss && boss->getCurrHealth() <= 0)
+	{
+		timeAfterBoss += (float)dt;
+		if (timeAfterBoss > 9.f)
+		{
+			CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
+		}
+	}
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -1024,8 +1035,11 @@ void SceneBoss::Exit()
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
-		if(meshList[i])
+		if (meshList[i])
+		{
 			delete meshList[i];
+			meshList[i] = NULL;
+		}
 	}
 	while (particleList.size() > 0)
 	{
@@ -1926,8 +1940,23 @@ void SceneBoss::RenderPassMain()
 					rot2);
 				//RenderMeshIn2D(meshList[GEO_SPRITEANIM_TIME_SLOW_HAND],false,A)
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
-				break;
 			}
+				break;
+			case CameraEffect::CE_TYPE_CONFETTI:
+			{
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
+				int randomae = 0;//Math::RandIntMinMax(0, 360 * 5);
+				//for (int i = 0 + randomae; i < 360 + randomae; i += 360 / 5)
+				//{
+				//	RenderMeshIn2D(meshList[GEO_SPRITEANIM_CONFETTI], false, Application::GetWindowHeight()*(0.015f *camEff->getOffset().x), Application::GetWindowHeight()*(0.015f *camEff->getOffset().y), 0.75f, 0.15f, i);
+				//}
+				RenderMeshIn2D(meshList[GEO_SPRITEANIM_CONFETTI], false, Application::GetWindowHeight()*(0.02f *camEff->getOffset().x), Application::GetWindowHeight()*(0.02f *camEff->getOffset().y));
+				std::ostringstream ssmes;
+				ssmes << "You win!";
+				RenderTextOnScreen(meshList[GEO_TEXT], ssmes.str(), Color(cosf(camEff->getAnimFrame()*5), cosf(camEff->getAnimFrame() * 5 + Math::HALF_PI), cosf(camEff->getAnimFrame() * 5 + Math::PI)), 15 * (camEff->getOffset().x*0.1f), 10, 30);
+				glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
+			}
+				break;
 			case CameraEffect::CE_TYPE_BLOODSCREEN:
 				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - camEff->getTransparency());
 				RenderMeshIn2D(meshList[GEO_SPRITEANIM_PLR_DAMAGE], false, Application::GetWindowWidth()*0.2f, Application::GetWindowHeight()*0.2f);

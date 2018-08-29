@@ -979,8 +979,11 @@ void SceneTerrain::Exit()
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
-		if(meshList[i])
+		if (meshList[i])
+		{
 			delete meshList[i];
+			meshList[i] = NULL;
+		}
 	}
 	while (particleList.size() > 0)
 	{

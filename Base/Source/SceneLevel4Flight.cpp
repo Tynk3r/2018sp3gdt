@@ -1340,7 +1340,10 @@ void SceneLevel4::Exit()
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		if (meshList[i])
+		{
 			delete meshList[i];
+			meshList[i] = NULL;
+		}
 	}
 	while (particleList.size() > 0)
 	{
