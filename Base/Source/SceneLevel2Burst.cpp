@@ -303,14 +303,14 @@ void SceneLevel2::Init()
 	enemy = new CWitch();
 	enemy->Init();
 	enemy->setScale(Vector3(15, 15, 15));
-	enemy->setPos(Vector3(-700, 400, 650));
+	enemy->setPos(Vector3(-700, 425, 650));
 	enemy->setPlayerRef(playerInfo);
 	enemy->setCanBeWalled(true);
 
 	enemy2 = new CWitch();
 	enemy2->Init();
 	enemy2->setScale(Vector3(15, 15, 15));
-	enemy2->setPos(Vector3(700, 400, 650));
+	enemy2->setPos(Vector3(700, 425, 650));
 	enemy2->setPlayerRef(playerInfo);
 	enemy2->setCanBeWalled(true);
 

@@ -16,7 +16,7 @@ CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	animFrame(0),
 	rig(CRigInfo::RIG_BOSS),
 	holdingProjectile(NULL),
-	maxHealth(500),
+	maxHealth(700),
 	freezeTime(0),
 	burnTime(0)
 {
