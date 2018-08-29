@@ -99,57 +99,9 @@ class SceneInstructions : public Scene
 	};
 	enum GEOMETRY_TYPE
 	{
-		GEO_AXES,
-		GEO_CROSSHAIR,
-		GEO_LIGHTBALL,
-		GEO_SPHERE,
-		GEO_SPHERE2,
-		GEO_SPHERE3,
-		GEO_SPHERE4,
-		GEO_SPHERE5,
-		GEO_SPHERE6,
-		GEO_SPHERE7,
-		GEO_SPHERE8,
-		GEO_SPHERE9,
-		GEO_QUAD,
-		GEO_CUBE,
-		GEO_RING,
-		GEO_CONE,
-		GEO_LEFT,
-		GEO_RIGHT,
-		GEO_TOP,
-		GEO_BOTTOM,
-		GEO_FRONT,
-		GEO_BACK,
-		GEO_GRASS_DARKGREEN,
-		GEO_GRASS_LIGHTGREEN,
-		GEO_OBJECT,
 		GEO_TEXT,
-		//TSL
-		GEO_SKYPLANE,
-		GEO_TERRAIN,
-		GEO_WETER,
-		GEO_CAMPFIRE_BASE,
-		GEO_CAMPFIRE_POT,
-		GEO_CAMPFIRE_POT_STAND,
-		GEO_TENT,
-		GEO_SPRITE_ANIMATION,
-		GEO_DOG,
-		GEO_PARTICLE_SMOKE,
-		GEO_PARTICLE_SPARK,
-		GEO_LIGHT_DEPTH_QUAD,
-		GEO_TESTPAINTQUAD,
-		GEO_TESTPAINTQUAD2,
-		GEO_LEFTARM,
-		GEO_RIGHTARM,
-		GEO_DRONE_HEAD,
-		GEO_DRONE_LWING,
-		GEO_DRONE_RWING,
-		GEO_PARTICLE_FIRE,
-		GEO_PARTICLE_ICE,
 		GEO_INSTRUCTIONS,
-
-		NUM_GEOMETRY,
+		NUM_GEOMETRY
 	};
 	enum RENDER_PASS
 	{
@@ -178,10 +130,6 @@ public:
 	void RenderPassMain();
 	void RenderWorld();
 
-	ParticleObject* GetParticle(void);
-	void UpdateParticles(double dt);
-	void RenderParticles(ParticleObject *particle);
-
 private:
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
@@ -190,8 +138,6 @@ private:
 
 	Camera3 camera;
 
-	float rotateAngle;
-
 	MS modelStack;
 	MS viewStack;
 	MS projectionStack;
@@ -199,27 +145,10 @@ private:
 	Light lights[2];
 	bool godlights = true;
 
-	unsigned m_gPassShaderID;
-	DepthFBO m_lightDepthFBO;
-	Mtx44 m_lightDepthProj;
-	Mtx44 m_lightDepthView;
-	RENDER_PASS m_renderPass;
-
 	bool bLightEnabled;
 
 	float fps;
-	int m_particleCount;
-	int MAX_PARTICLE;
-	Vector3 m_gravity;
-	std::vector<ParticleObject*> particleList;
 
-	CKeyboard* theKeyboard;
-	CMouse* theMouse;
-
-	//Terrain
-	std::vector<unsigned char> m_heightMap;
-
-	float testvar;
 };
 
 #endif

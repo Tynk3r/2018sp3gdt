@@ -8,23 +8,10 @@
 #include "Camera3.h"
 #include "Mesh.h"
 #include "MatrixStack.h"
-#include "Particle.h"
 #include "Light.h"
-#include "DepthFBO.h"
 #include <vector>
 
 #include "SceneManager.h"
-#include "KeyboardController.h"
-#include "MouseController.h"
-#include "JoystickController.h"
-#include "Entities/EntityManager.h"
-#include "Entities/Entity.h"
-#include "Entities/Enemy.h"
-#include "Entities/Drone.h"
-#include "PlayerInfo\PlayerInfo.h"
-#include "HardwareAbstraction\Keyboard.h"
-#include "HardwareAbstraction\Mouse.h"
-#include "Entities/Projectile.h"
 
 using namespace std;
 
@@ -99,35 +86,9 @@ class SceneStartMenu : public Scene
 	};
 	enum GEOMETRY_TYPE
 	{
-		GEO_AXES,
-		GEO_CROSSHAIR,
-		GEO_LIGHTBALL,
-		GEO_SPHERE,
-		GEO_SPHERE2,
-		GEO_SPHERE3,
-		GEO_SPHERE4,
-		GEO_SPHERE5,
-		GEO_SPHERE6,
-		GEO_SPHERE7,
-		GEO_SPHERE8,
-		GEO_SPHERE9,
-		GEO_QUAD,
-		GEO_CUBE,
-		GEO_RING,
-		GEO_CONE,
-		GEO_LEFT,
-		GEO_RIGHT,
-		GEO_TOP,
-		GEO_BOTTOM,
-		GEO_FRONT,
-		GEO_BACK,
-		GEO_GRASS_DARKGREEN,
-		GEO_GRASS_LIGHTGREEN,
-		GEO_OBJECT,
 		GEO_TEXT,
-
 		GEO_MAINMENU,
-		NUM_GEOMETRY,
+		NUM_GEOMETRY
 	};
 	enum RENDER_PASS
 	{
@@ -165,8 +126,6 @@ private:
 
 	Camera3 camera;
 
-	float rotateAngle;
-
 	MS modelStack;
 	MS viewStack;
 	MS projectionStack;
@@ -174,18 +133,18 @@ private:
 	Light lights[2];
 	bool godlights = true;
 
-	unsigned m_gPassShaderID;
-	DepthFBO m_lightDepthFBO;
-	Mtx44 m_lightDepthProj;
-	Mtx44 m_lightDepthView;
-	RENDER_PASS m_renderPass;
+	//unsigned m_gPassShaderID;
+	//DepthFBO m_lightDepthFBO;
+	//Mtx44 m_lightDepthProj;
+	//Mtx44 m_lightDepthView;
+	//RENDER_PASS m_renderPass;
 
 	bool bLightEnabled;
 
 	float fps;
-	int m_particleCount;
-	int MAX_PARTICLE;
-	Vector3 m_gravity;
+	//int m_particleCount;
+	//int MAX_PARTICLE;
+	//Vector3 m_gravity;
 };
 
 #endif

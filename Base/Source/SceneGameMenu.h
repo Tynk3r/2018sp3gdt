@@ -174,8 +174,8 @@ private:
 	Light lights[2];
 	bool godlights = true;
 
-	unsigned m_gPassShaderID;
-	DepthFBO m_lightDepthFBO;
+	//unsigned m_gPassShaderID;
+	//DepthFBO m_lightDepthFBO;
 	Mtx44 m_lightDepthProj;
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
