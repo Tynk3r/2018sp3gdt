@@ -18,6 +18,15 @@ CSceneManager* CSceneManager::Instance() {
 	return CSceneManager::instance;
 }
 
+void CSceneManager::Destroy()
+{
+	if (instance)
+	{
+		delete instance;
+		instance = NULL;
+	}
+}
+
 void CSceneManager::AddScene(Scene* newScene) {
 
 	// Warning
@@ -105,11 +114,21 @@ void CSceneManager::Exit() {
 	// Set back to zero
 	currentSceneID = 0;
 
-	for (int i = sceneList.size() - 1; i > -1; i--) {
-		// Exit from the Scenes
-		this->sceneList[this->currentSceneID]->Exit();
-		// Clean Up All the Vectors
-		this->sceneList.erase(this->sceneList.begin() + i);
+	//for (int i = sceneList.size() - 1; i > -1; i--) {
+	//	// Exit from the Scenes
+	//	this->sceneList[this->currentSceneID]->Exit();
+	//	// Clean Up All the Vectors
+	//	this->sceneList.erase(this->sceneList.begin() + i);
+	//}
+	this->sceneList[this->currentSceneID]->Exit();
+	//this->sceneList[this->currentLevelID]->Exit();
+	while (sceneList.size() > 0)
+	{
+		if (sceneList.back())
+		{
+			delete sceneList.back();
+		}
+		sceneList.pop_back();
 	}
 
 	// Just in case 
