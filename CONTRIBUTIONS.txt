@@ -42,3 +42,37 @@ GAMEPLAY CONTRIBUTIONS : {
 	Enemies : Witches (grounded or flying) with "long-range AI", will throw fire/ice balls if player is not too and not too close;
 	NPC : Displays dialogue if player is close enough and presses the middle mouse button;
 }
+
+< Rafiq / 170264F >
+CLASSES : {
+	Enemy,
+	Entity,
+	EntityManager,	
+	Controller,
+	Keyboard,
+	Mouse,
+	PlayerInfo,
+}
+OBJ/TGA ASSETS : {
+	barrel.tga,
+	floor.tga,
+	rocks.tga,
+	heightmapRange.raw,
+	heightmapRangeMoving.raw,
+	heightmapRangeElemental.raw,
+	barrel.obj,
+	pillar.obj,
+	rocks.obj,
+}
+FRAMEWORK CONTRIBUTIONS : {
+	ENTITY/ENTITY MANAGER: Base entity format for every object in-game to use. Manages all entities and ensures clean and efficient interaction.
+	HARDWARE ABSTRACTION: Singletons control all KB/M inputs so that each scene can use the singular instance
+	PLAYER INSTANCE: Allows player info to be accessed between all classes in order to carry over info between scenes and not require multiple player objects
+	COLLISION: AABB and Sphere checking every frame between all entities to ensure players and entities do not occupy the same space
+	GRAPHICAL FEATURES: Fog, shadows, etc
+}
+GAMEPLAY CONTRIBUTIONS : {
+	Player Movement: Camera follows player in scenes so the game takes place in a first person perspective
+	Targets: Targets that can be destroyed by player spells, that can have different type (fire/ice), and will move in the set range
+	Target Scripting: Scripted sequence of targets in range apearing after being destroyed
+}
