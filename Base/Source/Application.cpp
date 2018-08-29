@@ -299,29 +299,35 @@ void Application::Run()
 		m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.  
 		PostUpdateInput();
 	}
-	scene1->Exit();
-	delete scene1;
-	delete scene2;
-	delete scene3;
-	delete scene4;
-	delete scene5;
-	delete scene6;
-	delete scene7;
-	delete scene8;
-	delete scene9;
-	delete scene10;
-	delete scene11;
-	delete scene12;
-	delete scene13;
-	delete scene14;
-	delete scene15;
-	delete scene16;
-	delete scene17;
+	//scene1->Exit();
+	//delete scene1;
+	//delete scene2;
+	//delete scene3;
+	//delete scene4;
+	//delete scene5;
+	//delete scene6;
+	//delete scene7;
+	//delete scene8;
+	//delete scene9;
+	//delete scene10;
+	//delete scene11;
+	//delete scene12;
+	//delete scene13;
+	//delete scene14;
+	//delete scene15;
+	//delete scene16;
+	//delete scene17;
+	sceneManager->Exit();
+	CSceneManager::Destroy();
 	TimeTrackerManager::Destroy();
 	CameraEffectManager::Destroy();
 	ParticleManager::Destroy();
 	EntityManager::Destroy();
 	CSoundEngine::Destroy();
+	MouseController::Destroy();
+	KeyboardController::Destroy();
+	JoystickController::Destroy();
+	CPlayerInfo::DropInstance();
 }
 
 void Application::Exit()

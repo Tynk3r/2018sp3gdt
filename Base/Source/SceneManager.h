@@ -42,6 +42,9 @@ public:
 	// Returns Current Object
 	static CSceneManager* Instance();
 
+	//Deletes the Singleton
+	static void Destroy();
+
 	// Add new Scene to Vector
 	void AddScene(Scene* newScene);
 

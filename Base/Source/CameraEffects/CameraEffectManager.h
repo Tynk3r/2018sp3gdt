@@ -6,6 +6,16 @@
 #include "Vector3.h"
 #include "CameraEffect.h"
 
+/*
+Contributions :
+	Coen/175448P -> {
+		Created CameraEffectManager Class;
+		EVERYTHING;
+	}
+
+Updated as of 1:34 PM @ 29/8
+*/
+
 class CameraEffectManager : public Singleton<CameraEffectManager>
 {
 	friend Singleton<CameraEffectManager>;

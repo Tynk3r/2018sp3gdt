@@ -296,7 +296,7 @@ void CBoss::Update(double dt)
 						{
 							CEnemy* enemy = new CFlyingWitch();
 							enemy->Init();
-							enemy->setScale(Vector3(10, 10, 10));
+							enemy->setScale(Vector3(15, 15, 15));
 							enemy->setPos(offset);
 							enemy->EmitParticles(1);
 							enemy->setPlayerRef(this->playerRef);

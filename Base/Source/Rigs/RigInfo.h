@@ -4,6 +4,17 @@
 #include <string>
 #include <map>
 
+/*
+Contributions :
+	Coen/175448P -> {
+		Created RigInfo Class;
+		everything lul;
+	}
+
+Updated as of 1:29 PM @ 29/8
+*/
+
+
 class CRigInfo
 {
 public:
