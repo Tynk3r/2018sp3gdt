@@ -374,12 +374,12 @@ void CBoss::Update(double dt)
 			if (this->elapsedTime > 3.f)
 			{
 				float randnum = Math::RandFloatMinMax(0, 10000);
-				if (randnum < 10000 * 0.3f && EntityManager::GetInstance()->AmountOfEnemies() < 2)
+				//if (randnum < 10000 * 0.3f && EntityManager::GetInstance()->AmountOfEnemies() < 2)
 					this->state = F_SUMMON_ENEMY;
-				else if (randnum < 10000 * 0.6f)
-					this->state = F_ATTACK_FIREBALL;
-				else
-					this->state = F_ATTACK_ICEBALL;
+				//else if (randnum < 10000 * 0.6f)
+				//	this->state = F_ATTACK_FIREBALL;
+				//else
+				//	this->state = F_ATTACK_ICEBALL;
 				this->elapsedTime = this->animFrame = 0;
 			}
 			break;

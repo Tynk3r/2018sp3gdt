@@ -180,6 +180,7 @@ bool EntityManager::CheckForCollision(float dt)
 	// Update all entities
 	std::list<CEntity*>::iterator it, it2, end;
 	end = entityList.end();
+	bool hasDoneCollide = false;
 	for (it = entityList.begin(); it != end; ++it)
 	{
 		if ((*it)->getType() == CEntity::E_PLAYER || !(*it)->hasCollider() || (*it)->isDone())
@@ -210,9 +211,9 @@ bool EntityManager::CheckForCollision(float dt)
 					enemy->setPlayerRef(player);
 				}
 				break;
+			}
 			default:
 				break;
-			}
 			}						//pre-collision check updates <<<<<<<<<<<<END>>>>>>>>>>>>
 
 			bool notBeam = true;
@@ -306,8 +307,8 @@ bool EntityManager::CheckForCollision(float dt)
 							}
 							cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
 						}
-						break;
 					}
+					break;
 				case CEntity::E_PROJECTILE:
 				{
 					CProjectile* proj1 = dynamic_cast<CProjectile*>(*(it));
@@ -327,10 +328,8 @@ bool EntityManager::CheckForCollision(float dt)
 								CSoundEngine::GetInstance()->PlayASound("floorImpact");
 							else if (proj1->getProjType() == CProjectile::PTYPE_ICE)
 								CSoundEngine::GetInstance()->PlayASound("IceImpact");
-							break;
 						}
-						else
-							break;
+						break;
 					}
 					CProjectile* proj2 = dynamic_cast<CProjectile*>(*(it2));
 					if (proj2 && proj1->getSource() != proj2->getSource() && proj1->getProjType() != proj2->getProjType())
@@ -438,14 +437,14 @@ bool EntityManager::CheckForCollision(float dt)
 							break;
 						}
 						cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
-						break;
 					}
+						break;
 				default:
 					if ((*it)->getType() != CEntity::E_PROJECTILE && (*it2)->getType() != CEntity::E_PLAYER)
 					(*it)->setPos((*it)->getPos() - (viewVector * (*it)->getSpeed() * (float)dt)); // collision response
 					break;
 				}
-				return true; 
+				hasDoneCollide = true;
 			}
 			else
 			{
@@ -517,7 +516,7 @@ bool EntityManager::CheckForCollision(float dt)
 			}
 		}
 	}
-	return false;
+	return hasDoneCollide;
 }
 
 //DOCUMENTATION
