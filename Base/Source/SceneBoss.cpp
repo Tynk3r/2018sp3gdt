@@ -338,10 +338,12 @@ void SceneBoss::Init()
 	enemy->Init();
 	enemy->setScale(Vector3(10, 10, 10));
 	enemy->setPos(Vector3(0, enemy->getScale().y, 0));
+	enemy->setPlayerRef(playerInfo);
 	enemy = new CFlyingWitch();
 	enemy->Init();
 	enemy->setScale(Vector3(15, 15, 15));
-	enemy->setPos(Vector3(50, 50, 0));
+	enemy->setPos(Vector3(125, 50, 0));
+	enemy->setPlayerRef(playerInfo);
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
@@ -353,11 +355,10 @@ void SceneBoss::Init()
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
 	m_gravity.Set(0, -9.8f, 0);
-	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
+	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000.f, playerInfo->getPos().z / 4000.f);
 	bLightEnabled = true;
 	lights[0].type = Light::LIGHT_POINT;
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	playerInfo->FirstHeight = 350.f*ReadHeightMap(m_heightMap, camera.position.x / 4000.f, camera.position.z / 4000.f);
 	///init sound
 	SEngine = CSoundEngine::GetInstance();
 	//CSoundEngine::GetInstance()->Init();
@@ -1217,7 +1218,8 @@ void SceneBoss::RenderWorld()
 			case CEntity::E_ENEMY:
 			{
 				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
+				//modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000.f, (*it)->getPos().z / 4000.f), (*it)->getPos().z);
+				modelStack.Translate((*it)->getPos().x, entPos.y + playerInfo->FirstHeight, (*it)->getPos().z);
 				modelStack.Rotate(Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z)) + 180, 0, 1, 0);
 				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
 				//modelStack.Scale(5, 5, -5);
@@ -1275,8 +1277,6 @@ void SceneBoss::RenderWorld()
 					{
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
-						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
-						CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + entSca.x*0.5f);
 						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + entSca.x*0.015f);
 						if (proj->getProjType() == CProjectile::PTYPE_FIRE)
@@ -1392,7 +1392,7 @@ void SceneBoss::RenderWorld()
 				Vector3 bossOrigSca = boss->getOrigScale();
 				float bossElapsedTime = boss->getElapsedTime();
 				modelStack.PushMatrix();
-					modelStack.Translate(entPos.x, entPos.y + 350.f*ReadHeightMap(m_heightMap, entPos.x / 4000.f, entPos.z / 4000.f), entPos.z);
+					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
 					modelStack.PushMatrix();
 						modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)), 0, 1, 0);
 						modelStack.Translate(0, entSca.y*-0.35f, 0);

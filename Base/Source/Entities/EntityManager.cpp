@@ -274,8 +274,14 @@ bool EntityManager::CheckForCollision(float dt)
 							if (tempEnemy->getAI() != CEnemy::AI_LONGRANGEFOG) { (*it)->setIsDone(true); }
 							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
-							CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
-							CSoundEngine::GetInstance()->PlayASound("barrelbreak");
+							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
+							{
+								CSoundEngine::GetInstance()->PlayASound("floorImpact");
+							}
+							else if (proj->getProjType() == CProjectile::PTYPE_ICE)
+							{
+								CSoundEngine::GetInstance()->PlayASound("IceImpact");
+							}
 							switch ((*it)->getType())
 							{
 							case CEntity::E_ENEMY:
@@ -287,10 +293,14 @@ bool EntityManager::CheckForCollision(float dt)
 							case CEntity::E_MOVING_TARGET:
 								CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
 								ParticleManager::GetInstance()->AddParticle("+3 Points", (*it2), Color(0.1f, 1, 0.1f));
+								CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+								CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 								break;
 							case CEntity::E_TARGET:
 								CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
 								ParticleManager::GetInstance()->AddParticle("+1 Points", (*it2), Color(0.1f, 1, 0.1f));
+								CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
+								CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 								break;
 							}
 							cout << "Score: " << CPlayerInfo::GetInstance()->GetScore() << endl;
@@ -343,6 +353,8 @@ bool EntityManager::CheckForCollision(float dt)
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
 						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
 						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + (proj1->getScale().x + proj2->getScale().x)*0.015f*0.5f);
+						CSoundEngine::GetInstance()->PlayASound("IceImpact");
+						CSoundEngine::GetInstance()->PlayASound("floorImpact");
 						//CSoundEngine::GetInstance()->AddSound("barrelbreak", "Sound//barrelbreak.mp3");
 						//CSoundEngine::GetInstance()->PlayASound("barrelbreak");
 

@@ -1,4 +1,5 @@
 #include "Witch.h"
+#include "../SoundEngine.h"
 
 CWitch::CWitch() : 
 	CEnemy(AI_LONGRANGE),
@@ -57,6 +58,10 @@ void CWitch::Update(double dt)
 				dist = (this->playerRef->getPos() - this->witchProjectile->getPos()).Length();
 			}
 			this->witchProjectile->setTarget(this->playerRef->getPos() - this->witchProjectile->getGrav()*dist*0.9f);
+			if (witchProjectile->getProjType()==CProjectile::PTYPE_FIRE)
+				CSoundEngine::GetInstance()->PlayASound("Fireball");
+			else
+				CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			this->witchProjectile = NULL;
 			this->witchCooldown = 0;
 			this->witchState = WS_FIRED;
