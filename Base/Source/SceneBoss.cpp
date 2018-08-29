@@ -397,6 +397,7 @@ void SceneBoss::Update(double dt)
 			CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
 		}
 	}
+	fps = (float)(1.f / dt);
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -762,7 +763,7 @@ void SceneBoss::Update(double dt)
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
-	fps = (float)(1.f / dt);
+	//fps = (float)(1.f / dt);
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;

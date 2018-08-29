@@ -76,3 +76,19 @@ GAMEPLAY CONTRIBUTIONS : {
 	Targets: Targets that can be destroyed by player spells, that can have different type (fire/ice), and will move in the set range
 	Target Scripting: Scripted sequence of targets in range apearing after being destroyed
 }
+
+< Jovan Low / 170373M >
+CLASSES : {
+
+}
+OBJ/TGA ASSETS : {
+
+}
+FRAMEWORK CONTRIBUTIONS : {
+	SHADER :
+	CAMERA EFFECTS : easily add camera effects, automatically updates and renders due to CameraEffectManager;
+	PARTICLE EFFECTS : easily add particles, automatically updates and renders to due to ParticleManager;
+}
+GAMEPLAY CONTRIBUTIONS : {
+	
+}
