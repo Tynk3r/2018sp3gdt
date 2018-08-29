@@ -50,6 +50,11 @@ void CameraEffect::Init()
 		this->canFade = true;
 		this->animFrame = 0;
 		break;
+	case CE_TYPE_CONFETTI:
+		this->fadeDuration = 8.f;
+		this->transparency = 0.f;
+		this->canFade = true;
+		this->animFrame = 0;
 	}
 }
 
@@ -75,6 +80,27 @@ void CameraEffect::Update(double dt)
 			float alpha = this->animFrame / this->fadeDuration;
 			this->transparency = Math::lerp(0.f, 1.f, alpha);
 			
+		}
+		break;
+	case CE_TYPE_CONFETTI:
+		if (this->canFade)
+		{
+			this->animFrame += (float)dt;
+			if (this->animFrame / this->fadeDuration < 0.05f)
+			{
+				float alpha = (this->animFrame / this->fadeDuration) / 0.05f;
+				this->offset = Vector3(0, 0, 0).lerped(Vector3(10, 10, 10), alpha);
+			}
+			else if (this->animFrame / this->fadeDuration < 0.9f)
+			{
+				float alpha = ((this->animFrame / this->fadeDuration) - 0.05f) / 0.85f;
+				this->offset = Vector3(10, 10, 10).lerped(Vector3(9, 9, 9), alpha);
+			}
+			else
+			{
+				float alpha = ((this->animFrame / this->fadeDuration) - 0.9f) / 0.1f;
+				this->transparency = Math::lerp(0.f, 1.f, alpha);
+			}
 		}
 		break;
 	case CE_TYPE_TIME_SLOW:

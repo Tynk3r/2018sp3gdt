@@ -7,6 +7,7 @@
 #include "../Particles/ParticleManager.h"
 #include "Witch.h"
 #include "FlyingWitch.h"
+#include "../CameraEffects/CameraEffectManager.h"
 CBoss::CBoss(Vector3 pos, Vector3 scale, Vector3 target) :
 	CEntity(),
 	state(F_NORMAL),
@@ -66,6 +67,8 @@ void CBoss::Update(double dt)
 	{
 		this->state = F_DEAD;
 		this->elapsedTime = 0;
+		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_CONFETTI);
+		EntityManager::GetInstance()->KillAllEnemies();
 	}
 	if (this->playerRef != NULL)
 	{
