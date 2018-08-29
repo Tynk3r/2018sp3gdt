@@ -953,9 +953,9 @@ void SceneRangeMoving::Update(double dt)
 
 	testvar += 0.05 * dt;
 
-	lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
+	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
+	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
+	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
