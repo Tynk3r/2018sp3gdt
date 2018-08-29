@@ -517,40 +517,52 @@ bool EntityManager::CheckForCollision(float dt)
 	}
 	return false;
 }
+
+//DOCUMENTATION
+//This collision helps to check for an origin line intersecting a cuboid, where in this case the cuboid is the AABB bounding box
+//This function is carried out three times with each axis respectively, which is what the parameter 'times' represents
+//When (times == 2), it will be handled by a different but similar function as it does not lie in the 2D X-Y plane
+//Each time, it will check 2 faces with the origin line.
+//The 2 faces are represented by 2 lines separately in a cartesian plane graph, along with the origin line.
+//The pivot is the starting point of the origin line, and will be the center of the graph. (0, 0, 0)
+//Thus, this function depends on relative position.
+//The function checks if the origin line intersects any of those 2 line graphs (y = ax + c), returning the relative point of intersection
+//If it intersects both line graphs, the nearest point will be obtained
+//Points that are not within the origin line are ignored.
+//If there is no final valid intersection point, Vector3(9999, 9999, 9999) is returned as an invalid point
 Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vector3 mousePoint, int times)
 {
 	if (times == 2) return CheckForLineIntersectionZFace(pivot, ent, mousePoint);
 
 	Vector3 tempScale = ent->getMaxAABB() - ent->getMinAABB();
-	//tempScale *= 0.5;
 
 	Vector3 relativePos = ent->getPos() - pivot;
 	float tempAng = Math::DegreeToRadian(90);
 	float grad0, grad1, con0, con1;
-	Vector3 NP(cosf(tempAng) /** go2->normal.x*/ - sinf(tempAng) /** go2->normal.y*/, sinf(tempAng) /** go2->normal.x*/ + cosf(tempAng) /** go2->normal.y*/);
+	Vector3 NP(cosf(tempAng) - sinf(tempAng), sinf(tempAng) + cosf(tempAng));
 
 	if (abs(NP.x) <= Math::EPSILON) NP.x = 0;
 	if (abs(NP.y) <= Math::EPSILON) NP.y = 0;
 	Vector3 p0, p1, p2, p3;
+	//first line graph is p0 to p1, second linegraph is p2 to p3
 	if (times == 0)
 	{
-		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
-		p1 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
+		p0 = relativePos + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p1 = relativePos + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 
-		p2 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
-		p3 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
+		p2 = relativePos + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p3 = relativePos + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 	}
 	else if (times == 1)
 	{
-		p0 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
-		p1 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p0 = relativePos + Vector3(NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
+		p1 = relativePos + Vector3(-NP.x * tempScale.x, NP.y * tempScale.y) * 0.5;
 
-		p2 = relativePos + Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
-		p3 = relativePos - Vector3(0, 0, 0) * tempScale.x * 0.5 + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
+		p2 = relativePos + Vector3(NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
+		p3 = relativePos + Vector3(-NP.x * tempScale.x, -NP.y * tempScale.y) * 0.5;
 	}
 
-	//std::cout << p0 << p1 << p2 << p3 << relativePos << mousePoint << std::endl << std::endl;
-
+	//Gradient cannot be obtained because you cannot divide by zero where (p1.x - p0.x) = 0, where (p3.x - p2.x) would also be 0
 	if (abs(p1.x - p0.x) < Math::EPSILON) /////////////////
 	{
 		float excepY0, excepY1;
@@ -617,7 +629,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 		else grad1 = (p2.y - p3.y) / (p2.x - p3.x);
 		con1 = p2.y - grad1 * p2.x;
 	}
-	//time to check!!
+	//With the equations of the 2 line graphs obtained (grad = a, con = c, in 'y = ax + c'), now we can check for intersection
 
 	float x0, y0, x1, y1, mGrad, z0, z1;
 	mGrad = mousePoint.y / mousePoint.x;
@@ -682,7 +694,7 @@ Vector3 EntityManager::CheckForLineIntersection(Vector3 pivot, CEntity *ent, Vec
 Vector3 EntityManager::CheckForLineIntersectionZFace(Vector3 pivot, CEntity *ent, Vector3 mousePoint)
 {
 	Vector3 tempScale = ent->getMaxAABB() - ent->getMinAABB();
-	tempScale *= 0.5;
+	//tempScale *= 0.5;
 
 	Vector3 relativePos = ent->getPos() - pivot;
 
