@@ -95,6 +95,7 @@ void CameraEffect::Update(double dt)
 			float alpha = this->animFrame / this->fadeDuration;
 			this->transparency = Math::lerp(0.f, 1.f, alpha);
 		}
+		break;
 	case CE_TYPE_CONFETTI:
 		if (this->canFade)
 		{
