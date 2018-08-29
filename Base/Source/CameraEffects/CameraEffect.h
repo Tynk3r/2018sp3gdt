@@ -1,5 +1,17 @@
 #pragma once
 #include "Vector3.h"
+
+/*
+Contributions :
+	Coen/175448P -> {
+		Created CameraEffect Class;
+		Coded the basis of the class;
+		Created the following CamEffect Types = [ ACTIONLINE_WHITE, TIME_SLOW ];
+	}
+
+Updated as of 1:35 PM @ 29/8
+*/
+
 //camera effect class, able to store stuff like duration of cam effect and transparency n etc
 class CameraEffect
 {

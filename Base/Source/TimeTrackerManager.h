@@ -4,6 +4,16 @@
 #include "SingletonTemplate.h"
 #include <list>
 
+/*
+Contributions :
+	Coen/175448P -> {
+		Created TimeTrackerManager Class;
+		EVERYTHING;
+	}
+
+Updated as of 1:34 PM @ 29/8
+*/
+
 class TimeTrackerManager : public Singleton<TimeTrackerManager>
 {
 	friend Singleton<TimeTrackerManager>;

@@ -3,6 +3,17 @@
 #include "Enemy.h"
 #include "../PlayerInfo/PlayerInfo.h"
 #include "Projectile.h"
+
+/*
+Contributions :
+	Coen/175448P -> {
+		Created FlyingWitch Class;
+		everything lul;
+	}
+
+Updated as of 1:29 PM @ 29/8
+*/
+
 class CFlyingWitch : public CEnemy
 {
 public:

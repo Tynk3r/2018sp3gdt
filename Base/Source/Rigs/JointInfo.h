@@ -3,6 +3,16 @@
 #include <string>
 #include <vector>
 
+/*
+Contributions :
+	Coen/175448P -> {
+		Created JointInfo Class;
+		everything lul;
+	}
+
+Updated as of 1:29 PM @ 29/8
+*/
+
 class CJointInfo
 {
 public:

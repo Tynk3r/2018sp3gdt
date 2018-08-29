@@ -4,7 +4,16 @@
 #include "../PlayerInfo/PlayerInfo.h"
 #include "../Rigs/RigInfo.h"
 #include "Projectile.h"
-//#include <memory>
+
+/*
+Contributions :
+	Coen/175448P -> {
+		Created Boss Class;
+		everything lul;
+	}
+
+Updated as of 1:29 PM @ 29/8
+*/
 
 class CBoss : public CEntity
 {

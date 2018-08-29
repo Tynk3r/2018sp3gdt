@@ -2,6 +2,19 @@
 #include "Vector3.h"
 #include "Entity.h"
 #include "../Particles/ParticleManager.h"
+
+/*
+Contributions :
+	Coen/175448P -> {
+		Created Projectile Class;
+		Coded the basis of the class;
+		Created the following Projectile Types : [ FIRE, ICE ];
+		Created the following Mod Types : [ NORMAL ];
+	}
+
+Updated as of 1:32 PM @ 29/8
+*/
+
 // a projectile class
 class CProjectile : public CEntity
 {

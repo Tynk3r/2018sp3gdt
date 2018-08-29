@@ -6,7 +6,16 @@
 #include "Vector3.h"
 #include "Particle_2.h"
 #include "../Entities/Projectile.h"
+/*
+Contributions :
+	Coen/175448P -> {
+		Created ParticleManager Class;
+		pretty much did everything in ParticleManager Class;
+		Rendered the particles in <particleList> in the scenes (RenderWorld() functions in the scenes);
+	}
 
+Updated as of 1:23 PM @ 29/8
+*/
 
 class ParticleManager : public Singleton<ParticleManager>
 {

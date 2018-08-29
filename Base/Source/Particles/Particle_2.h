@@ -5,6 +5,17 @@
 #include "../Vertex.h"
 #include <string>
 
+/*
+Contributions :
+	Coen/175448P -> {
+		Created Particle_2 Class;
+		Coded the basis of the class;
+		Created the following Particle types : [ FIRE, ICE, TEXT, ENEMYAPPEAR ];
+	}
+
+Updated as of 1:23 PM @ 29/8
+*/
+
 // a projectile class
 class CParticle_2 : public CEntity
 {
