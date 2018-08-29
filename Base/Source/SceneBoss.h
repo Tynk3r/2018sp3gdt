@@ -272,6 +272,7 @@ private:
 	std::vector<unsigned char> m_heightMap;
 
 	float testvar;
+	float timeAfterBoss;
 };
 
 #endif

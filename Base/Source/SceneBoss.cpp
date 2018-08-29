@@ -369,6 +369,7 @@ void SceneBoss::Init()
 	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
 	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 	playerInfo->screenShakeOn = true;
+	timeAfterBoss = 0;
 }
 
 void SceneBoss::Update(double dt)
@@ -387,6 +388,14 @@ void SceneBoss::Update(double dt)
 		playerInfo->rocketMode = false;
 	}
 	if (dt > 1.0) return;
+	if (boss && boss->getCurrHealth() <= 0)
+	{
+		timeAfterBoss += (float)dt;
+		if (timeAfterBoss > 9.f)
+		{
+			CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
+		}
+	}
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -1026,8 +1035,11 @@ void SceneBoss::Exit()
 	// Cleanup VBO
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
-		if(meshList[i])
+		if (meshList[i])
+		{
 			delete meshList[i];
+			meshList[i] = NULL;
+		}
 	}
 	while (particleList.size() > 0)
 	{
