@@ -1,0 +1,44 @@
+CONTRIBUTIONS
+
+
+< Coen / 175448P >
+CLASSES : {
+	Projectile;
+	ParticleManager;
+	CameraEffectManager;
+	TimeTrackerManager;
+	Particle_2;
+	CameraEffect;
+	RigInfo;
+	JointInfo;
+	Witch;
+	FlyingWitch;
+	Boss;
+	NPC;
+	
+	UNUSED : JoystickController;
+}
+OBJ/TGA ASSETS : {
+	ball.obj;
+	action_lines.tga;
+	time_slow_texture.tga;
+	time_slow_hand_texture.tga;
+	fireball_texture.tga;
+	iceball_texture.tga;
+	shield_texture.tga;
+}
+FRAMEWORK CONTRIBUTIONS : {
+	SHADER : Texture Offset (moving textures), Object Transparency;
+	CAMERA EFFECTS : easily add camera effects, automatically updates and renders due to CameraEffectManager;
+	PARTICLE EFFECTS : easily add particles, automatically updates and renders to due to ParticleManager;
+	INTERPOLATIONS : added lerp (linear interpolation) functions in Math and Vector3;
+	ANIMATIONS : add a rig to enemies if needed;
+}
+GAMEPLAY CONTRIBUTIONS : {
+	Player Arm Animations : Player arms sway with camera, and moves/rotates with appropriate actions;
+	Spells : Fire and Ice ball with LMB and RMB respectively, time-slow with the T button;
+	Element parry : Spells from other enemies and player can clash with other projectiles and targets of the opposing element;
+	Boss : Animated Tentacle Boss, chases player, throws fire/ice balls at player and also summons enemies, has a shield that will only temporarily be disabled upon successful element parry while casting;
+	Enemies : Witches (grounded or flying) with "long-range AI", will throw fire/ice balls if player is not too and not too close;
+	NPC : Displays dialogue if player is close enough and presses the middle mouse button;
+}
