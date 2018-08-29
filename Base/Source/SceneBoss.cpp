@@ -17,16 +17,6 @@ SceneBoss::SceneBoss()
 
 SceneBoss::~SceneBoss()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneBoss::Init()
@@ -49,9 +39,6 @@ void SceneBoss::Init()
 	glGenVertexArrays(1, &m_vertexArrayID);
 	glBindVertexArray(m_vertexArrayID);
 
-	/*m_programID = LoadShaders( "Shader//Texture.vertexshader", "Shader//Text.fragmentshader" );*/
-	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
-	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
 	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
@@ -232,14 +219,14 @@ void SceneBoss::Init()
 	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
 	meshList[GEO_KILLERNADO] = MeshBuilder::GenerateOBJ("tornado", "OBJ//tornado.obj");
 	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
-	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
-	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
-	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
+	//meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
+	//meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
+	//meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
 
 	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
 	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
-	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
-	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
+	//meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
+	//meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
 	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
 	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
@@ -292,8 +279,8 @@ void SceneBoss::Init()
 	meshList[GEO_OCTO_HEAD_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
 	meshList[GEO_OCTO_BODY_SHIELD] = MeshBuilder::GenerateOBJ("octoBodyShield", "OBJ//octoBody.obj");
 	meshList[GEO_OCTO_BODY_SHIELD]->textureArray[0] = LoadTGA("Image//shield_texture.tga");
-	meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
-	meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
+	//meshList[GEO_OCTO_TRIDENT] = MeshBuilder::GenerateOBJ("octoTrident", "OBJ//octoTrident.obj");
+	//meshList[GEO_OCTO_TRIDENT]->textureArray[0] = LoadTGA("Image//octoTrident.tga");
 	meshList[GEO_OCTO_TENTACLE_SPHERE] = MeshBuilder::GenerateSphere("tentacleSphere", Color(97.f / 255.f, 0, 127.f / 255.f) , 8, 8, 1.f);
 	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
 	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
@@ -337,26 +324,6 @@ void SceneBoss::Init()
 	playerInfo->AttachCamera(&camera);
 	playerInfo->setSpellModLimit(CPlayerInfo::SMTYPE_TOTAL);
 
-	//CNPC* npc = new CNPC(CNPC::NPC_WIZARDBOSS,
-	//	Vector3(100, 0, 100),
-	//	Vector3(4, 12, 4),
-	//	Vector3(100, 0, 100 + 1)
-	//	);
-	//npc->setPlayerRef(playerInfo);
-
-	//CNPC* npc = new CNPC(
-	//	Vector3(0, 0, 80),
-	//	Vector3(4, 12, 4),
-	//	Vector3(0, 0, 80.f)
-	//);
-	//npc->setPlayerRef(playerInfo);
-
-	/*wall1 = new CEntity();
-	wall1->Init();
-	wall1->setType(CEntity::E_WALL);
-	wall1->setPos(Vector3(0, 0, 740));
-	wall1->setScale(Vector3(25.f, 25.f, 25.f));*/
-
 	boss = new CBoss();
 	boss->Init();
 	boss->setPlayerRef(playerInfo);
@@ -396,6 +363,8 @@ void SceneBoss::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
+	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 	playerInfo->screenShakeOn = true;
 }
 
@@ -450,29 +419,6 @@ void SceneBoss::Update(double dt)
 	{
 		bLightEnabled = false;
 	}
-	//if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
-	//{
-	//	CProjectile* aa;
-	//	if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_FIREBALL)
-	//	{
-	//		aa = new CProjectile(CProjectile::PTYPE_FIRE);
-	//		CSoundEngine::GetInstance()->PlayASound("Fireball");
-	//		playerInfo->setMana(playerInfo->getMana() - 10);
-	//	}
-	//	else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
-	//	{
-	//		aa = new CProjectile(CProjectile::PTYPE_ICE);
-	//		CSoundEngine::GetInstance()->PlayASound("Iceattack");
-	//		playerInfo->setMana(playerInfo->getMana() - 10);
-	//	}
-	//	Vector3 campos = camera.position - Vector3(0, playerInfo->FirstHeight, 0);
-	//	Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
-	//	Vector3 viewvec = (camtar - campos).Normalized();
-	//	aa->Init(campos + viewvec, camtar + viewvec*1.5f);
-	//	CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
-	//	playerInfo->SetSpellType(CPlayerInfo::SPELL_NONE);
-	//	
-	//}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa;
@@ -756,12 +702,12 @@ void SceneBoss::Update(double dt)
 		lights[0].position.y += (float)(10.f * dt);
 
 	//rotateAngle += (float)(10 * dt);
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
-	if (sa)
-	{
-		sa->Update(dt);
-		sa->m_anim->animActive = true;
-	}
+	//SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
+	//if (sa)
+	//{
+	//	sa->Update(dt);
+	//	sa->m_anim->animActive = true;
+	//}
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -807,8 +753,6 @@ void SceneBoss::Update(double dt)
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
-	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
-	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 }
 
 void SceneBoss::RenderText(Mesh* mesh, std::string text, Color color)
@@ -1093,6 +1037,26 @@ void SceneBoss::Exit()
 		CEntity *entity = EntityManager::GetInstance()->entityList.back();
 		if (entity->getType() != entity->E_PLAYER) { delete entity; }
 		EntityManager::GetInstance()->entityList.pop_back();
+	}
+	while (ParticleManager::GetInstance()->particleList.size() > 0)
+	{
+		delete ParticleManager::GetInstance()->particleList.back();
+		ParticleManager::GetInstance()->particleList.pop_back();
+	}
+	while (CameraEffectManager::GetInstance()->camEfflist.size() > 0)
+	{
+		delete CameraEffectManager::GetInstance()->camEfflist.back();
+		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 	playerInfo->setHealth(100);

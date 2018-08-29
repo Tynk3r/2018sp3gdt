@@ -25,7 +25,7 @@ public:
 	};
 
 	CEntity();
-	~CEntity();
+	virtual ~CEntity();
 
 	void Init();
 	virtual void Update(double dt);

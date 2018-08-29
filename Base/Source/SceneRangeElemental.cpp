@@ -17,16 +17,6 @@ SceneRangeElemental::SceneRangeElemental()
 
 SceneRangeElemental::~SceneRangeElemental()
 {
-	if (theMouse)
-	{
-		delete theMouse;
-		theMouse = NULL;
-	}
-	if (theKeyboard)
-	{
-		delete theKeyboard;
-		theKeyboard = NULL;
-	}
 }
 
 void SceneRangeElemental::Init()
@@ -1177,6 +1167,26 @@ void SceneRangeElemental::Exit()
 		CEntity *entity = EntityManager::GetInstance()->entityList.back();
 		if (entity->getType() != entity->E_PLAYER) { delete entity; }
 		EntityManager::GetInstance()->entityList.pop_back();
+	}
+	while (ParticleManager::GetInstance()->particleList.size() > 0)
+	{
+		delete ParticleManager::GetInstance()->particleList.back();
+		ParticleManager::GetInstance()->particleList.pop_back();
+	}
+	while (CameraEffectManager::GetInstance()->camEfflist.size() > 0)
+	{
+		delete CameraEffectManager::GetInstance()->camEfflist.back();
+		CameraEffectManager::GetInstance()->camEfflist.pop_back();
+	}
+	if (theMouse)
+	{
+		delete theMouse;
+		theMouse = NULL;
+	}
+	if (theKeyboard)
+	{
+		delete theKeyboard;
+		theKeyboard = NULL;
 	}
 	playerInfo->DetachCamera();
 

@@ -32,6 +32,11 @@
 #include "SceneLevel3Fog.h"
 #include "SceneLevel4Flight.h"
 
+#include "TimeTrackerManager.h"
+#include "Particles\ParticleManager.h"
+#include "Entities\EntityManager.h"
+#include "CameraEffects\CameraEffectManager.h"
+
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
 const unsigned int frameTime = 1000 / FPS; // time for each frame
@@ -312,7 +317,11 @@ void Application::Run()
 	delete scene15;
 	delete scene16;
 	delete scene17;
-
+	TimeTrackerManager::Destroy();
+	CameraEffectManager::Destroy();
+	ParticleManager::Destroy();
+	EntityManager::Destroy();
+	CSoundEngine::Destroy();
 }
 
 void Application::Exit()
