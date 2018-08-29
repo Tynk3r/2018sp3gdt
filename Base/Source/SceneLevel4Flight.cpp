@@ -1591,7 +1591,8 @@ void SceneLevel4::RenderWorld()
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
 						CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
-
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + entSca.x*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + entSca.x*0.015f);
 						if (proj->getProjType() == CProjectile::PTYPE_FIRE)
 						{
 							CSoundEngine::GetInstance()->PlayASound("floorImpact");

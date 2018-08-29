@@ -370,6 +370,7 @@ void SceneBoss::Init()
 	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
 	playerInfo->screenShakeOn = true;
 	timeAfterBoss = 0;
+	healthBarAlpha = 1;
 }
 
 void SceneBoss::Update(double dt)
@@ -1214,6 +1215,46 @@ void SceneBoss::RenderParticles(ParticleObject *particle)
 	}
 }
 
+void SceneBoss::RenderBossHealth()
+{
+	if (boss)
+	{
+		std::ostringstream ss;
+		ss << "Boss Health";
+		float aH = Application::GetWindowHeight();
+		float aW = Application::GetWindowWidth();
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 3, aW*0.1f*0.375f, aH*0.1f*0.95f);
+		healthBarAlpha = Math::lerp(healthBarAlpha, boss->getCurrHealth() / boss->getMaxHealth(), 0.1f);
+		//std::cout << -(1.f - (healthpercentage)) << std::endl;
+		//RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.6f*healthpercentage, aH*0.1f*0.1f, aW*0.01f*(1-healthpercentage), aH*0.1f*0.11f);
+		//RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.8f*healthpercentage, aH*0.1f*0.1f, -((1.f - (healthpercentage))*(1.f - (healthpercentage))) * aW*0.1f*0.8f*0.01f, aH*0.1f*0.11f);
+		//RenderMeshIn2D(meshList[GEO_QUAD_RED], false, aW*0.1f*0.8f, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
+		Mtx44 ortho;
+		ortho.SetToOrtho(-128, 128, -72, 72, -50, 50);
+		projectionStack.PushMatrix();
+			projectionStack.LoadMatrix(ortho);
+			viewStack.PushMatrix();
+				viewStack.LoadIdentity();
+				modelStack.PushMatrix();
+					modelStack.LoadIdentity();
+					modelStack.Scale(aW*0.1f*0.8f, aH*0.1f*0.1f, 1);
+					modelStack.Translate(0, aH*0.1f*0.11f, 0);
+					RenderMesh(meshList[GEO_QUAD_RED], false);
+					modelStack.PushMatrix();
+						glDepthFunc(GL_ALWAYS);
+						modelStack.Translate(-(1.f - healthBarAlpha)*0.5f, 0, 0);
+						modelStack.Scale(healthBarAlpha, 1, 1);
+						RenderMesh(meshList[GEO_QUAD_GREEN], false);
+						glDepthFunc(GL_LESS);
+					modelStack.PopMatrix();
+					
+       
+				modelStack.PopMatrix();
+			viewStack.PopMatrix();
+		projectionStack.PopMatrix();
+	}
+}
+
 void SceneBoss::RenderWorld()
 {
 	// Render all entities
@@ -1897,19 +1938,20 @@ void SceneBoss::RenderPassMain()
 
 	// Render the crosshair
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 12.5f,12.5f);
-	if (boss)
-	{
-		std::ostringstream ss;
-		ss << "Boss Health";
-		float aH = Application::GetWindowHeight();
-		float aW = Application::GetWindowWidth();
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 3, aW*0.1f*0.375f, aH*0.1f*0.95f);
-		float healthpercentage = boss->getCurrHealth() / boss->getMaxHealth();
-		std::cout << -(1.f - (healthpercentage)) << std::endl;
-		//RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.6f*healthpercentage, aH*0.1f*0.1f, aW*0.01f*(1-healthpercentage), aH*0.1f*0.11f);
-		RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.8f*healthpercentage, aH*0.1f*0.1f, -(1.f - (healthpercentage)) * aW*0.1f*0.8f*0.01f, aH*0.1f*0.11f);
-		RenderMeshIn2D(meshList[GEO_QUAD_RED], false, aW*0.1f*0.8f, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
-	}
+	//if (boss)
+	//{
+	//	std::ostringstream ss;
+	//	ss << "Boss Health";
+	//	float aH = Application::GetWindowHeight();
+	//	float aW = Application::GetWindowWidth();
+	//	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 3, aW*0.1f*0.375f, aH*0.1f*0.95f);
+	//	float healthpercentage = boss->getCurrHealth() / boss->getMaxHealth();
+	//	//std::cout << -(1.f - (healthpercentage)) << std::endl;
+	//	//RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.6f*healthpercentage, aH*0.1f*0.1f, aW*0.01f*(1-healthpercentage), aH*0.1f*0.11f);
+	//	RenderMeshIn2D(meshList[GEO_QUAD_GREEN], false, aW*0.1f*0.8f*healthpercentage, aH*0.1f*0.1f, -((1.f - (healthpercentage))*(1.f - (healthpercentage))) * aW*0.1f*0.8f*0.01f, aH*0.1f*0.11f);
+	//	RenderMeshIn2D(meshList[GEO_QUAD_RED], false, aW*0.1f*0.8f, aH*0.1f*0.1f, 0, aH*0.1f*0.11f);
+	//}
+	RenderBossHealth();
 	if (!CameraEffectManager::GetInstance()->camEfflist.empty()) //RENDERING OF CAMERA EFFECTS IN CAMERA EFFECT MANAGER
 	{
 		std::list < CameraEffect *> ::iterator it, end;

@@ -103,6 +103,10 @@ void CPlayerInfo::Init(void)
 	speedingUpTime = false;
 	TimeTrackerManager::GetInstance()->setSpeed(1);
 
+	screenShakeOn = true;
+	screenShakeDuration = 0;
+	screenShakeElapsedTime = 0;
+
 	rocketPosition.Set(0, 0, 0);
 	rocketTarget.Set(0, 0, 1);
 	rocketUp.Set(0, 1, 0);

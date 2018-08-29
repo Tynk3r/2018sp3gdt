@@ -412,7 +412,8 @@ bool EntityManager::CheckForCollision(float dt)
 						(*it)->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("barrelbreak","Sound//barrelbreak.mp3");
 						CSoundEngine::GetInstance()->PlayASound("barrelbreak");
-
+						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
+						CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
 						switch ((*it)->getType())
 						{
 						case CEntity::E_ENEMY:

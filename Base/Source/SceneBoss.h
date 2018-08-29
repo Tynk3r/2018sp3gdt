@@ -220,6 +220,8 @@ public:
 	void UpdateParticles(double dt);
 	void RenderParticles(ParticleObject *particle);
 
+	void RenderBossHealth();
+
 private:
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
@@ -273,6 +275,7 @@ private:
 
 	float testvar;
 	float timeAfterBoss;
+	float healthBarAlpha;
 };
 
 #endif
