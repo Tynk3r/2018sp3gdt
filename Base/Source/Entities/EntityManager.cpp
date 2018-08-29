@@ -18,7 +18,8 @@ void EntityManager::Update(double _dt)
 	{
 		(*it)->Update(_dt);
 	}
-	if (CheckForCollision(_dt)) { cout << "Collision Detected" << endl; }
+	//if (CheckForCollision(_dt)) { cout << "Collision Detected" << endl; }
+	CheckForCollision(_dt);
 	// Clean up entities that are done
 	it = entityList.begin();
 	while (it != end)
