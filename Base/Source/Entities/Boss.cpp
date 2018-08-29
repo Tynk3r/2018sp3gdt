@@ -108,7 +108,7 @@ void CBoss::Update(double dt)
 						this->holdingProjectile->setIsDone(true);
 						this->animFrame = this->elapsedTime = 0;
 						this->holdingProjectile = NULL;
-						//break;
+						break;
 					}
 					Vector3 rTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_RIGHT")->getPosOffset();
 					Vector3 rTentactleFBALLPos = this->rig.GetJoint("OCTO_FIREBALL")->getPosOffset();
@@ -207,7 +207,7 @@ void CBoss::Update(double dt)
 						this->holdingProjectile->setIsDone(true);
 						this->animFrame = this->elapsedTime = 0;
 						this->holdingProjectile = NULL;
-						//break;
+						break;
 					}
 					Vector3 lTentaclePos = this->rig.GetJoint("OCTO_TENTACLE_LOWER_LEFT")->getPosOffset();
 					Vector3 lTentactleIBALLPos = this->rig.GetJoint("OCTO_ICEBALL")->getPosOffset();
@@ -374,12 +374,12 @@ void CBoss::Update(double dt)
 			if (this->elapsedTime > 3.f)
 			{
 				float randnum = Math::RandFloatMinMax(0, 10000);
-				//if (randnum < 10000 * 0.3f && EntityManager::GetInstance()->AmountOfEnemies() < 2)
+				if (randnum < 10000 * 0.3f && EntityManager::GetInstance()->AmountOfEnemies() < 13)
 					this->state = F_SUMMON_ENEMY;
-				//else if (randnum < 10000 * 0.6f)
-				//	this->state = F_ATTACK_FIREBALL;
-				//else
-				//	this->state = F_ATTACK_ICEBALL;
+				else if (randnum < 10000 * 0.6f)
+					this->state = F_ATTACK_FIREBALL;
+				else
+					this->state = F_ATTACK_ICEBALL;
 				this->elapsedTime = this->animFrame = 0;
 			}
 			break;

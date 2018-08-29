@@ -274,7 +274,10 @@ bool EntityManager::CheckForCollision(float dt)
 						{
 							CEnemy* tempEnemy = (CEnemy*)*it;
 							if (tempEnemy->getAI() != CEnemy::AI_LONGRANGEFOG) { (*it)->setIsDone(true); }
-							if (proj->getProjType() != CProjectile::PTYPE_BEAM) (*it2)->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
+								(*it2)->setIsDone(true);
+							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
+							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 							if (proj->getProjType() == CProjectile::PTYPE_FIRE)
 							{
