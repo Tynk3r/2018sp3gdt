@@ -125,28 +125,7 @@ class SceneStartMenu : public Scene
 		GEO_GRASS_LIGHTGREEN,
 		GEO_OBJECT,
 		GEO_TEXT,
-		//TSL
-		GEO_SKYPLANE,
-		GEO_TERRAIN,
-		GEO_WETER,
-		GEO_CAMPFIRE_BASE,
-		GEO_CAMPFIRE_POT,
-		GEO_CAMPFIRE_POT_STAND,
-		GEO_TENT,
-		GEO_SPRITE_ANIMATION,
-		GEO_DOG,
-		GEO_PARTICLE_SMOKE,
-		GEO_PARTICLE_SPARK,
-		GEO_LIGHT_DEPTH_QUAD,
-		GEO_TESTPAINTQUAD,
-		GEO_TESTPAINTQUAD2,
-		GEO_LEFTARM,
-		GEO_RIGHTARM,
-		GEO_DRONE_HEAD,
-		GEO_DRONE_LWING,
-		GEO_DRONE_RWING,
-		GEO_PARTICLE_FIRE,
-		GEO_PARTICLE_ICE,
+
 		GEO_MAINMENU,
 		NUM_GEOMETRY,
 	};
@@ -177,9 +156,6 @@ public:
 	void RenderPassMain();
 	void RenderWorld();
 
-	ParticleObject* GetParticle(void);
-	void UpdateParticles(double dt);
-	void RenderParticles(ParticleObject *particle);
 
 private:
 	unsigned m_vertexArrayID;
@@ -210,15 +186,6 @@ private:
 	int m_particleCount;
 	int MAX_PARTICLE;
 	Vector3 m_gravity;
-	std::vector<ParticleObject*> particleList;
-
-	CKeyboard* theKeyboard;
-	CMouse* theMouse;
-
-	//Terrain
-	std::vector<unsigned char> m_heightMap;
-
-	float testvar;
 };
 
 #endif

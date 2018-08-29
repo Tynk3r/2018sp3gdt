@@ -18,6 +18,7 @@ public:
 	Camera3();
 	~Camera3();
 	virtual void Init(const Vector3& pos, const Vector3& target, const Vector3& up, std::vector<unsigned char> &heightMap);
+	void InitMenu(const Vector3& pos, const Vector3& target, const Vector3& up);
 	virtual void Update(double dt);
 	virtual void Reset();
 };

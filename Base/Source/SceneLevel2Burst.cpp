@@ -232,29 +232,19 @@ void SceneLevel2::Init()
 	meshList[GEO_RIGHTARM_AURA_FIRE]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
 	meshList[GEO_RIGHTARM_AURA_ICE] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM_AURA_ICE", "OBJ//rightArm.obj");
 	meshList[GEO_RIGHTARM_AURA_ICE]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
-
-	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
-	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
-	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
-
 	meshList[GEO_BARREL_ICE] = MeshBuilder::GenerateOBJ("barrel_ice", "OBJ//barrel.obj");
 	meshList[GEO_BARREL_ICE]->textureArray[0] = LoadTGA("Image//barrel_ice.tga");
 	meshList[GEO_BARREL_FIRE] = MeshBuilder::GenerateOBJ("barrel_fire", "OBJ//barrel.obj");
 	meshList[GEO_BARREL_FIRE]->textureArray[0] = LoadTGA("Image//barrel_fire.tga");
 
-	meshList[GEO_BOLT] = MeshBuilder::GenerateOBJ("GEO_BOLT", "OBJ//bolt.obj");
-	meshList[GEO_BOLT]->textureArray[0] = LoadTGA("Image//bolt.tga");
 	meshList[GEO_BARREL] = MeshBuilder::GenerateOBJ("dummy", "OBJ//barrel.obj");
 	meshList[GEO_BARREL]->textureArray[0] = LoadTGA("Image//barrel.tga");
-	meshList[GEO_DRAGON] = MeshBuilder::GenerateOBJ("GEO_DRAGON", "OBJ//dragon.obj");
-	meshList[GEO_DRAGON]->textureArray[0] = LoadTGA("Image//Tex_Dragon.tga");
 
 	// For Ter Rain
 	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmapLevel2.raw", m_heightMap);
 	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//floor.tga");
 	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
 	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
-	testvar = 0;
 
 	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 1.f);
 	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f / 255.f, 241.f / 255.f, 1), 6, 6, 1.f);
@@ -263,19 +253,13 @@ void SceneLevel2::Init()
 	meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball_texture.tga");
 	meshList[GEO_ICEBALL] = MeshBuilder::GenerateOBJ("iceball", "OBJ//ball.obj");
 	meshList[GEO_ICEBALL]->textureArray[0] = LoadTGA("Image//iceball_texture.tga");
-	meshList[GEO_KILLERNADO] = MeshBuilder::GenerateOBJ("tornado", "OBJ//tornado.obj");
-	meshList[GEO_KILLERNADO]->textureArray[0] = LoadTGA("Image//tornado.tga");
-	meshList[GEO_ICEBLOCK] = MeshBuilder::GenerateOBJ("iceblock", "OBJ//iceblock.obj");
-	meshList[GEO_ICEBLOCK]->textureArray[0] = LoadTGA("Image//icecube.tga");
+
 	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("witch", "OBJ//witch.obj");
 	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
 	meshList[GEO_HEART] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
-
+	meshList[GEO_HEART]->textureArray[0] = LoadTGA("Image//heart.tga");
 	meshList[GEO_MANA] = MeshBuilder::GenerateQuad("SceneInGameMenu", 1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
+	meshList[GEO_MANA]->textureArray[0] = LoadTGA("Image//mana.tga");
 	// Load the ground mesh and texture
 	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
@@ -300,12 +284,8 @@ void SceneLevel2::Init()
 	meshList[GEO_HUD_HOURGLASS]->textureArray[0] = LoadTGA("Image//hourglass.tga");
 	meshList[GEO_HUD_HOURGLASSFLUID] = MeshBuilder::GenerateQuad("hourglassFluid", Color());
 	meshList[GEO_HUD_HOURGLASSFLUID]->textureArray[0] = LoadTGA("Image//hourglassFluid.tga");
-	meshList[GEO_HUD_SPELLMOD0] = MeshBuilder::GenerateQuad("spellmod0", Color());
-	meshList[GEO_HUD_SPELLMOD0]->textureArray[0] = LoadTGA("Image//spellmodNormal.tga");
 	meshList[GEO_HUD_SPELLMOD1] = MeshBuilder::GenerateQuad("spellmod1", Color());
 	meshList[GEO_HUD_SPELLMOD1]->textureArray[0] = LoadTGA("Image//spellmodBurst.tga");
-	meshList[GEO_HUD_SPELLMOD2] = MeshBuilder::GenerateQuad("spellmod2", Color());
-	meshList[GEO_HUD_SPELLMOD2]->textureArray[0] = LoadTGA("Image//spellmodSpecial.tga");
 	SpriteAnimation* sa_AL = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITEANIM_ACTIONLINES]);
 	if (sa_AL)
 	{
@@ -343,13 +323,6 @@ void SceneLevel2::Init()
 	enemy2->setPos(Vector3(700, 400, 650));
 	enemy2->setPlayerRef(playerInfo);
 	enemy2->setCanBeWalled(true);
-
-	//CNPC* npc = new CNPC(
-	//	Vector3(0, 0, 80),
-	//	Vector3(4, 12, 4),
-	//	Vector3(0, 0, 80.f)
-	//	);
-	//npc->setPlayerRef(playerInfo);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -490,29 +463,6 @@ void SceneLevel2::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	if (Application::IsKeyPressed('5'))
-	{
-		lights[0].type = Light::LIGHT_POINT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('6'))
-	{
-		lights[0].type = Light::LIGHT_DIRECTIONAL;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('7'))
-	{
-		lights[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('8'))
-	{
-		bLightEnabled = true;
-	}
-	else if (Application::IsKeyPressed('9'))
-	{
-		bLightEnabled = false;
-	}
 	if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_NONE)
 	{
 		CProjectile* aa;
@@ -532,7 +482,6 @@ void SceneLevel2::Update(double dt)
 			aa3->SetBurstPivRotOff(240);
 
 			CSoundEngine::GetInstance()->PlayASound("Fireball");
-			//playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 			playerInfo->setMana(playerInfo->getMana() - 25);
 		}
 		else if (playerInfo->GetSpellType() == CPlayerInfo::SPELL_ICEBALL)
@@ -554,7 +503,6 @@ void SceneLevel2::Update(double dt)
 			aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
 
 			CSoundEngine::GetInstance()->PlayASound("Iceattack");
-			//playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 			playerInfo->setMana(playerInfo->getMana() - 25);
 		}
 		CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -569,44 +517,8 @@ void SceneLevel2::Update(double dt)
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_BOSS);
 	}
-	//if (playerInfo->GetScore() >= 10)
-	//{
-	//	CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL2);
-	//}
-#endif // SP3_DEBUG
 
-	//if (KeyboardController::GetInstance()->IsKeyPressed('U'))
-	//{
-	//	if (playerInfo->rocketMode)
-	//	{
-	//		playerInfo->SetUp(Vector3(0, 1, 0));
-	//		playerInfo->setTarget(playerInfo->getPos() + (playerInfo->rocketTarget - playerInfo->rocketPosition).Normalized());
-	//		playerInfo->SetOnFreeFall(true);
-	//		playerInfo->rocketMode = false;
-	//	}
-	//	else if (!playerInfo->rocketMode)
-	//	{
-	//		playerInfo->rocketMode = true;
-	//		playerInfo->rocketPosition = playerInfo->getPos() + Vector3(0, 10 + 350 * ReadHeightMap(m_heightMap, playerInfo->getPos().x / 4000, playerInfo->getPos().z / 4000), 0);
-	//		playerInfo->rocketTarget = playerInfo->rocketPosition + (playerInfo->getTarget() - playerInfo->getPos()).Normalized();
-	//		playerInfo->rocketUp = Vector3(0, 1, 0);
-	//		playerInfo->rocketPitchAccel = 0;
-	//		playerInfo->rocketRollAccel = 0;
-	//		playerInfo->rocketYawAccel = 0;
-	//	}
-	//}
-	//if (playerInfo->rocketMode)
-	//{
-	//	playerInfo->setPos(playerInfo->rocketPosition);
-	//}
-	//if (playerInfo->rocketMode && playerInfo->rocketPosition.y + playerInfo->FirstHeight <= 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000))
-	//{
-	//	playerInfo->SetUp(Vector3(0, 1, 0));
-	//	playerInfo->setPos(playerInfo->getPos() + Vector3(0, -playerInfo->getPos().y, 0));
-	//	playerInfo->setTarget(playerInfo->getPos() + (playerInfo->rocketTarget - playerInfo->rocketPosition).Normalized());
-	//	playerInfo->terrainHeight = 350 * ReadHeightMap(m_heightMap, playerInfo->rocketPosition.x / 4000, playerInfo->rocketPosition.z / 4000);
-	//	playerInfo->rocketMode = false;
-	//}
+#endif // SP3_DEBUG
 
 	if (Application::IsKeyPressed('I'))
 		lights[0].position.z -= (float)(10.f * dt);
@@ -651,7 +563,6 @@ void SceneLevel2::Update(double dt)
 	enemy->setPos(Vector3(enemy->getPos().x, 350.f * ReadHeightMap(m_heightMap, enemy->getPos().x / 4000, enemy->getPos().z / 4000), enemy->getPos().z));
 	enemy2->setPos(Vector3(enemy2->getPos().x, 350.f * ReadHeightMap(m_heightMap, enemy2->getPos().x / 4000, enemy2->getPos().z / 4000), enemy2->getPos().z));
 
-	//bool shouldChange = true;
 	bool shouldChange = false;
 	totalBarrelsDown = 0;
 	//check if shouldnt change (any targets still up)
@@ -783,29 +694,13 @@ void SceneLevel2::Update(double dt)
 			stateChangeTimer1 = 0;
 			switch (targetState1)
 			{
-			//case T_MOVING:
-			//	targetState1 = T_STATIONARY;
-			//	for (int i = 0; i < 3; i++)
-			//	{
-			//		targets1[i]->setIsDone(false);
-			//		targets1[i]->setType(CEntity::E_TARGET_FIRE);
-			//		//targets1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-			//		//targets1[i]->setOriginPos(targets1[i]->getPos());
-			//		targets1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-			//		targets1[i]->setTarget(Vector3(0.f, 0.f, 0.f));
-			//	}
-			//	break;
 			case T_STATIONARY:
 				targetState1 = T_MOVING;
 				for (int i = 0; i < 3; i++)
 				{
 					targetsMoving1[i]->setIsDone(false);
 					targetsMoving1[i]->setType(CEntity::E_TARGET_ICE);
-	/*				targetsMoving1[i]->setPos(Vector3(-250 + i * 250, 500.f, -500.f));
-					targetsMoving1[i]->setOriginPos(targetsMoving1[i]->getPos());*/
 					targetsMoving1[i]->setScale(Vector3(20.f, 20.f, 20.f));
-					//targetsMoving1[i]->setTarget(Vector3(0, 0, 0));
-					//secondSetBarrel = true;
 				}
 				break;
 			default:
@@ -844,18 +739,10 @@ void SceneLevel2::Update(double dt)
 	//I use the number '0.5' in this case because I want the paint to be in the center of the quad, and I must multiply it by the Modifier in order to make sure it renders at the correct position
 	//meshList[GEO_TESTPAINTQUAD2]->texturePaintID = PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), 0.5 * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 
-	testvar += 0.05 * dt;
-
-	//lights[1].position.Set(drone1->getPos().x, drone1->getPos().y + 350.f * ReadHeightMap(m_heightMap, drone1->getPos().x / 4000, drone1->getPos().z / 4000), drone1->getPos().z);
-	//Vector3 tempView = (drone1->getTarget() - drone1->getPos()).Normalized();
-	//lights[1].spotDirection.Set(tempView.x, tempView.y, tempView.z);
-
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	fps = (float)(1.f / dt);
 	rotateAngle++;
-	//UpdateParticles(dt);
-	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
 	if (totalTime <= 0 || Application::IsKeyPressed('E'))
@@ -1322,15 +1209,6 @@ void SceneLevel2::RenderWorld()
 
 				if (proj->getProjType() == CProjectile::PTYPE_BEAM)
 				{
-					modelStack.PushMatrix();
-					//modelStack.Translate(camera.position.x, camera.position.y - 1, camera.position.z);
-					modelStack.Translate(entPos.x, entPos.y + playerInfo->FirstHeight, entPos.z);
-					modelStack.Rotate(Math::RadianToDegree(atan2(entTar.x - entPos.x, entTar.z - entPos.z)) - 180, 0, 1, 0);
-					modelStack.Rotate(Math::RadianToDegree(atan2((entTar - entPos).Normalized().y, 1)), 1, 0, 0);
-					modelStack.Translate(0, 0, -entSca.z / 2);
-					modelStack.Scale(entSca.x, entSca.y, entSca.z);
-					RenderMesh(meshList[GEO_BOLT], false);
-					modelStack.PopMatrix();
 				}
 				else
 				{
@@ -1351,9 +1229,6 @@ void SceneLevel2::RenderWorld()
 					}
 					else if (proj->getProjType() == CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
-						modelStack.Rotate(proj->getProjRot() * 360, 0, 1, 0);
-						modelStack.Scale(entSca.x, entSca.y, entSca.z);
-						RenderMesh(meshList[GEO_KILLERNADO], false);
 					}
 					modelStack.PopMatrix();
 
@@ -1406,40 +1281,6 @@ void SceneLevel2::RenderWorld()
 						}
 					}
 				}
-			}
-			break;
-			case CEntity::E_DRONE:
-			{
-				float tempRotation = Math::RadianToDegree(atan2((*it)->getTarget().x - (*it)->getPos().x, (*it)->getTarget().z - (*it)->getPos().z));
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_HEAD], godlights);
-				modelStack.PopMatrix();
-
-				CDrone* tempDrone = (CDrone*)*it; //this is my lazy code and should be changed asap if possible
-
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Translate(16, 18, -15);
-				modelStack.Rotate(tempDrone->getWingRotation(), 0, 0, 1);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_LWING], godlights);
-				modelStack.PopMatrix();
-
-				modelStack.PushMatrix();
-				modelStack.Translate((*it)->getPos().x, (*it)->getScale().y / 3 + (*it)->getPos().y + 350.f * ReadHeightMap(m_heightMap, (*it)->getPos().x / 4000, (*it)->getPos().z / 4000), (*it)->getPos().z);
-				modelStack.Rotate(tempRotation + 180, 0, 1, 0);
-				modelStack.Translate(-16, 18, -15);
-				modelStack.Rotate(-tempDrone->getWingRotation(), 0, 0, 1);
-				modelStack.Scale((*it)->getScale().x, (*it)->getScale().y, (*it)->getScale().z);
-				RenderMesh(meshList[GEO_DRONE_RWING], godlights);
-				modelStack.PopMatrix();
-
-
-
 			}
 			break;
 			case CEntity::E_TARGET:
@@ -1603,23 +1444,6 @@ void SceneLevel2::RenderWorld()
 			}
 		}
 	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
-					//modelStack.PushMatrix();
-					//modelStack.Translate(0, 400, 200);
-					//modelStack.Rotate(90, 1, 0, 0);
-					//modelStack.Scale(20, 20, 1);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint / 20);
-					//RenderMesh(meshList[GEO_TESTPAINTQUAD], godlights);
-					//modelStack.PopMatrix();
-
-					//modelStack.PushMatrix();
-					//modelStack.Translate(0, 350, 300);
-					//modelStack.Rotate(90, 1, 0, 0);
-					//modelStack.Scale(90, 160, 1);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90);
-					//glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160);
-					//RenderMesh(meshList[GEO_TESTPAINTQUAD2], godlights);
-					//modelStack.PopMatrix();
 
 	Vector3 tempDir = (camera.target - camera.position).Normalized();
 	Vector3 lArmOffset, rArmOffset, lArmRot, rArmRot;
@@ -1631,8 +1455,7 @@ void SceneLevel2::RenderWorld()
 		rArmRot = playerInfo->GetRightArmRotation();
 	}
 	modelStack.PushMatrix();
-	if (!playerInfo->rocketMode)
-	{
+
 		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 		modelStack.Translate(-3 /*+ playerInfo->GetCameraSway().x*/ + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
@@ -1642,29 +1465,7 @@ void SceneLevel2::RenderWorld()
 		modelStack.Rotate(lArmRot.z, 0, 0, 1);
 		modelStack.Scale(-1, 1, 1.5);
 		RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	}
-	else
-	{
-		viewStack.LoadIdentity();
-		viewStack.LookAt(
-			0, 0, 0,
-			0, 0, -1,
-			0, 1, 0
-			);
-
-		modelStack.PushMatrix();
-		modelStack.Translate(0, -4.5, -5);
-		modelStack.Scale(6, 4, -5);
-		RenderMesh(meshList[GEO_DRAGON], godlights);
-		modelStack.PopMatrix();
-
-		modelStack.Translate(-3 + lArmOffset.x, -1.5 + lArmOffset.y, -1.5);
-		modelStack.Rotate(lArmRot.x, 1, 0, 0);
-		modelStack.Rotate(lArmRot.y, 0, 1, 0);
-		modelStack.Rotate(lArmRot.z, 0, 0, 1);
-		modelStack.Scale(-1, 1, 1.5);
-		RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	}
+	
 	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_LEFTARM_CASTED)
 	{
 		modelStack.PushMatrix();
@@ -1681,19 +1482,8 @@ void SceneLevel2::RenderWorld()
 	}
 	modelStack.PopMatrix();
 
-	if (playerInfo->rocketMode)
-	{
-		viewStack.LoadIdentity();
-		viewStack.LookAt(
-			camera.position.x, camera.position.y, camera.position.z,
-			camera.target.x, camera.target.y, camera.target.z,
-			camera.up.x, camera.up.y, camera.up.z
-			);
-	}
-
 	modelStack.PushMatrix();
-	if (!playerInfo->rocketMode)
-	{
+
 		modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 		modelStack.Rotate(Math::RadianToDegree(-atan2(tempDir.z, tempDir.x)) - 90, 0, 1, 0);
 		modelStack.Translate(3/* + playerInfo->GetCameraSway().x*/ + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
@@ -1703,23 +1493,7 @@ void SceneLevel2::RenderWorld()
 		modelStack.Rotate(rArmRot.z, 0, 0, 1);
 		modelStack.Scale(1, 1, 1.5);
 		RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	}
-	else
-	{
-		viewStack.LoadIdentity();
-		viewStack.LookAt(
-			0, 0, 0,
-			0, 0, -1,
-			0, 1, 0
-			);
 
-		modelStack.Translate(3 + rArmOffset.x, -1.5 + rArmOffset.y, -1.5);
-		modelStack.Rotate(rArmRot.x, 1, 0, 0);
-		modelStack.Rotate(rArmRot.y, 0, 1, 0);
-		modelStack.Rotate(rArmRot.z, 0, 0, 1);
-		modelStack.Scale(1, 1, 1.5);
-		RenderMesh(meshList[GEO_RIGHTARM], godlights);
-	}
 	if (playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTHOLDING || playerInfo->GetAnimState() == CPlayerInfo::PLR_ANIM_RIGHTARM_CASTED)
 	{
 		modelStack.PushMatrix();
@@ -1734,17 +1508,9 @@ void SceneLevel2::RenderWorld()
 		glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
 		modelStack.PopMatrix();
 	}
+
 	modelStack.PopMatrix();
 
-	if (playerInfo->rocketMode)
-	{
-		viewStack.LoadIdentity();
-		viewStack.LookAt(
-			camera.position.x, camera.position.y, camera.position.z,
-			camera.target.x, camera.target.y, camera.target.z,
-			camera.up.x, camera.up.y, camera.up.z
-			);
-	}
 }
 
 void SceneLevel2::RenderPassMain()

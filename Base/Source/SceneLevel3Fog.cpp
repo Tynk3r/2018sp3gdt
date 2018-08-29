@@ -7,7 +7,7 @@
 #include "SoundEngine.h"
 #include "Utility.h"
 #include "LoadTGA.h"
-#include "Entities/Witch.h"
+#include "Entities/WitchFog.h"
 #include "LoadHmap.h"
 #include <sstream>
 #define SP3_DEBUG
@@ -376,7 +376,7 @@ void SceneLevel3::Init()
 		);
 	npc->setPlayerRef(playerInfo);
 
-	enemy = new CWitch();
+	enemy = new CWitchFog();
 	enemy->Init();
 	enemy->setScale(Vector3(15, 15, 15));
 	enemy->setPos(Vector3(50, 400, 0));
