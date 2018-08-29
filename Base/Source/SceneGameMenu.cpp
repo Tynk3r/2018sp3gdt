@@ -183,8 +183,6 @@ void SceneGameMenu::Init()
 
 	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 
-	m_lightDepthFBO.Init(1024, 1024);
-
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
@@ -620,7 +618,7 @@ void SceneGameMenu::RenderPassMain()
 	glUseProgram(m_programID);
 
 	//pass light depth texture
-	m_lightDepthFBO.BindForReading(GL_TEXTURE8);
+	//m_lightDepthFBO.BindForReading(GL_TEXTURE8);
 	//glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
@@ -698,17 +696,4 @@ void SceneGameMenu::RenderPassMain()
 }
 void SceneGameMenu::RenderPassGPass()
 {
-	m_renderPass = RENDER_PASS_PRE;
-	m_lightDepthFBO.BindForWriting();
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(m_gPassShaderID);
-	//These matrices should change when light position or direction changes
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
-		m_lightDepthProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
-	else 
-		m_lightDepthProj.SetToPerspective(90, 1.f, 0.1, 200);
-	m_lightDepthView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
-	RenderWorld();
 }

@@ -6,7 +6,6 @@
 #include "Application.h"
 #include "Utility.h"
 #include "LoadTGA.h"
-#include "LoadHmap.h"
 #include <sstream>
 #include "SceneManager.h"
 #include "SoundEngine.h"
@@ -46,7 +45,7 @@ void SceneStartMenu::Init()
 	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
 	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
-	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
+	//m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
 	// Get a handle for our uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
@@ -96,21 +95,20 @@ void SceneStartMenu::Init()
 	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.type");
 	m_parameters[U_FOG_ENABLED] = glGetUniformLocation(m_programID, "fogParam.enabled");
 	// shadow shtuff
-	m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
 	m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
 	m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
 	
 	//paint uniform value parameters
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
@@ -183,34 +181,19 @@ void SceneStartMenu::Init()
 
 	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 
-	m_lightDepthFBO.Init(1024, 1024);
-
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
-	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
-	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
+
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
-	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
-	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 10.f);
-	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
-	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
-	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
 
 	//LOAD MAIN MENU
 	meshList[GEO_MAINMENU] = MeshBuilder::GenerateQuad("Menu",1.f);
 	meshList[GEO_MAINMENU]->textureArray[0] = LoadTGA("Image//menu.tga");
 
-	// Load the ground mesh and texture
-	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
-	meshList[GEO_GRASS_LIGHTGREEN] = MeshBuilder::GenerateQuad("GEO_GRASS_LIGHTGREEN", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS_LIGHTGREEN]->textureArray[0] = LoadTGA("Image//grass_lightgreen.tga");
 	
 	//camera.Init(playerInfo->GetPos(), playerInfo->GetTarget(), playerInfo->GetUp(), m_heightMap);
 	camera.InitMenu(Vector3(), Vector3(0, 0, -1), Vector3(0, 1));
@@ -219,11 +202,6 @@ void SceneStartMenu::Init()
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
-	
-	rotateAngle = 0;
-	m_particleCount = 0;
-	MAX_PARTICLE = 1000;
-	m_gravity.Set(0, -9.8f, 0);
 
 	bLightEnabled = true;
 
@@ -303,15 +281,11 @@ void SceneStartMenu::Update(double dt)
 
 #endif // SP3_DEBUG
 
-
-	rotateAngle += (float)(10 * dt);
-
 	//camera.Update(dt);
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	fps = (float)(1.f / dt);
-	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 }
@@ -444,25 +418,6 @@ void SceneStartMenu::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, 
 void SceneStartMenu::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
-	if (m_renderPass == RENDER_PASS_PRE)
-	{
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
-		for (int i = 0; i < MAX_TEXTURES; ++i)
-		{
-			if (mesh->textureArray[i] > 0)
-			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
-				glActiveTexture(GL_TEXTURE0 + i);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
-			}
-			else
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-		mesh->Render();
-		return;
-	}
 
 	if (mesh->texturePaintID > 0)
 	{
@@ -486,8 +441,11 @@ void SceneStartMenu::RenderMesh(Mesh *mesh, bool enableLight)
 		//glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
 		//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
 		//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
-
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+		Mtx44 tempProj;
+		tempProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
+		Mtx44 tempView;
+		tempView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
+		Mtx44 lightDepthMVP = tempProj * tempView * modelStack.Top();
 		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
 		
 		//load material
@@ -533,26 +491,7 @@ void SceneStartMenu::RenderMesh(Mesh *mesh, bool enableLight)
 
 void SceneStartMenu::RenderGround()
 {
-	modelStack.PushMatrix();
-	modelStack.Rotate(-90, 1, 0, 0);
-	modelStack.Translate(0, 0, -10);
-	modelStack.Rotate(-90, 0, 0, 1);
-	modelStack.Scale(400.0f, 400.0f, 400.0f);
 
-	for (int x=0; x<10; x++)
-	{
-		for (int z=0; z<10; z++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(x-5.0f, z-5.0f, 0.0f);
-			if ( ((x*9+z) % 2) == 0)
-				RenderMesh(meshList[GEO_GRASS_DARKGREEN], false);
-			else
-				RenderMesh(meshList[GEO_GRASS_LIGHTGREEN], false);
-			modelStack.PopMatrix();
-		}
-	}
-	modelStack.PopMatrix();
 }
 
 void SceneStartMenu::Render()
@@ -560,7 +499,7 @@ void SceneStartMenu::Render()
 
 	
 	//******************************* PRE RENDER PASS*************************************
-		RenderPassGPass();
+		//RenderPassGPass();
 	//******************************* MAIN RENDER PASS************************************
 		RenderPassMain();
 }
@@ -575,7 +514,7 @@ void SceneStartMenu::Exit()
 	}
 
 	glDeleteProgram(m_programID);
-	glDeleteProgram(m_gPassShaderID);
+	//glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
@@ -589,7 +528,6 @@ void SceneStartMenu::RenderWorld()
 
 void SceneStartMenu::RenderPassMain()
 {
-	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
 	glDisable(GL_CULL_FACE);
@@ -599,8 +537,8 @@ void SceneStartMenu::RenderPassMain()
 	glUseProgram(m_programID);
 
 	//pass light depth texture
-	m_lightDepthFBO.BindForReading(GL_TEXTURE8);
-	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
+	//m_lightDepthFBO.BindForReading(GL_TEXTURE8);
+	//glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
 	//perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
@@ -677,17 +615,4 @@ void SceneStartMenu::RenderPassMain()
 }
 void SceneStartMenu::RenderPassGPass()
 {
-	m_renderPass = RENDER_PASS_PRE;
-	m_lightDepthFBO.BindForWriting();
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(m_gPassShaderID);
-	//These matrices should change when light position or direction changes
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
-		m_lightDepthProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
-	else 
-		m_lightDepthProj.SetToPerspective(90, 1.f, 0.1, 200);
-	m_lightDepthView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
-	RenderWorld();
 }

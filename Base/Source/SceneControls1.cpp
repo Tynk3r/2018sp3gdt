@@ -46,7 +46,7 @@ void SceneControls1::Init()
 	/*m_programID = LoadShaders("Shader//comg.vertexshader", "Shader//MultiTexture.fragmentshader");*/
 	/*m_programID = LoadShaders("Shader//Fog.vertexshader", "Shader//Fog.fragmentshader");*/
 	m_programID = LoadShaders("Shader//Shadow.vertexshader", "Shader//Shadow.fragmentshader");
-	m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
+	//m_gPassShaderID = LoadShaders("Shader//GPass.vertexshader", "Shader//GPass.fragmentshader");
 
 	// Get a handle for our uniform
 	m_parameters[U_MVP] = glGetUniformLocation(m_programID, "MVP");
@@ -96,21 +96,21 @@ void SceneControls1::Init()
 	m_parameters[U_FOG_TYPE] = glGetUniformLocation(m_programID, "fogParam.type");
 	m_parameters[U_FOG_ENABLED] = glGetUniformLocation(m_programID, "fogParam.enabled");
 	// shadow shtuff
-	m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
+	//m_parameters[U_LIGHT_DEPTH_MVP_GPASS] = glGetUniformLocation(m_gPassShaderID, "lightDepthMVP");
 	m_parameters[U_LIGHT_DEPTH_MVP] = glGetUniformLocation(m_programID, "lightDepthMVP");
 	m_parameters[U_SHADOW_MAP] = glGetUniformLocation(m_programID, "shadowMap");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE1] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
-	m_parameters[U_SHADOW_COLOR_TEXTURE2] =
-		glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[0]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE1] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[1]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTextureEnabled[2]");
+	//m_parameters[U_SHADOW_COLOR_TEXTURE2] =
+	//	glGetUniformLocation(m_gPassShaderID, "colorTexture[2]");
 	
 	//paint uniform value parameters
 	m_parameters[U_PAINT_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "paintTextureEnabled");
@@ -183,101 +183,27 @@ void SceneControls1::Init()
 
 	glUniform1f(m_parameters[U_COLOR_ALPHA], 1);
 
-	m_lightDepthFBO.Init(1024, 1024);
-
 	for(int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
-	//meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
-	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
-	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
+
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
-	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
-	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
-	meshList[GEO_SPHERE] = MeshBuilder::GenerateSphere("sphere", Color(1, 0, 0), 18, 36, 10.f);
-	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
-	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
-	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
-
-	meshList[GEO_SKYPLANE] = MeshBuilder::GenerateSkyPlane("GEO_SKYPLANE", Color(1, 1, 1), 128, 200.0f, 2000.0f, 1.0f, 1.0f);
-	meshList[GEO_SKYPLANE]->textureArray[0] = LoadTGA("Image//top.tga");
-
-	meshList[GEO_LEFTARM] = MeshBuilder::GenerateOBJ("GEO_LEFTARM", "OBJ//leftArm.obj");
-	meshList[GEO_RIGHTARM] = MeshBuilder::GenerateOBJ("GEO_RIGHTARM", "OBJ//rightArm.obj");
-
-	meshList[GEO_DRONE_HEAD] = MeshBuilder::GenerateOBJ("GEO_DRONE_HEAD", "OBJ//droneHead.obj");
-	meshList[GEO_DRONE_LWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_LWING", "OBJ//droneLeftwing.obj");
-	meshList[GEO_DRONE_RWING] = MeshBuilder::GenerateOBJ("GEO_DRONE_RWING", "OBJ//droneRightwing.obj");
-
-	// For Ter Rain
-	meshList[GEO_TERRAIN] = MeshBuilder::GenerateTerrain("GEO_TERRAIN", "Image//heightmap.raw", m_heightMap);
-	meshList[GEO_TERRAIN]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_TERRAIN]->tgaLengthPaint = 256;
-	meshList[GEO_TERRAIN]->texturePaintID = NewTGA(meshList[GEO_TERRAIN]->tgaLengthPaint);
-	testvar = 0;
-
-	meshList[GEO_TESTPAINTQUAD] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD", Color(1, 1, 1), 1.f);
-	meshList[GEO_TESTPAINTQUAD]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint = 1;
-	meshList[GEO_TESTPAINTQUAD]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD]->tgaLengthPaint);
-
-	meshList[GEO_TESTPAINTQUAD2] = MeshBuilder::GenerateQuad("GEO_TESTPAINTQUAD2", Color(1, 1, 1), 1.f);
-	meshList[GEO_TESTPAINTQUAD2]->textureArray[0] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint = 64;
-	meshList[GEO_TESTPAINTQUAD2]->texturePaintID = NewTGA(meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
-
-	//meshList[GEO_TERRAIN]->textureArray[1] = LoadTGA("Image//moss1.tga");
-	meshList[GEO_WETER] = MeshBuilder::GenerateQuad("wat", Color(1, 1, 1), 1.f);
-	meshList[GEO_WETER]->textureArray[0] = LoadTGA("Image//trans.tga");
-
-	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
-	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
-
-	meshList[GEO_PARTICLE_SMOKE] = MeshBuilder::GenerateQuad("PARTICLE_SMOKE", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SMOKE]->textureArray[0] = LoadTGA("Image//particle.tga");
-	meshList[GEO_PARTICLE_SPARK] = MeshBuilder::GenerateQuad("PARTICLE_SPARK", Color(1, 1, 1), 1.f);
-	meshList[GEO_PARTICLE_SPARK]->textureArray[0] = LoadTGA("Image//sparkparticle.tga");
-	meshList[GEO_PARTICLE_FIRE] = MeshBuilder::GenerateSphere("fireparticle", Color(1, 157.f / 255.f, 0), 6, 6, 10.f);
-	meshList[GEO_PARTICLE_ICE] = MeshBuilder::GenerateSphere("iceparticle", Color(168.f/255.f, 241.f / 255.f, 1), 6, 6, 10.f);
 
 	//LOAD MAIN MENU
 	meshList[GEO_CONTROLS1] = MeshBuilder::GenerateQuad("Controls",1.f);
-	for (int i = 0; i < MAX_TEXTURES; ++i)
-		meshList[GEO_CONTROLS1]->textureArray[i] = LoadTGA("Image//controls.tga");
+	meshList[GEO_CONTROLS1]->textureArray[0] = LoadTGA("Image//controls.tga");
 
-
-
-	// Load the ground mesh and texture
-	meshList[GEO_GRASS_DARKGREEN] = MeshBuilder::GenerateQuad("GRASS_DARKGREEN", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS_DARKGREEN]->textureArray[0] = LoadTGA("Image//grass_darkgreen.tga");
-	meshList[GEO_GRASS_LIGHTGREEN] = MeshBuilder::GenerateQuad("GEO_GRASS_LIGHTGREEN", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS_LIGHTGREEN]->textureArray[0] = LoadTGA("Image//grass_lightgreen.tga");
-	meshList[GEO_SPRITE_ANIMATION] =
-		MeshBuilder::GenerateSpriteAnimation("fire", 4, 4);
-	meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//fire.tga");
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation
-		*>(meshList[GEO_SPRITE_ANIMATION]);
-	if (sa)
-	{
-		sa->m_anim = new Animation();
-		sa->m_anim->Set(0, 15, 0, 1.f, true);
-	}
 	
 	//camera.Init(playerInfo->GetPos(), playerInfo->GetTarget(), playerInfo->GetUp(), m_heightMap);
-	camera.Init(Vector3(), Vector3(0, 0, -1), Vector3(0, 1), m_heightMap);
+	camera.InitMenu(Vector3(), Vector3(0, 0, -1), Vector3(0, 1));
 
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
-	
-	rotateAngle = 0;
-	m_particleCount = 0;
-	MAX_PARTICLE = 1000;
-	m_gravity.Set(0, -9.8f, 0);
 
 	bLightEnabled = true;
 
@@ -349,25 +275,9 @@ void SceneControls1::Update(double dt)
 
 #endif // SP3_DEBUG
 
-
-	rotateAngle += (float)(10 * dt);
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
-	if (sa)
-	{
-		sa->Update(dt);
-		sa->m_anim->animActive = true;
-	}
-
-	ParticleManager::GetInstance()->Update(dt);
-	//camera.Update(dt);
-
-	
-	testvar += 0.05 * dt;
-
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 	fps = (float)(1.f / dt);
-	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 
@@ -402,12 +312,7 @@ void SceneControls1::RenderText(Mesh* mesh, std::string text, Color color)
 }
 
 void SceneControls1::RenderTerrain() {
-	modelStack.PushMatrix();
-	modelStack.Scale(4000, 350.f, 4000); // values varies.
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_X], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
-	glUniform1f(m_parameters[U_PAINT_TGASTRETCH_Y], PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000);
-	RenderMesh(meshList[GEO_TERRAIN], godlights);
-	modelStack.PopMatrix();
+
 }
 
 void SceneControls1::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
@@ -507,25 +412,6 @@ void SceneControls1::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size_x, 
 void SceneControls1::RenderMesh(Mesh *mesh, bool enableLight)
 {
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
-	if (m_renderPass == RENDER_PASS_PRE)
-	{
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
-		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP_GPASS], 1, GL_FALSE, &lightDepthMVP.a[0]);
-		for (int i = 0; i < MAX_TEXTURES; ++i)
-		{
-			if (mesh->textureArray[i] > 0)
-			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED	+ i], 1);
-				glActiveTexture(GL_TEXTURE0 + i);
-				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
-			}
-			else
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-		}
-		mesh->Render();
-		return;
-	}
 
 	if (mesh->texturePaintID > 0)
 	{
@@ -550,7 +436,11 @@ void SceneControls1::RenderMesh(Mesh *mesh, bool enableLight)
 		//modelView_inverse_transpose = modelView.GetInverse().GetTranspose();
 		//glUniformMatrix4fv(m_parameters[U_MODELVIEW_INVERSE_TRANSPOSE], 1, GL_FALSE, &modelView.a[0]);
 
-		Mtx44 lightDepthMVP = m_lightDepthProj * m_lightDepthView * modelStack.Top();
+		Mtx44 tempProj;
+		tempProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
+		Mtx44 tempView;
+		tempView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
+		Mtx44 lightDepthMVP = tempProj * tempView * modelStack.Top();
 		glUniformMatrix4fv(m_parameters[U_LIGHT_DEPTH_MVP], 1, GL_FALSE, &lightDepthMVP.a[0]);
 		
 		//load material
@@ -596,26 +486,7 @@ void SceneControls1::RenderMesh(Mesh *mesh, bool enableLight)
 
 void SceneControls1::RenderGround()
 {
-	modelStack.PushMatrix();
-	modelStack.Rotate(-90, 1, 0, 0);
-	modelStack.Translate(0, 0, -10);
-	modelStack.Rotate(-90, 0, 0, 1);
-	modelStack.Scale(400.0f, 400.0f, 400.0f);
 
-	for (int x=0; x<10; x++)
-	{
-		for (int z=0; z<10; z++)
-		{
-			modelStack.PushMatrix();
-			modelStack.Translate(x-5.0f, z-5.0f, 0.0f);
-			if ( ((x*9+z) % 2) == 0)
-				RenderMesh(meshList[GEO_GRASS_DARKGREEN], false);
-			else
-				RenderMesh(meshList[GEO_GRASS_LIGHTGREEN], false);
-			modelStack.PopMatrix();
-		}
-	}
-	modelStack.PopMatrix();
 }
 
 void SceneControls1::Render()
@@ -636,191 +507,24 @@ void SceneControls1::Exit()
 		if(meshList[i])
 			delete meshList[i];
 	}
-	while (particleList.size() > 0)
-	{
-		ParticleObject *particle = particleList.back();
-		delete particle;
-		particleList.pop_back();
-	}
+
 	glDeleteProgram(m_programID);
-	glDeleteProgram(m_gPassShaderID);
+	//glDeleteProgram(m_gPassShaderID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 }
 
 void SceneControls1::RenderTrees() 
 {
-	Vector3 Pos; // Pos to set locate a position for the tree to be planted.
-	Pos.Set(20.0f, 0, -100.0f);
-	modelStack.PushMatrix();// Push Matrix.
-	// To position the tree so that it is sitting properly on the terrain.
-	modelStack.Translate(Pos.x, 450 * ReadHeightMap(m_heightMap, Pos.x / 4000,Pos.z / 4000), Pos.z);
-	// Based on Method 1 on slide 4, rotate camera’s look position towards the tree.
-	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - Pos.x, camera.position.z - Pos.z)), 0, 1, 0);
-	modelStack.Scale(100, 100, 100); // Scale by 100.
-	RenderMesh(meshList[GEO_OBJECT], false); // Load tree.
-	modelStack.PopMatrix(); //Pop Matrix.
-}
 
-// Week 11: Particles
-ParticleObject* SceneControls1::GetParticle(void)
-{
-	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject *particle = (ParticleObject *)*it;
-		if (!particle->active)
-		{
-			particle->active = true;
-			m_particleCount++;
-			return particle;
-		}
-	}
-	for (unsigned i = 0; i < 10; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_SMOKE);
-		particleList.push_back(particle);
-	}
-	ParticleObject *particle = particleList.back();
-	particle->active = true;
-	m_particleCount++;
-	return particle;
-}
-
-// Week 11: Update Particles
-void SceneControls1::UpdateParticles(double dt)
-{
-	if (m_particleCount < MAX_PARTICLE)
-	{
-		ParticleObject* particle = GetParticle();
-		int rand = std::rand() % 2 + 1;
-		switch (rand) {
-		case 1:
-			particle->type = ParticleObject_TYPE::P_SMOKE;
-			particle->scale.Set(5, 5, 5);
-			particle->vel.Set(1, 5, 1);
-			particle->rotationSpeed = 0;// Math::RandFloatMinMax(20.f, 40.f);
-			particle->pos.Set(Math::RandFloatMinMax(-20, 10), (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f) + 50, Math::RandFloatMinMax(80, 110));
-			break;
-		case 2:
-			particle->type = ParticleObject_TYPE::P_SPARK;
-			particle->scale.Set(5, 5, 5);
-			particle->vel.Set(Math::RandFloatMinMax(-4.f, 4.f), 5, Math::RandFloatMinMax(-4.f, 4.f));
-			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-			particle->pos.Set(Math::RandFloatMinMax(-20, 10), (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f), Math::RandFloatMinMax(80, 110));
-			break;
-		}
-		
-	}
-
-
-	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
-	{
-		ParticleObject *particle = (ParticleObject *)*it;
-		if (particle->active)
-		{
-			if (particle->type == ParticleObject_TYPE::P_SMOKE)
-			{
-				/*particle->vel += m_gravity * (float)dt;*/
-
-				particle->pos += particle->vel * (float)dt * 10.f;
-				particle->scale *= 0.995f;
-				particle->rotation += particle->rotationSpeed * (float)dt;
-				if (particle->pos.y > 600.f)
-				{
-					particle->active = false;
-					m_particleCount--;
-				}
-			}
-			if (particle->type == ParticleObject_TYPE::P_SPARK)
-			{
-				particle->vel += m_gravity * (float)dt;
-
-				particle->pos += particle->vel * (float)dt * 10.f;
-
-				particle->rotation += particle->rotationSpeed * (float)dt;
-				if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
-				{
-					particle->active = false;
-					m_particleCount--;
-				}
-			}
-
-			/*if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))*/
-			
-		}
-	}
-}
-
-void SceneControls1::RenderParticles(ParticleObject *particle)
-{
-	switch (particle->type)
-	{
-	case ParticleObject_TYPE::P_SMOKE:
-		modelStack.PushMatrix();
-		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
-		modelStack.Rotate(particle->rotation, 0, 0, 1);
-		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		//RenderMesh(meshList[GEO_PARTICLE_SMOKE], godlights);
-		modelStack.PopMatrix();
-		break;
-	case ParticleObject_TYPE::P_SPARK:
-		modelStack.PushMatrix();
-		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
-		modelStack.Rotate(particle->rotation, 0, 0, 1);
-		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		//RenderMesh(meshList[GEO_PARTICLE_SPARK], godlights);
-		modelStack.PopMatrix();
-		break;
-	}
 }
 
 void SceneControls1::RenderWorld()
 {
-	if (!ParticleManager::GetInstance()->particleList.empty()) //RENDERING OF PARTICLES IN PARTICLE MANAGER
-	{
-
-		std::list < CParticle_2 *> ::iterator it, end;
-		end = ParticleManager::GetInstance()->particleList.end();
-		for (it = ParticleManager::GetInstance()->particleList.begin(); it != end; ++it)
-		{
-			CParticle_2* par = *it;
-			Vector3 parPos = par->getPos();
-			Vector3 parSca = par->getScale();
-			float bBoardRot = Math::RadianToDegree(atan2f(camera.position.x - parPos.x, camera.position.z - parPos.z));
-			switch (par->getParType())
-			{
-			case CParticle_2::PTYPE_FIRE:
-				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
-				modelStack.Rotate(bBoardRot, 0, 1, 0);
-				modelStack.Rotate(par->getRot(), 0, 0, 1);
-				modelStack.Scale(parSca.x, parSca.y, 0.1f);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
-				RenderMesh(meshList[GEO_PARTICLE_FIRE], false);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
-				modelStack.PopMatrix();
-				break;
-			case CParticle_2::PTYPE_ICE:
-				modelStack.PushMatrix();
-				modelStack.Translate(parPos.x, parPos.y + 350.f*ReadHeightMap(m_heightMap, parPos.x / 4000.f, parPos.z / 4000.f), parPos.z);
-				modelStack.Rotate(bBoardRot, 0, 1, 0);
-				modelStack.Rotate(par->getRot(), 0, 0, 1);
-				modelStack.Scale(parSca.x, parSca.y, 0.1f);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f - par->getTransparency());
-				RenderMesh(meshList[GEO_PARTICLE_ICE], false);
-				glUniform1f(m_parameters[U_COLOR_ALPHA], 1.f);
-				modelStack.PopMatrix();
-				break;
-			}
-		}
-	}				//RENDERING OF PARTICLES IN PARTICLE MANAGER <<<<<<<<<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 }
 
 void SceneControls1::RenderPassMain()
 {
-	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
 	glDisable(GL_CULL_FACE);
@@ -828,10 +532,6 @@ void SceneControls1::RenderPassMain()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(m_programID);
-
-	//pass light depth texture
-	m_lightDepthFBO.BindForReading(GL_TEXTURE8);
-	glUniform1i(m_parameters[U_SHADOW_MAP], 8);
 
 	Mtx44 perspective;
 	//perspective.SetToPerspective(45.0f, 1280.f / 720.f, 0.1f, 10000.0f);
@@ -909,17 +609,5 @@ void SceneControls1::RenderPassMain()
 }
 void SceneControls1::RenderPassGPass()
 {
-	m_renderPass = RENDER_PASS_PRE;
-	m_lightDepthFBO.BindForWriting();
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glUseProgram(m_gPassShaderID);
-	//These matrices should change when light position or direction changes
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
-		m_lightDepthProj.SetToOrtho(-100, 100, -100, 100, -100, 200);
-	else 
-		m_lightDepthProj.SetToPerspective(90, 1.f, 0.1, 200);
-	m_lightDepthView.SetToLookAt(lights[0].position.x, lights[0].position.y, lights[0].position.z, 0, 0, 0, 0, 1, 0);
-	RenderWorld();
+
 }
