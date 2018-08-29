@@ -101,6 +101,7 @@ void CPlayerInfo::Init(void)
 	currentNPC = NULL;
 	doSlowTime = false;
 	speedingUpTime = false;
+	TimeTrackerManager::GetInstance()->setSpeed(1);
 
 	rocketPosition.Set(0, 0, 0);
 	rocketTarget.Set(0, 0, 1);

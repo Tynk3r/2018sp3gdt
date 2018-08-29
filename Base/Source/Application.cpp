@@ -327,6 +327,7 @@ void Application::Run()
 	MouseController::Destroy();
 	KeyboardController::Destroy();
 	JoystickController::Destroy();
+	CPlayerInfo::DropInstance();
 }
 
 void Application::Exit()
