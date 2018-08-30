@@ -241,7 +241,8 @@ bool EntityManager::CheckForCollision(float dt)
 						CBoss* bos = static_cast<CBoss*>(*it);
 						if (proj->getSource() != (*it))
 						{
-							proj->setIsDone(true);
+							if (proj->getProjType() != CProjectile::PTYPE_BEAM)
+								proj->setIsDone(true);
 							proj->EmitParticles(Math::RandIntMinMax(16, 32));
 							CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + proj->getScale().x*0.5f);
 							CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + proj->getScale().x*0.015f);
@@ -355,6 +356,10 @@ bool EntityManager::CheckForCollision(float dt)
 							proj1->setIsDone(true);
 							proj2->setIsDone(true);
 						}
+						if (proj1->getProjType() == CProjectile::PTYPE_SPECIAL_KILLERNADO || proj1->getProjType() == CProjectile::PTYPE_BEAM)
+							proj1->setIsDone(false);
+						if (proj2->getProjType() == CProjectile::PTYPE_SPECIAL_KILLERNADO || proj2->getProjType() == CProjectile::PTYPE_BEAM)
+							proj2->setIsDone(false);
 						proj1->EmitParticles(Math::RandIntMinMax(16, 32));
 						proj2->EmitParticles(Math::RandIntMinMax(16, 32));
 						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + (proj1->getScale().x + proj2->getScale().x)*0.5f*0.5f);
@@ -485,22 +490,30 @@ bool EntityManager::CheckForCollision(float dt)
 								case CEntity::E_ENEMY:
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 5);
 									(*it)->setIsDone(true);
+									CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + tempProjectile->getScale().x*0.5f);
+									CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + tempProjectile->getScale().x*0.015f);
 									break;
 								case CEntity::E_MOVING_TARGET:
 								case CEntity::E_TARGET_ICE:
 								case CEntity::E_TARGET_FIRE:
 									(*it)->setIsDone(true);
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 3);
+									CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + tempProjectile->getScale().x*0.5f);
+									CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + tempProjectile->getScale().x*0.015f);
 									break;
 								case CEntity::E_TARGET:
 									(*it)->setIsDone(true);
 									CPlayerInfo::GetInstance()->SetScore(CPlayerInfo::GetInstance()->GetScore() + 1);
+									CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + tempProjectile->getScale().x*0.5f);
+									CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + tempProjectile->getScale().x*0.015f);
 									break;
 								case CEntity::E_BOSS:
 								{
 									CBoss* bos = static_cast<CBoss*>(*it);
 									bos->TakeDamage(tempProjectile);
 									tempProjectile->setIsDone(true);
+									CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + tempProjectile->getScale().x*0.5f);
+									CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + tempProjectile->getScale().x*0.015f);
 								}
 									break;
 								case CEntity::E_PROJECTILE:
@@ -508,6 +521,8 @@ bool EntityManager::CheckForCollision(float dt)
 									CProjectile* bossProj = (CProjectile*)*it;
 									bossProj->bossDone = true;
 									(*it)->setIsDone(true);
+									CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + tempProjectile->getScale().x*0.5f);
+									CPlayerInfo::GetInstance()->setScreenShakeTime(0.075f + tempProjectile->getScale().x*0.015f);
 								}
 									break;
 								default:
