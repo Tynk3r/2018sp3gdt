@@ -99,6 +99,11 @@ int CKeyboard::Read(const float deltaTime)
 	if (KeyboardController::GetInstance()->IsKeyDown('M'))
 		tTracker->setSpeed(tTracker->getSpeed() + deltaTime);
 
+	if (KeyboardController::GetInstance()->IsKeyPressed('C'))
+	{
+		if (thePlayerInfo->FPSMode) thePlayerInfo->FPSMode = false;
+		else if (!thePlayerInfo->FPSMode) thePlayerInfo->FPSMode = true;
+	}
 
 	return 0;
 }

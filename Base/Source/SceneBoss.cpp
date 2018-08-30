@@ -388,6 +388,7 @@ void SceneBoss::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 		playerInfo->rocketMode = false;
 	}
+	fps = (float)(1.f / dt);
 	if (dt > 1.0) return;
 	if (boss && boss->getCurrHealth() <= 0)
 	{
@@ -397,7 +398,7 @@ void SceneBoss::Update(double dt)
 			CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
 		}
 	}
-	fps = (float)(1.f / dt);
+
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
 
@@ -702,18 +703,18 @@ void SceneBoss::Update(double dt)
 		playerInfo->rocketMode = false;
 	}
 
-	if(Application::IsKeyPressed('I'))
-		lights[0].position.z -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('K'))
-		lights[0].position.z += (float)(10.f * dt);
-	if(Application::IsKeyPressed('J'))
-		lights[0].position.x -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('L'))
-		lights[0].position.x += (float)(10.f * dt);
-	if(Application::IsKeyPressed('O'))
-		lights[0].position.y -= (float)(10.f * dt);
-	if(Application::IsKeyPressed('P'))
-		lights[0].position.y += (float)(10.f * dt);
+	//if(Application::IsKeyPressed('I'))
+	//	lights[0].position.z -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('K'))
+	//	lights[0].position.z += (float)(10.f * dt);
+	//if(Application::IsKeyPressed('J'))
+	//	lights[0].position.x -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('L'))
+	//	lights[0].position.x += (float)(10.f * dt);
+	//if(Application::IsKeyPressed('O'))
+	//	lights[0].position.y -= (float)(10.f * dt);
+	//if(Application::IsKeyPressed('P'))
+	//	lights[0].position.y += (float)(10.f * dt);
 
 	//rotateAngle += (float)(10 * dt);
 	//SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -2025,6 +2026,12 @@ void SceneBoss::RenderPassMain()
 	std::ostringstream ss7;
 	ss7 << playerInfo->GetScore();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss7.str(), Color(0, 1, 0), 4, 115, 65);
+	if (playerInfo->FPSMode)
+	{
+		std::ostringstream ss8;
+		ss8 << "FPS:" << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss8.str(), Color(0, 1, 0), 4, 0, 55);
+	}
 	//std::ostringstream ss9;
 	//ss9.precision(1);
 	//ss9 << "SpellMod: " << playerInfo->GetSpellMod();

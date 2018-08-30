@@ -470,6 +470,7 @@ void SceneLevel3::Update(double dt)
 		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_IN_GAME_MENU);
 	}
+	fps = (float)(1.f / dt);
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
@@ -812,7 +813,7 @@ void SceneLevel3::Update(double dt)
 
 	//glUniform1i(m_parameters[U_GETFOGGED], 0);
 
-	fps = (float)(1.f / dt);
+	//fps = (float)(1.f / dt);
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
@@ -2019,6 +2020,12 @@ void SceneLevel3::RenderPassMain()
 	std::ostringstream ss7;
 	ss7 << playerInfo->GetScore();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss7.str(), Color(0, 1, 0), 4, 115, 65);
+	if (playerInfo->FPSMode)
+	{
+		std::ostringstream ss8;
+		ss8 << "FPS:" << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss8.str(), Color(0, 1, 0), 4, 0, 55);
+	}
 	//std::ostringstream ss4;
 	//ss4.precision((int)floor(log10f(totalTime)) + 1);
 	//ss4 << "Time: " << totalTime;

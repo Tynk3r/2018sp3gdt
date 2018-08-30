@@ -185,7 +185,7 @@ public:
 	bool rocketMode = false;
 
 	Vector3 rocketPosition, rocketUp, rocketRight, rocketTarget;
-
+	bool FPSMode = false;
 	float FirstHeight = 0;
 
 	void setSpellModLimit(SPELLMOD_TYPE smtype) { spellModLimit = smtype; }

@@ -102,7 +102,7 @@ GLuint PaintTGA(GLuint texture, float x, float y, Vector3 color, float alpha, fl
 		{
 			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4] = color.z * 255;  //BLUE
 			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 1] = color.y * 255; //GREEN
-			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 2] = color.x * 255; ///RED
+			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 2] = color.x * 255; //RED
 			data[targetY * (int)sqrt(imageSize) * 2 + targetX * 4 + 3] = alpha * 255; //ALPHA
 		}
 		break;

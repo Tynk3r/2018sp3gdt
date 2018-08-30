@@ -467,6 +467,7 @@ void SceneRangeMoving::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_ELEMENTAL);
 		playerInfo->rocketMode = false;
 	}
+	fps = (float)(1.f / dt);
 	if (dt > 1.0) return;
 	TimeTrackerManager::GetInstance()->Update(dt);
 	dt *= TimeTrackerManager::GetInstance()->getSpeed();
@@ -959,7 +960,7 @@ void SceneRangeMoving::Update(double dt)
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
-	fps = (float)(1.f / dt);
+	//fps = (float)(1.f / dt);
 	rotateAngle++;
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
@@ -2114,6 +2115,12 @@ void SceneRangeMoving::RenderPassMain()
 	std::ostringstream ss7;
 	ss7 << playerInfo->GetScore();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss7.str(), Color(0, 1, 0), 4, 115, 65);
+	if (playerInfo->FPSMode)
+	{
+		std::ostringstream ss8;
+		ss8 << "FPS:" << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss8.str(), Color(0, 1, 0), 4, 0, 55);
+	}
 	//std::ostringstream ss9;
 	//ss9.precision(1);
 	//ss9 << "SpellMod: " << playerInfo->GetSpellMod();
