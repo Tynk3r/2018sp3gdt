@@ -115,6 +115,8 @@ spellmodSpecial.tga
 star.tga
 hourglass.tga
 hourglassFluid.tga
+floor2.tga
+floor3.tga
 heightmapLevel1.raw
 heightmapLevel2.raw
 heightmapLevel3.raw
@@ -133,4 +135,32 @@ GAMEPLAY CONTRIBUTIONS : {
 	LIGHTNING BEAM SPELL (Ice Special) : Using Line X AABB box collision, the game can check whether your line of sight (with a distance limit) intersects an AABB box, before launching a lightning beam that lasts for less than a second.
 	HURRICANE SPELL (Fire Special) : Launch a fire projectile that releases a hurricane upon colliding with the ground. The hurricane destroys all enemies and targets in its way, except the boss.
 	LEVEL DESIGN : Created Levels 1 to 4 using entities that other members provided, such as targets and enemies.
+}
+
+< Hong Wei / 175063X >
+CLASSES : {
+	SceneManager
+	SoundEngine
+	SceneStartMenu
+	SceneInstructions
+	SceneInstructions1
+	SceneInGameMenu
+	SceneGameMenu
+	SceneGameOver
+	SceneControls
+	SceneControls1
+}
+OBJ/TGA/SOUND ASSETS : {
+controls.tga
+gamemenu.tga
+gameover.tga
+menu.tga
+instructionsss.tga
+ingame.tga
+}
+FRAMEWORK CONTRIBUTIONS : {
+
+}
+GAMEPLAY CONTRIBUTIONS : {
+
 }
