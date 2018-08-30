@@ -1589,6 +1589,7 @@ void SceneLevel4::RenderWorld()
 
 					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
+						proj->bossDone = true;
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");

@@ -712,7 +712,7 @@ void SceneLevel3::Update(double dt)
 		break;
 	}
 
-	if (totalBarrelsDown <= 0 && playerInfo->rocketPosition.y > 800)
+	if ((totalBarrelsDown <= 0 && playerInfo->rocketPosition.y > 800) || Application::IsKeyPressed('E'))
 	{
 		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL4);
@@ -819,7 +819,7 @@ void SceneLevel3::Update(double dt)
 	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
-	if (totalTime <= 0 || Application::IsKeyPressed('E') || (dragonObtain && camera.position.y - 50 < tideHeight) || playerInfo->GetHealth() <= 0)
+	if (totalTime <= 0 || (dragonObtain && camera.position.y - 50 < tideHeight) || playerInfo->GetHealth() <= 0)
 	{
 		playerInfo->rocketMode = false;
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
@@ -1349,6 +1349,7 @@ void SceneLevel3::RenderWorld()
 
 					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
+						proj->bossDone = true;
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");

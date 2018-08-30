@@ -720,7 +720,7 @@ void SceneLevel2::Update(double dt)
 		break;
 	}
 
-	if (totalBarrelsDown <= 0 && secondSetBarrel)
+	if ((totalBarrelsDown <= 0 && secondSetBarrel) || Application::IsKeyPressed('E'))
 	{
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_LEVEL3);
 	}
@@ -1247,6 +1247,7 @@ void SceneLevel2::RenderWorld()
 
 					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
+						proj->bossDone = true;
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");

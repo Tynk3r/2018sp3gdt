@@ -421,19 +421,19 @@ float CBoss::getMaxHealth() const
 float CBoss::TakeDamage(CEntity * ent)
 {
 	float damageMultiplier = 0.1f;
-	if (this->state == F_VULNERABLE || this->state == F_SURPRISED)
+	CProjectile* proj = dynamic_cast<CProjectile*>(ent);
+	if (this->state == F_VULNERABLE || this->state == F_SURPRISED || proj->getProjType() == CProjectile::PTYPE_BEAM || proj->getProjType() == CProjectile::PTYPE_SPECIAL_KILLERNADO)
 		damageMultiplier = 1;
 	float damagetodo = 0;
-	CProjectile* proj = dynamic_cast<CProjectile*>(ent);
 	if (proj)
 	{
 		switch (proj->getProjType())
 		{
 		case CProjectile::PTYPE_SPECIAL_KILLERNADO:
-			damagetodo = 30 * damageMultiplier;
+			damagetodo = 60 * damageMultiplier;
 			break;
 		case CProjectile::PTYPE_BEAM:
-			damagetodo = 40 * damageMultiplier;
+			damagetodo = 50 * damageMultiplier;
 			break;
 		case CProjectile::PTYPE_ICE:
 			damagetodo = 20 * damageMultiplier;

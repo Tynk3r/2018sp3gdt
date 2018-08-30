@@ -368,6 +368,8 @@ void SceneBoss::Init()
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
 	CSoundEngine::GetInstance()->AddSound("floorImpact", "Sound//floorImpact.mp3");
 	CSoundEngine::GetInstance()->AddSound("IceImpact", "Sound//iceimpact.mp3");
+	CSoundEngine::GetInstance()->AddSound("Laser", "Sound//laserbeam.mp3");
+
 	playerInfo->screenShakeOn = true;
 	timeAfterBoss = 0;
 	healthBarAlpha = 1;
@@ -388,6 +390,10 @@ void SceneBoss::Update(double dt)
 		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 		playerInfo->rocketMode = false;
 	}
+	if (Application::IsKeyPressed('F'))
+	{
+		playerInfo->setHealth(100);
+	}
 	fps = (float)(1.f / dt);
 	if (dt > 1.0) return;
 	if (boss && boss->getCurrHealth() <= 0)
@@ -395,7 +401,9 @@ void SceneBoss::Update(double dt)
 		timeAfterBoss += (float)dt;
 		if (timeAfterBoss > 9.f)
 		{
+			CSoundEngine::GetInstance()->stopGame();
 			CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_START_MENU);
+			CSoundEngine::GetInstance()->playMenu();
 		}
 	}
 
@@ -482,6 +490,8 @@ void SceneBoss::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f, playerInfo);
+				CSoundEngine::GetInstance()->PlayASound("Iceattack");
+
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -499,6 +509,7 @@ void SceneBoss::Update(double dt)
 				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f, playerInfo);
 				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
 				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f, playerInfo);
+				CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
@@ -560,13 +571,13 @@ void SceneBoss::Update(double dt)
 					aa->setTarget(aa->getPos() + tempProj);
 					aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
 					CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
-
+					CSoundEngine::GetInstance()->PlayASound("Laser");
 					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(1, 0, 1), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 				}
 
 			}
 
-			CSoundEngine::GetInstance()->PlayASound("Iceattack");
+			
 			playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 		}
 		if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_ICEBALL && playerInfo->GetSpellMod() != CProjectile::SMTYPE_SPECIAL) CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
@@ -1332,6 +1343,7 @@ void SceneBoss::RenderWorld()
 					modelStack.PopMatrix();
 					if (entPos.y < 350.f * ReadHeightMap(m_heightMap, entPos.x / 4000, entPos.z / 4000) - playerInfo->FirstHeight && proj->getProjType() != CProjectile::PTYPE_SPECIAL_KILLERNADO)
 					{
+						proj->bossDone = true;
 						proj->setIsDone(true);
 						proj->EmitParticles(Math::RandIntMinMax(16, 32));
 						CPlayerInfo::GetInstance()->setScreenShakeIntensity(2.f + entSca.x*0.5f);
@@ -1866,7 +1878,7 @@ void SceneBoss::RenderPassMain()
 
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
-	RenderMesh(meshList[GEO_AXES], false);
+	//RenderMesh(meshList[GEO_AXES], false);
 	modelStack.PushMatrix();
 	modelStack.Translate(2, 2000, 2);
 	RenderMesh(meshList[GEO_SKYPLANE], godlights);
