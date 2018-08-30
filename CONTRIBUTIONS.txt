@@ -157,10 +157,22 @@ gameover.tga
 menu.tga
 instructionsss.tga
 ingame.tga
+mana.tga
+heart.tga
+Librarian.tga
+rocks.obj
+pillar.obj
+orb.obj
+ & ALL SOUND ASSETS
 }
 FRAMEWORK CONTRIBUTIONS : {
+	SCENE MANAGER : Allows player to switch between scenes when needed
+
+	SOUND ENGINE: Plays sound when called
 
 }
 GAMEPLAY CONTRIBUTIONS : {
-
+	Sound: Added sound for all effects and animation
+	HUD: Added HUD display for score, mana and health
+	
 }
