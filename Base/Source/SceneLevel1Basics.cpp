@@ -443,6 +443,7 @@ void SceneLevel1::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+	SEngine->AddSound("Laser", "Sound//laserbeam.mp3");
 
 	totalTime = 180;
 	totalBarrelsDown = 0;

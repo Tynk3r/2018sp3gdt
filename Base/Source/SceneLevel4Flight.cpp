@@ -540,6 +540,7 @@ void SceneLevel4::Init()
 	//CSoundEngine::GetInstance()->Init();
 	SEngine->AddSound("Fireball", "Sound//fireball.mp3");
 	SEngine->AddSound("Iceattack", "Sound//iceattack.mp3");
+	SEngine->AddSound("Laser", "Sound//laserbeam.mp3");
 
 	totalTime = 150;
 	totalBarrelsDown = 0;
@@ -638,6 +639,7 @@ void SceneLevel4::Update(double dt)
 				Vector3 camtar = camera.target - Vector3(0, playerInfo->FirstHeight, 0);
 				Vector3 viewvec = (camtar - campos).Normalized();
 				aa->Init(campos + viewvec, camtar + viewvec*1.5f);
+				CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_BURST)
 			{
@@ -655,6 +657,7 @@ void SceneLevel4::Update(double dt)
 				aa2->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
 				rotation.SetToRotation(-30, tempUp.x, tempUp.y, tempUp.z);
 				aa3->Init(campos + (rotation * viewvec), camtar + (rotation * viewvec)*1.5f);
+				CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			}
 			else if (playerInfo->GetSpellMod() == CProjectile::SMTYPE_SPECIAL)
 			{
@@ -697,14 +700,14 @@ void SceneLevel4::Update(double dt)
 					aa->setTarget(aa->getPos() + tempProj);
 					aa->setScale(aa->getScale() + Vector3(24, 24, tempProj.Length()));
 					CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
-
+					CSoundEngine::GetInstance()->PlayASound("Laser");
 					meshList[GEO_TERRAIN]->texturePaintID = PaintTGA(meshList[GEO_TERRAIN]->texturePaintID, ((camera.position.x / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), ((camera.position.z / 4000.f) + 0.5f) * (1 / (PAINT_LENGTH * meshList[GEO_TERRAIN]->tgaLengthPaint / 4000.f)), Vector3(1, 0, 1), 1, meshList[GEO_TERRAIN]->tgaLengthPaint, PAINT_PATTERNS::PAINT_MAGICCIRCLE);//PaintTGA(meshList[GEO_TESTPAINTQUAD2]->texturePaintID, (entPos.x / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 90)), (entPos.z / 4000.f) * (1 / (PAINT_LENGTH * meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint / 160)), Vector3(0.5, 1, 0), 1, meshList[GEO_TESTPAINTQUAD2]->tgaLengthPaint);
 				}
 
 
 			}
 
-			CSoundEngine::GetInstance()->PlayASound("Iceattack");
+			//CSoundEngine::GetInstance()->PlayASound("Iceattack");
 			playerInfo->setMana(playerInfo->getMana() - playerInfo->getManaCost());
 		}
 		if (playerInfo->GetSpellType() != CPlayerInfo::SPELL_ICEBALL && playerInfo->GetSpellMod() != CProjectile::SMTYPE_SPECIAL) CameraEffectManager::GetInstance()->AddCamEffect(CameraEffect::CE_TYPE_ACTIONLINE_WHITE);
