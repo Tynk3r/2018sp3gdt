@@ -309,7 +309,7 @@ void SceneGameOver::Update(double dt)
 	//UpdateParticles(dt);
 	//std::cout << camera.position << std::endl;
 
-	cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
+	//cout << Application::mouse_current_x << "," << Application::mouse_current_y << endl;
 }
 
 void SceneGameOver::RenderText(Mesh* mesh, std::string text, Color color)

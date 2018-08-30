@@ -1064,11 +1064,12 @@ void SceneLevel4::Update(double dt)
 	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
-	if (totalTime <= 0 || Application::IsKeyPressed('E'))
+	if (totalTime <= 0 || playerInfo->GetHealth() <= 0)
 	{
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 		playerInfo->rocketMode = false;
 	}
+
 
 }
 

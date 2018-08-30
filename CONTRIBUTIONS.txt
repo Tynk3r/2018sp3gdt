@@ -79,16 +79,58 @@ GAMEPLAY CONTRIBUTIONS : {
 
 < Jovan Low / 170373M >
 CLASSES : {
-
+	WitchFog
+	SceneLevel1Basics
+	SceneLevel2Burst
+	SceneLevel3Fog
+	SceneLevel4Flight
+}
+MAJOR FILE EDITS THAT WERE NOT A NEW CLASS : {
+LoadTGA.cpp - Added PaintTGA function for painting textures, Added NewTGA function for generating blank textures
+Level3.fragmentshader / Level3.vertexshader - Shader specifically for Level 3. Main difference is that the vertex shader will obtain specific fragment height relative to world position, and that fragment shader creates special fog
 }
 OBJ/TGA ASSETS : {
-
+bolt.obj
+bolt.tga
+blank256.tga
+dragon.obj (from Google Poly)
+Tex_Dragon.tga (from Google Poly)
+nest.obj (from Google Poly)
+nest.tga (from Google Poly)
+rightArm.obj
+rightArm.tga
+octoBody.obj
+octoBody.tga
+octoHead.obj
+octoHead.tga
+sign.obj
+sign.tga
+tornado.obj
+tornado.tga
+witch.obj
+witch.tga
+spellmodNormal.tga
+spellmodBurst.tga
+spellmodSpecial.tga
+star.tga
+hourglass.tga
+hourglassFluid.tga
+heightmapLevel1.raw
+heightmapLevel2.raw
+heightmapLevel3.raw
+heightmapLevel4.raw
 }
 FRAMEWORK CONTRIBUTIONS : {
-	SHADER :
-	CAMERA EFFECTS : easily add camera effects, automatically updates and renders due to CameraEffectManager;
-	PARTICLE EFFECTS : easily add particles, automatically updates and renders to due to ParticleManager;
+	SHADER AND LOADTGA (TEXTURE-PAINTING, GRAPHICAL) : Added a system that allows terrain to be mixed with a paint texture, where the texture will be edited to have the paint at specific coordinates when fire/ice projectiles hit the terrain. Check TDD for full explanation of implementation
+	CAMERA : Camera sway and Camera shake in CPlayerInfo
+	Line X AABB box Collision Algorithm : Collision that checks for a straight vector line intersecting with the AABB bounding box of another entity in the form of a cuboid
+	TexCoord Remover : Able to cutoff parts of a mesh texture that you do not want to see. Used for the hourglass timer in some levels.
 }
 GAMEPLAY CONTRIBUTIONS : {
-	
+	SPECIAL FOG SHADER (PART OF THE GAME) : Level 3 uses a different shader (Level3 shader instead of Shadow shader) which has fog that can be affected by player position, and position of other objects that can clear up the fog. This is part of the gameplay as you are supposed to use your fire magic to light up the path and reach the goal.
+	BURST PATTERNS FOR PROJECTILES : You can modify your spell to shoot your projectiles differently. You can launch 3 fireballs at once that will move while in a swirling pattern like a ring of fire. You can launch 3 iceballs that will spiral continuously around their direction of movement.
+	DRAGON FLIGHT : Using Euler rotation, you can enter dragon flight mode and fly high in the sky, where Yaw/Pitch/Roll is available. There is also acceleration for your rotational movements.
+	LIGHTNING BEAM SPELL (Ice Special) : Using Line X AABB box collision, the game can check whether your line of sight (with a distance limit) intersects an AABB box, before launching a lightning beam that lasts for less than a second.
+	HURRICANE SPELL (Fire Special) : Launch a fire projectile that releases a hurricane upon colliding with the ground. The hurricane destroys all enemies and targets in its way, except the boss.
+	LEVEL DESIGN : Created Levels 1 to 4 using entities that other members provided, such as targets and enemies.
 }

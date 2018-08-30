@@ -819,10 +819,10 @@ void SceneLevel3::Update(double dt)
 	//std::cout << camera.position << std::endl;
 
 	totalTime -= dt;
-	if (totalTime <= 0 || Application::IsKeyPressed('E') || (dragonObtain && camera.position.y - 50 < tideHeight))
+	if (totalTime <= 0 || Application::IsKeyPressed('E') || (dragonObtain && camera.position.y - 50 < tideHeight) || playerInfo->GetHealth() <= 0)
 	{
 		playerInfo->rocketMode = false;
-		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_RANGE_MOVING);
+		CSceneManager::Instance()->GoToScene(CSceneManager::SCENE_GAME_OVER);
 	}
 
 }
